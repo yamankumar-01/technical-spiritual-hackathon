@@ -1,7 +1,16 @@
 import axios from 'axios';
 
+let rawBaseURL =
+  import.meta.env.VITE_API_URL ||
+  import.meta.env.VITE_API_BASE_URL ||
+  (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api');
+
+if (rawBaseURL && !rawBaseURL.endsWith('/api') && !rawBaseURL.endsWith('/api/')) {
+  rawBaseURL = `${rawBaseURL.replace(/\/+$/, '')}/api`;
+}
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: rawBaseURL,
   withCredentials: true, // Crucial for sending/receiving httpOnly cookies
 });
 
