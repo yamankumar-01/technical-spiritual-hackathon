@@ -137,7 +137,9 @@ const startHoldCleanupJob = () => {
         console.log(`🧹 Cleaned up ${modifiedCount} expired registration holds.`);
       }
     } catch (err) {
-      console.error('Error during hold cleanup job:', err.message);
+      if (err.code !== 'ECONNREFUSED') {
+        console.error('Error during hold cleanup job:', err.message);
+      }
     }
   }, 60000);
 };

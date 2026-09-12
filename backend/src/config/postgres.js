@@ -54,11 +54,13 @@ export const pgQuery = async (text, params = []) => {
     }
     return res;
   } catch (err) {
-    console.error('❌ PostgreSQL Query Error:', {
-      query: text.trim().substring(0, 150),
-      message: err.message,
-      code: err.code,
-    });
+    if (err.code !== 'ECONNREFUSED') {
+      console.error('❌ PostgreSQL Query Error:', {
+        query: text.trim().substring(0, 150),
+        message: err.message,
+        code: err.code,
+      });
+    }
     throw err;
   }
 };
