@@ -1,0 +1,133 @@
+/* ==========================================================================
+   Reusable "Soft Medical Glass" Theme — CSS Tokens & Utility Classes
+   Calm, trustworthy, modern healthcare & clean SaaS aesthetic.
+   ========================================================================== */
+
+:root {
+  /* Soft Healing Green / Mint Medical Glass Palette */
+  --smg-bg-top: #DDF5EB;
+  --smg-bg-bottom: #EBF8F2;
+  --smg-bg-white: #FFFFFF;
+
+  --smg-primary: #2EB88A;
+  --smg-primary-hover: #24A379;
+  --smg-accent-gradient-end: #1E9470;
+
+  --smg-text-heading: #12141A;
+  --smg-text-body: #536159;
+  --smg-text-muted: #84948C;
+
+  --smg-card-bg: rgba(255, 255, 255, 0.95);
+  --smg-card-border: rgba(255, 255, 255, 0.85);
+
+  --smg-blob-bg: #DDF5EB;
+  --smg-blob-hover: #D0F2E3;
+
+  --smg-radius-pill: 9999px;
+  --smg-radius-hero: 32px;
+  --smg-radius-card: 24px;
+  --smg-radius-input: 14px;
+
+  --smg-shadow-card: 0 10px 30px rgba(18, 30, 24, 0.06);
+  --smg-shadow-card-hover: 0 15px 35px rgba(18, 30, 24, 0.10);
+  --smg-shadow-button: 0 6px 18px rgba(46, 184, 138, 0.32);
+  --smg-shadow-floating: 0 15px 35px rgba(18, 30, 24, 0.08);
+}
+
+/* Page Background Gradient Wash */
+.smg-page-bg {
+  background: linear-gradient(180deg, var(--smg-bg-top) 0%, var(--smg-bg-bottom) 50%, var(--smg-bg-white) 100%);
+  color: var(--smg-text-heading);
+  min-height: 100vh;
+}
+
+/* Glassmorphic Card Container */
+.smg-card {
+  background-color: var(--smg-card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--smg-radius-card);
+  box-shadow: var(--smg-shadow-card);
+  border: 1px solid var(--smg-card-border);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.smg-card-interactive:hover {
+  box-shadow: var(--smg-shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+/* Hero Outer Container */
+.smg-hero-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.88) 60%, rgba(235, 248, 242, 0.8) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--smg-radius-hero);
+  box-shadow: 0 20px 45px rgba(18, 20, 26, 0.06);
+  border: 1px solid var(--smg-card-border);
+}
+
+/* Floating Overlap Bar */
+.smg-overlap-bar {
+  background-color: var(--smg-card-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 20px;
+  box-shadow: var(--smg-shadow-floating);
+  border: 1px solid var(--smg-card-border);
+}
+
+/* Duotone Icon Blob */
+.smg-blob {
+  background-color: var(--smg-blob-bg);
+  color: var(--smg-primary);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.smg-blob:hover {
+  background-color: var(--smg-blob-hover);
+  transform: scale(1.04);
+}
+
+/* Accent Gradient Pill Button */
+.smg-button {
+  background: linear-gradient(135deg, var(--smg-primary) 0%, var(--smg-accent-gradient-end) 100%);
+  color: #FFFFFF;
+  border-radius: var(--smg-radius-pill);
+  font-weight: 600;
+  box-shadow: var(--smg-shadow-button);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.smg-button:hover {
+  box-shadow: 0 8px 24px rgba(46, 184, 138, 0.45);
+  transform: translateY(-1px) scale(1.01);
+}
+
+.smg-button:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* Photo Subtle Mint/Green Color-Grade Filter */
+.smg-photo-grade {
+  filter: saturate(1.04) contrast(1.02);
+  position: relative;
+}
+
+.smg-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(46, 184, 138, 0.10);
+  mix-blend-mode: color;
+  pointer-events: none;
+}

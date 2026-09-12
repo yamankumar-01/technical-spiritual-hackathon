@@ -1,0 +1,400 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { psService, teamService } from '../services/api';
+import ProblemStatementListItem from '../components/ProblemStatementListItem';
+import ProblemStatementModal from '../components/ProblemStatementModal';
+import {
+  Sparkles,
+  RefreshCw,
+  AlertCircle,
+  Filter,
+  Search,
+  Layers,
+  XCircle,
+  CheckCircle2,
+  AlertTriangle,
+  Clock,
+  ArrowRight,
+} from 'lucide-react';
+
+const DOMAIN_FILTERS = [
+  { id: 'all', label: 'All Tracks' },
+  { id: 'ar_ai', label: 'AR & AI Solutions', keywords: ['ar', 'ai', 'voice', 'vision', 'browser', 'screen', 'detox'] },
+  { id: 'iot', label: 'IoT & Smart Hardware', keywords: ['iot', 'hardware', 'touch', 'platform', 'console', 'board', '3d'] },
+  { id: 'mindfulness', label: 'Mindfulness & Health', keywords: ['mindfulness', 'meditation', 'nutrition', 'sattvic', 'health', 'focus', 'traffic control', 'well-being'] },
+  { id: 'campus', label: 'Campus & Academics', keywords: ['campus', 'academic', 'exam', 'rtu', 'library', 'resource', 'venue', 'dialogue', 'textbook'] },
+  { id: 'habits_games', label: 'Habits, Games & Ethics', keywords: ['habit', 'virtue', 'power', 'karma', 'game', 'character', 'reflection', 'goodness', 'journal'] },
+  { id: 'environment', label: 'Environment & Sustainability', keywords: ['carbon', 'waste', 'tree', 'plantation', 'geotag', 'sdg', 'botanical', 'noise', 'wildlife', 'microplastic', 'water', 'e-waste', 'green', 'swachhta', 'prithvi', 'tarukosh', 'dhara', 'anusandhan', 'arogya'] },
+];
+
+export const PSPage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const [problemStatements, setProblemStatements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [selectedPS, setSelectedPS] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDomain, setSelectedDomain] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [seatFilter, setSeatFilter] = useState('all'); // 'all', 'available', 'full'
+  const [refreshing, setRefreshing] = useState(false);
+
+  // User state maps
+  const [userHoldsMap, setUserHoldsMap] = useState({});
+  const [userTeamsMap, setUserTeamsMap] = useState({});
+
+  // Temporarily Unavailable Alert State
+  const [tempUnavailableModal, setTempUnavailableModal] = useState(null);
+  const [acquiringHoldFor, setAcquiringHoldFor] = useState(null);
+
+  const fetchPS = async (isManual = false) => {
+    try {
+      if (isManual) setRefreshing(true);
+      const startTime = Date.now();
+
+      // Fetch live real-time capacity for all problem statements
+      const res = await psService.getAllCapacity();
+      if (res.data?.success) {
+        setProblemStatements(res.data.data);
+      }
+
+      // Fetch user active holds and teams if logged in
+      if (user) {
+        try {
+          const userRes = await teamService.getMyRegistrations();
+          if (userRes.data?.success) {
+            const hMap = {};
+            (userRes.data.activeHolds || []).forEach((h) => {
+              const psId = typeof h.problem === 'object' ? h.problem?._id : h.problem;
+              if (psId) hMap[psId] = h;
+            });
+            setUserHoldsMap(hMap);
+
+            const tMap = {};
+            (userRes.data.teams || []).forEach((t) => {
+              const psId = typeof t.problemStatement === 'object' ? t.problemStatement?._id : t.problemStatement;
+              if (psId) tMap[psId] = t;
+            });
+            setUserTeamsMap(tMap);
+          }
+        } catch (err) {
+          console.error('Failed to load user registrations:', err);
+        }
+      }
+
+      if (isManual) {
+        const elapsed = Date.now() - startTime;
+        if (elapsed < 600) {
+          await new Promise((r) => setTimeout(r, 600 - elapsed));
+        }
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to fetch problem statements.');
+    } finally {
+      setLoading(false);
+      if (isManual) setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPS();
+    const interval = setInterval(() => fetchPS(), 15000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  // Handle Register click with atomic hold creation
+  const handleRegister = async (ps) => {
+    if (!user) {
+      navigate(`/login?redirect=/register-team?psId=${ps._id}`);
+      return;
+    }
+
+    // Check if user already submitted a registration
+    if (userTeamsMap[ps._id]) {
+      navigate('/dashboard');
+      return;
+    }
+
+    // Check if user already has an active hold
+    if (userHoldsMap[ps._id]) {
+      navigate(`/register-team?psId=${ps._id}&holdToken=${userHoldsMap[ps._id].holdToken}`);
+      return;
+    }
+
+    try {
+      setAcquiringHoldFor(ps._id);
+      const res = await psService.acquireHold(ps._id);
+      if (res.data?.success) {
+        navigate(`/register-team?psId=${ps._id}&holdToken=${res.data.holdToken}`);
+      } else if (res.data?.code === 'TEMPORARILY_UNAVAILABLE') {
+        setTempUnavailableModal({
+          ps,
+          message: res.data.message,
+        });
+        await fetchPS();
+      }
+    } catch (err) {
+      if (err.code === 'TEMPORARILY_UNAVAILABLE' || err.response?.data?.code === 'TEMPORARILY_UNAVAILABLE') {
+        setTempUnavailableModal({
+          ps,
+          message:
+            err.response?.data?.message ||
+            'Temporarily unavailable. All available slots are currently occupied. Another participant may currently be filling the last available slot. Please try again after a few minutes.',
+        });
+        await fetchPS();
+      } else {
+        alert(err.message || 'Failed to reserve temporary slot.');
+      }
+    } finally {
+      setAcquiringHoldFor(null);
+    }
+  };
+
+  // Handle retry when temporarily unavailable
+  const handleRetry = async (ps) => {
+    setTempUnavailableModal(null);
+    await fetchPS(true);
+    await handleRegister(ps);
+  };
+
+  const categories = useMemo(() => {
+    return ['All', ...new Set(problemStatements.map((p) => p.category).filter(Boolean))].sort();
+  }, [problemStatements]);
+
+  const filteredPS = useMemo(() => {
+    return problemStatements.filter((ps) => {
+      // 1. Text Search
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const inTitle = ps.title?.toLowerCase().includes(q);
+        const inCode = ps.code?.toLowerCase().includes(q);
+        const inCategory = ps.category?.toLowerCase().includes(q);
+        if (!inTitle && !inCode && !inCategory) return false;
+      }
+
+      // 2. Domain Filter
+      if (selectedDomain !== 'all') {
+        const domainConfig = DOMAIN_FILTERS.find((d) => d.id === selectedDomain);
+        if (domainConfig?.keywords) {
+          const categoryText = (ps.category || '').toLowerCase();
+          const titleText = (ps.title || '').toLowerCase();
+          const matchesDomain = domainConfig.keywords.some(
+            (kw) => categoryText.includes(kw) || titleText.includes(kw)
+          );
+          if (!matchesDomain) return false;
+        }
+      }
+
+      // 3. Exact Category Filter
+      if (selectedCategory !== 'All' && ps.category !== selectedCategory) {
+        return false;
+      }
+
+      // 4. Seat Filter
+      const avail = ps.available !== undefined ? ps.available : ps.seatsAvailable ?? 5;
+      if (seatFilter === 'available' && avail <= 0) return false;
+      if (seatFilter === 'full' && avail > 0) return false;
+
+      return true;
+    });
+  }, [problemStatements, searchQuery, selectedDomain, selectedCategory, seatFilter]);
+
+  return (
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+      {/* Header & Title Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/15 border border-[#2EB88A]/30 text-[#1E9470] dark:text-[#2EB88A] text-xs font-bold uppercase tracking-wider shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#2EB88A]" />
+            <span>50 Official Hackathon Challenges</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
+            Problem Statements Repository
+          </h1>
+          <p className="text-xs sm:text-sm text-[#536159] dark:text-slate-400 max-w-2xl">
+            Each track has a strictly capped 5-team capacity. Reserve your slot with a 15-minute registration window.
+          </p>
+        </div>
+
+        {/* Action button: Refresh live seats */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => fetchPS(true)}
+            disabled={refreshing}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-[#071510] border border-slate-200 dark:border-white/10 hover:border-[#2EB88A] text-[#12141A] dark:text-white shadow-xs transition-all active:scale-95 cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-[#2EB88A] ${refreshing ? 'animate-spin' : ''}`} />
+            <span>{refreshing ? 'Refreshing...' : 'Refresh Live Slots'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Domain Filters Carousel/Bar */}
+      <div className="w-full max-w-full flex items-center gap-2 overflow-x-auto pb-2 scroll-smooth">
+        {DOMAIN_FILTERS.map((d) => (
+          <button
+            key={d.id}
+            type="button"
+            onClick={() => setSelectedDomain(d.id)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              selectedDomain === d.id
+                ? 'bg-gradient-to-r from-[#2EB88A] to-[#1E9470] text-white shadow-sm'
+                : 'bg-white/80 dark:bg-slate-800/80 text-[#536159] dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/60 hover:border-[#2EB88A]/50'
+            }`}
+          >
+            {d.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Search Bar & Secondary Filters */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-3xl bg-white/90 dark:bg-[#071510]/90 border border-slate-200/80 dark:border-white/10 shadow-sm">
+        <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Search by code, title, category..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-full text-xs bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 text-[#12141A] dark:text-white focus:outline-none focus:border-[#2EB88A]"
+          />
+        </div>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          {/* Seat Filter Toggle */}
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800/80 p-1 rounded-full border border-slate-200 dark:border-slate-700 text-xs">
+            <button
+              type="button"
+              onClick={() => setSeatFilter('all')}
+              className={`px-3 py-1 rounded-full font-medium transition-all ${
+                seatFilter === 'all' ? 'bg-white dark:bg-slate-900 text-[#12141A] dark:text-white shadow-xs font-bold' : 'text-slate-500'
+              }`}
+            >
+              All ({problemStatements.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setSeatFilter('available')}
+              className={`px-3 py-1 rounded-full font-medium transition-all ${
+                seatFilter === 'available' ? 'bg-white dark:bg-slate-900 text-[#1E9470] dark:text-[#2EB88A] shadow-xs font-bold' : 'text-slate-500'
+              }`}
+            >
+              Available
+            </button>
+            <button
+              type="button"
+              onClick={() => setSeatFilter('full')}
+              className={`px-3 py-1 rounded-full font-medium transition-all ${
+                seatFilter === 'full' ? 'bg-white dark:bg-slate-900 text-rose-600 shadow-xs font-bold' : 'text-slate-500'
+              }`}
+            >
+              Full
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Problem Statements List */}
+      {loading ? (
+        <div className="py-24 text-center space-y-3">
+          <div className="w-8 h-8 mx-auto border-3 border-[#2EB88A] border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-[#536159] dark:text-slate-400">Loading live problem statements and capacities...</p>
+        </div>
+      ) : filteredPS.length === 0 ? (
+        <div className="py-16 text-center rounded-3xl bg-white/60 dark:bg-[#071510]/60 border border-slate-200 dark:border-white/10 space-y-3">
+          <AlertCircle className="w-8 h-8 text-slate-400 mx-auto" />
+          <p className="text-sm font-bold text-[#12141A] dark:text-white">No problem statements match your filter criteria.</p>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedDomain('all');
+              setSelectedCategory('All');
+              setSeatFilter('all');
+            }}
+            className="px-4 py-2 rounded-full text-xs font-bold bg-[#DDF5EB] text-[#1E9470] hover:bg-[#DDF5EB]/80"
+          >
+            Clear All Filters
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-3.5">
+          {filteredPS.map((ps, idx) => (
+            <ProblemStatementListItem
+              key={ps._id}
+              ps={ps}
+              index={idx}
+              onViewDetails={(p) => setSelectedPS(p)}
+              userHold={userHoldsMap[ps._id]}
+              userTeam={userTeamsMap[ps._id]}
+              onRegister={handleRegister}
+              onRetry={handleRetry}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Details Modal */}
+      {selectedPS && (
+        <ProblemStatementModal
+          ps={selectedPS}
+          onClose={() => setSelectedPS(null)}
+          userHold={userHoldsMap[selectedPS._id]}
+          userTeam={userTeamsMap[selectedPS._id]}
+          onRegister={handleRegister}
+          onRetry={handleRetry}
+        />
+      )}
+
+      {/* Temporarily Unavailable Modal Alert (Requirement 6 & 29) */}
+      {tempUnavailableModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-md p-6 rounded-3xl bg-white dark:bg-[#0c1420] border border-amber-300 dark:border-amber-700/60 shadow-2xl space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1.5">
+              <h3 className="text-lg font-bold text-[#12141A] dark:text-white font-['Outfit']">
+                Temporarily Unavailable
+              </h3>
+              <p className="text-xs text-[#536159] dark:text-slate-300 leading-relaxed">
+                All available slots are currently occupied. Another participant may currently be filling the last available slot. Please try again after a few minutes.
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs text-center">
+              <span className="font-mono font-bold text-[#1E9470] dark:text-[#2EB88A]">
+                {tempUnavailableModal.ps?.code}: {tempUnavailableModal.ps?.title}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setTempUnavailableModal(null)}
+                className="flex-1 py-2.5 rounded-full text-xs font-bold text-[#536159] dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition-colors"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRetry(tempUnavailableModal.ps)}
+                className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-full text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 transition-all shadow-md"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Try Again</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PSPage;

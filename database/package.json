@@ -1,0 +1,31 @@
+{
+  "name": "tsh-database-postgres",
+  "version": "1.0.0",
+  "description": "Techno Spiritual Hackathon 2026 - PostgreSQL Database Schema, Migrations, and Utilities",
+  "main": "client.js",
+  "type": "module",
+  "scripts": {
+    "start:docker": "docker compose up -d",
+    "stop:docker": "docker compose down",
+    "logs:docker": "docker compose logs -f postgres",
+    "migrate": "node migrate.js",
+    "seed": "node seed.js",
+    "setup": "node migrate.js && node seed.js",
+    "test": "node test-connection.js"
+  },
+  "keywords": [
+    "postgresql",
+    "hackathon",
+    "schema",
+    "migrations"
+  ],
+  "author": "Techno Spiritual Hackathon Organizing Committee",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8"
+  }
+}
