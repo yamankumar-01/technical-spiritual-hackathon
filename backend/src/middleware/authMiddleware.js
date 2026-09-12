@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { User } from '../models/User.js';
+import { findUserById } from '../db/queries.js';
 
 export const protect = async (req, res, next) => {
   try {
@@ -31,7 +31,7 @@ export const protect = async (req, res, next) => {
     const secret = process.env.JWT_SECRET || 'tsh_super_secret_jwt_key_2026_zen_cyber';
     const decoded = jwt.verify(token, secret);
 
-    const user = await User.findById(decoded.id).select('-password');
+    const user = await findUserById(decoded.id);
     if (!user) {
       return res.status(401).json({
         success: false,

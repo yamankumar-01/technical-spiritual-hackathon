@@ -3,10 +3,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import { connectDB, closeDB } from './src/config/db.js';
-import { seedDatabase } from './src/config/seed.js';
+import { initializePostgres, pgPool, pgQuery } from './src/config/postgres.js';
+import { cleanupExpiredHolds } from './src/db/queries.js';
 import { protect } from './src/middleware/authMiddleware.js';
-import { Team } from './src/models/Team.js';
 
 import authRoutes from './src/routes/authRoutes.js';
 import psRoutes from './src/routes/psRoutes.js';
@@ -60,20 +59,26 @@ const uploadsPath = path.resolve('uploads');
 app.get('/uploads/:filename', protect, async (req, res) => {
   try {
     const { filename } = req.params;
-    const team = await Team.findOne({
-      $or: [
-        { 'payment.manualProofUrl': `/uploads/${filename}` },
-        { 'payment.manualProofUrl': filename },
-      ],
-    });
+    const teamRes = await pgQuery(
+      `SELECT t.*, tm.email AS member_email
+       FROM teams t
+       LEFT JOIN team_members tm ON tm.team_id = t.id
+       WHERE t.payment_screenshot_url = $1 OR t.payment_screenshot_url = $2`,
+      [`/uploads/${filename}`, filename]
+    );
 
-    if (!team) {
+    if (teamRes.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'File not found or not associated with any team.' });
     }
 
-    const isLeader = team.leader?.email?.toLowerCase() === req.user.email?.toLowerCase();
-    const isMember = team.members?.some((m) => m.email?.toLowerCase() === req.user.email?.toLowerCase());
-    const isCreator = team.createdBy?.toString() === req.user._id?.toString();
+    const team = teamRes.rows[0];
+    const memberEmails = teamRes.rows.map((r) => r.member_email?.toLowerCase()).filter(Boolean);
+    const userEmail = req.user.email?.toLowerCase();
+    const userId = req.user.id || req.user._id;
+
+    const isLeader = team.leader_email?.toLowerCase() === userEmail;
+    const isMember = memberEmails.includes(userEmail);
+    const isCreator = team.created_by === userId || team.leader_id === userId;
     const isAdmin = req.user.role === 'admin';
 
     if (!isLeader && !isMember && !isCreator && !isAdmin) {
@@ -95,12 +100,23 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    status: 'online',
-    timestamp: new Date().toISOString(),
-    service: 'Techno Spiritual Hackathon (TSH) API',
-  });
+app.get('/api/health', async (req, res) => {
+  try {
+    const dbCheck = await pgQuery('SELECT 1');
+    res.status(200).json({
+      status: 'online',
+      database: 'PostgreSQL (Connected)',
+      timestamp: new Date().toISOString(),
+      service: 'Techno Spiritual Hackathon (TSH) API',
+    });
+  } catch (err) {
+    res.status(200).json({
+      status: 'degraded',
+      database: `PostgreSQL (Error: ${err.message})`,
+      timestamp: new Date().toISOString(),
+      service: 'Techno Spiritual Hackathon (TSH) API',
+    });
+  }
 });
 
 // Error handling middleware
@@ -112,23 +128,16 @@ app.use((err, req, res, next) => {
   });
 });
 
-import { RegistrationHold } from './src/models/RegistrationHold.js';
-import { GlobalSettings } from './src/models/GlobalSettings.js';
-
 // Periodic expired holds cleanup job (runs every 60 seconds)
 const startHoldCleanupJob = () => {
   setInterval(async () => {
     try {
-      const now = new Date();
-      const result = await RegistrationHold.updateMany(
-        { status: 'active', expiresAt: { $lte: now } },
-        { $set: { status: 'expired' } }
-      );
-      if (result.modifiedCount > 0) {
-        console.log(`🧹 Cleaned up ${result.modifiedCount} expired registration holds.`);
+      const modifiedCount = await cleanupExpiredHolds();
+      if (modifiedCount > 0) {
+        console.log(`🧹 Cleaned up ${modifiedCount} expired registration holds.`);
       }
     } catch (err) {
-      console.error('Error during hold cleanup job:', err);
+      console.error('Error during hold cleanup job:', err.message);
     }
   }, 60000);
 };
@@ -136,26 +145,24 @@ const startHoldCleanupJob = () => {
 // Initialize database and start server
 const startServer = async () => {
   try {
-    await connectDB();
-    await seedDatabase();
-    await Team.syncIndexes();
-    await RegistrationHold.syncIndexes();
-    await GlobalSettings.getSettings();
-    console.log('🛡️ Database multikey and hold unique indexes synchronized successfully.');
+    console.log('🚀 Connecting and bootstrapping PostgreSQL database...');
+    await initializePostgres();
 
     startHoldCleanupJob();
 
     const server = app.listen(PORT, () => {
-      console.log(`✨ TSH Server running on port ${PORT} [Mode: ${process.env.NODE_ENV || 'development'}]`);
+      console.log(`✨ TSH Server running on port ${PORT} [Mode: ${process.env.NODE_ENV || 'development'}] [DB: PostgreSQL]`);
     });
 
     const shutdown = async (signal) => {
       console.log(`\n🛑 Received ${signal}. Shutting down gracefully...`);
       server.close(async () => {
-        await closeDB();
+        try {
+          await pgPool.end();
+          console.log('🐘 PostgreSQL pool closed.');
+        } catch (_) {}
         process.exit(0);
       });
-      // Force exit after 5s if still hanging
       setTimeout(() => process.exit(1), 5000);
     };
 

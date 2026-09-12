@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { User } from '../models/User.js';
+import bcrypt from 'bcryptjs';
+import { findUserByEmail, findUserById, createUser } from '../db/queries.js';
 
 const generateToken = (id) => {
   const secret = process.env.JWT_SECRET || 'tsh_super_secret_jwt_key_2026_zen_cyber';
@@ -7,7 +8,7 @@ const generateToken = (id) => {
 };
 
 const sendTokenResponse = (user, statusCode, res, message = 'Success') => {
-  const token = generateToken(user._id);
+  const token = generateToken(user.id || user._id);
 
   const cookieOptions = {
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -24,7 +25,8 @@ const sendTokenResponse = (user, statusCode, res, message = 'Success') => {
       message,
       token,
       user: {
-        id: user._id,
+        id: user.id || user._id,
+        _id: user.id || user._id,
         name: user.name,
         email: user.email,
         phone: user.phone,
@@ -45,7 +47,7 @@ export const register = async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await findUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -53,10 +55,13 @@ export const register = async (req, res) => {
       });
     }
 
-    const user = await User.create({
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    const user = await createUser({
       name,
       email: email.toLowerCase(),
-      password,
+      passwordHash,
       phone,
       college,
       role: 'user',
@@ -82,7 +87,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    const user = await findUserByEmail(email);
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -90,7 +95,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const isMatch = await user.matchPassword(password);
+    const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -121,11 +126,15 @@ export const logout = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await findUserById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
     res.status(200).json({
       success: true,
       user: {
-        id: user._id,
+        id: user.id,
+        _id: user.id,
         name: user.name,
         email: user.email,
         phone: user.phone,

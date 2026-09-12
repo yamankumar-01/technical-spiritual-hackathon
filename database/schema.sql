@@ -60,8 +60,10 @@ CREATE INDEX IF NOT EXISTS idx_ps_seats ON problem_statements(seats_available);
 CREATE TABLE IF NOT EXISTS teams (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     team_name VARCHAR(150) NOT NULL,
+    team_code VARCHAR(50) UNIQUE,
     problem_statement_id UUID NOT NULL REFERENCES problem_statements(id) ON DELETE RESTRICT,
     leader_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    created_by UUID REFERENCES users(id) ON DELETE SET NULL,
     leader_name VARCHAR(150) NOT NULL,
     leader_email VARCHAR(255) NOT NULL,
     leader_phone VARCHAR(50) NOT NULL,
@@ -69,11 +71,14 @@ CREATE TABLE IF NOT EXISTS teams (
     leader_branch VARCHAR(100),
     leader_year VARCHAR(50),
     registration_number VARCHAR(80) UNIQUE,
-    status VARCHAR(50) NOT NULL DEFAULT 'payment_pending' CHECK (status IN ('draft', 'pending', 'payment_pending', 'confirmed', 'rejected', 'shortlisted')),
+    hold_token VARCHAR(120),
+    status VARCHAR(50) NOT NULL DEFAULT 'payment_pending' CHECK (status IN ('draft', 'pending', 'payment_pending', 'confirmed', 'rejected', 'shortlisted', 'registered', 'finalized')),
     payment_status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (payment_status IN ('pending', 'verified', 'confirmed', 'rejected', 'failed', 'refunded')),
     payment_method VARCHAR(50) NOT NULL DEFAULT 'src_desk' CHECK (payment_method IN ('src_desk', 'upi', 'bank_transfer', 'manual', 'cash')),
+    payment_amount NUMERIC NOT NULL DEFAULT 400,
     transaction_id VARCHAR(120),
     payment_screenshot_url TEXT,
+    admin_notes TEXT,
     approved_at TIMESTAMPTZ,
     rejected_at TIMESTAMPTZ,
     registration_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -83,10 +88,12 @@ CREATE TABLE IF NOT EXISTS teams (
 
 -- Indexes for teams
 CREATE INDEX IF NOT EXISTS idx_teams_ps_id ON teams(problem_statement_id);
+CREATE INDEX IF NOT EXISTS idx_teams_created_by ON teams(created_by);
 CREATE INDEX IF NOT EXISTS idx_teams_leader_email ON teams(LOWER(leader_email));
 CREATE INDEX IF NOT EXISTS idx_teams_status ON teams(status);
 CREATE INDEX IF NOT EXISTS idx_teams_payment_status ON teams(payment_status);
 CREATE INDEX IF NOT EXISTS idx_teams_registration_number ON teams(registration_number);
+CREATE INDEX IF NOT EXISTS idx_teams_team_code ON teams(team_code);
 
 -- ============================================================================
 -- 3.1 REGISTRATION HOLDS TABLE (15-Minute Temporary Slot Reservations)
@@ -145,6 +152,24 @@ CREATE TABLE IF NOT EXISTS contact_queries (
 
 CREATE INDEX IF NOT EXISTS idx_contact_email ON contact_queries(LOWER(email));
 CREATE INDEX IF NOT EXISTS idx_contact_status ON contact_queries(status);
+
+-- ============================================================================
+-- 5.1 GLOBAL SETTINGS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS global_settings (
+    id SERIAL PRIMARY KEY,
+    registration_enabled BOOLEAN NOT NULL DEFAULT true,
+    registration_start_date TIMESTAMPTZ NOT NULL DEFAULT '2026-01-01 00:00:00+00',
+    registration_end_date TIMESTAMPTZ NOT NULL DEFAULT '2026-12-31 23:59:59+00',
+    hold_duration_seconds INTEGER NOT NULL DEFAULT 900,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Ensure a default row exists
+INSERT INTO global_settings (id, registration_enabled, registration_start_date, registration_end_date, hold_duration_seconds)
+VALUES (1, true, '2026-01-01 00:00:00+00', '2026-12-31 23:59:59+00', 900)
+ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================
 -- 6. STRICT ANTI-DUPLICATE EMAIL ENGINE (Database-Level Enforcement)

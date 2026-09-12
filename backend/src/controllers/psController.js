@@ -1,8 +1,8 @@
-import { ProblemStatement } from '../models/ProblemStatement.js';
+import { getAllProblemStatements, getProblemStatementById } from '../db/queries.js';
 
 export const getAllPS = async (req, res) => {
   try {
-    const problemStatements = await ProblemStatement.find().sort({ code: 1 });
+    const problemStatements = await getAllProblemStatements();
     res.status(200).json({
       success: true,
       count: problemStatements.length,
@@ -18,7 +18,7 @@ export const getAllPS = async (req, res) => {
 
 export const getPSById = async (req, res) => {
   try {
-    const ps = await ProblemStatement.findById(req.params.id);
+    const ps = await getProblemStatementById(req.params.id);
     if (!ps) {
       return res.status(404).json({
         success: false,

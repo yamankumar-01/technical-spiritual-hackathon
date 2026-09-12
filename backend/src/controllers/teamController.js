@@ -1,64 +1,23 @@
-import { ProblemStatement } from '../models/ProblemStatement.js';
-import { Team } from '../models/Team.js';
-import { RegistrationHold } from '../models/RegistrationHold.js';
-import { problemMutex } from '../utils/holdMutex.js';
+import {
+  registerNewTeam,
+  getTeamByCreator,
+  getTeamsByCreator,
+  updateTeamPaymentProof,
+  getUserActiveHolds as getUserActiveHoldsQuery,
+} from '../db/queries.js';
 
 // 1. Register team (Leader + 3 Members + PS selection + Hold Token)
 export const registerTeam = async (req, res) => {
   try {
     const { teamName, leader, members, holdToken } = req.body;
     const psId = req.body.psId || req.body.problemStatementId;
+    const userId = req.user.id || req.user._id;
 
     if (!teamName || !psId || !leader || !members) {
       return res.status(400).json({
         success: false,
         message: 'Team name, problem statement, leader, and 3 member details are required.',
       });
-    }
-
-    // Verify holdToken if provided or enforce hold requirement
-    let hold = null;
-    if (holdToken) {
-      hold = await RegistrationHold.findOne({
-        holdToken,
-        userId: req.user._id,
-        problemId: psId,
-      });
-
-      if (!hold) {
-        return res.status(400).json({
-          success: false,
-          code: 'HOLD_EXPIRED',
-          message: 'This registration session is no longer valid. Please select the problem again.',
-        });
-      }
-
-      // Idempotency check: if already consumed, check if team exists and return it without duplicate creation
-      if (hold.status === 'consumed') {
-        const existingSubmittedTeam = await Team.findOne({ holdToken });
-        if (existingSubmittedTeam) {
-          await existingSubmittedTeam.populate('problemStatement', 'title code category seatsAvailable totalSeats');
-          return res.status(200).json({
-            success: true,
-            isDuplicateSubmission: true,
-            isExisting: true,
-            message: 'Registration already submitted successfully.',
-            team: existingSubmittedTeam,
-            data: existingSubmittedTeam,
-          });
-        }
-      }
-
-      const now = new Date();
-      if (hold.status !== 'active' || now >= new Date(hold.expiresAt)) {
-        hold.status = 'expired';
-        await hold.save();
-        return res.status(400).json({
-          success: false,
-          code: 'HOLD_EXPIRED',
-          message: 'Your 15-minute registration window has expired. Please select the problem again and start a new registration.',
-        });
-      }
     }
 
     if (!Array.isArray(members) || members.length !== 3) {
@@ -81,7 +40,7 @@ export const registerTeam = async (req, res) => {
       });
     }
 
-    // A. Check for internal duplicate emails within the submitted roster
+    // Check for internal duplicate emails within the submitted roster
     const uniqueEmailSet = new Set(allSubmittedEmails);
     if (uniqueEmailSet.size !== allSubmittedEmails.length) {
       return res.status(400).json({
@@ -90,100 +49,46 @@ export const registerTeam = async (req, res) => {
       });
     }
 
-    // Check if user already registered a finalized/pending team for this problem
-    const existingTeam = await Team.findOne({
-      createdBy: req.user._id,
-      problemStatement: psId,
-      status: { $in: ['payment_pending', 'confirmed', 'finalized'] },
-    });
-    if (existingTeam) {
-      return res.status(400).json({
-        success: false,
-        code: 'ALREADY_REGISTERED',
-        message: `You have already registered team "${existingTeam.teamName}" for this problem statement (Status: ${existingTeam.status.toUpperCase()}).`,
-        team: existingTeam,
-      });
-    }
-
-    // B. Check across entire database: An email can only belong to ONE Problem Statement / team
-    const conflictingTeam = await Team.findOne({
-      status: { $in: ['payment_pending', 'confirmed', 'registered', 'finalized'] },
-      $or: [
-        { 'leader.email': { $in: allSubmittedEmails } },
-        { 'members.email': { $in: allSubmittedEmails } },
-      ],
-    }).populate('problemStatement', 'title code');
-
-    if (conflictingTeam) {
-      const clashingEmail = allSubmittedEmails.find((email) => {
-        if (conflictingTeam.leader?.email?.toLowerCase() === email) return true;
-        return conflictingTeam.members?.some((m) => m.email?.toLowerCase() === email);
-      });
-
-      const psDetails = conflictingTeam.problemStatement
-        ? `${conflictingTeam.problemStatement.code} (${conflictingTeam.problemStatement.title})`
-        : 'another problem statement';
-
-      return res.status(400).json({
-        success: false,
-        message: `The email "${clashingEmail}" is already registered with team "${conflictingTeam.teamName}" for Problem Statement ${psDetails}. An email can only be assigned to one Problem Statement.`,
-      });
-    }
-
-    // Verify problem statement exists
-    const ps = await ProblemStatement.findById(psId);
-    if (!ps) {
-      return res.status(404).json({
-        success: false,
-        message: 'Selected problem statement does not exist.',
-      });
-    }
-
-    // Atomically create team and consume hold
-    const team = await Team.create({
-      teamName: teamName.trim(),
-      createdBy: req.user._id,
-      problemStatement: psId,
-      leader: {
-        ...leader,
-        email: leaderEmail,
-      },
-      members: members.map((m) => ({
-        ...m,
-        email: m.email.trim().toLowerCase(),
-      })),
-      participantEmails: allSubmittedEmails,
-      holdToken: hold?.holdToken || null,
-      status: 'payment_pending',
-      payment_status: 'pending',
-      payment: {
-        method: 'src_desk',
-        amount: 400,
-        manualTxnId: 'OFFLINE_SRC_DESK',
-        manualProofUrl: null,
-      },
+    const result = await registerNewTeam({
+      teamName,
+      psId,
+      userId,
+      leader,
+      members,
+      holdToken,
     });
 
-    if (hold) {
-      hold.status = 'consumed';
-      await hold.save();
+    if (result.isDuplicate) {
+      return res.status(200).json({
+        success: true,
+        isDuplicateSubmission: true,
+        isExisting: true,
+        message: 'Registration already submitted successfully.',
+        team: result.team,
+        data: result.team,
+      });
     }
-
-    await team.populate('problemStatement', 'title code category seatsAvailable totalSeats');
 
     res.status(201).json({
       success: true,
       status: 'PAYMENT PENDING',
       message:
         'Registration submitted successfully. Your registration slot has been reserved. Payment instructions and payment timings will be shared in the official WhatsApp group. Payment Mode: Offline. Payment Location: SRC Club.',
-      team,
-      data: team,
+      team: result.team,
+      data: result.team,
     });
   } catch (error) {
-    if (error.code === 11000) {
+    if (error.message.includes('DUPLICATE_EMAIL_VIOLATION') || error.message.includes('already registered')) {
       return res.status(400).json({
         success: false,
-        message: 'One or more of these emails is already registered with another team. An email can only be assigned to one Problem Statement.',
+        message: error.message,
+      });
+    }
+    if (error.message.includes('expired') || error.message.includes('no longer valid')) {
+      return res.status(400).json({
+        success: false,
+        code: 'HOLD_EXPIRED',
+        message: error.message,
       });
     }
     res.status(500).json({
@@ -197,6 +102,7 @@ export const registerTeam = async (req, res) => {
 export const submitManualPayment = async (req, res) => {
   try {
     const { teamId, txnId } = req.body;
+    const userId = req.user.id || req.user._id;
 
     if (!txnId || !txnId.trim()) {
       return res.status(400).json({
@@ -205,27 +111,19 @@ export const submitManualPayment = async (req, res) => {
       });
     }
 
-    const team = await Team.findOne({ _id: teamId, createdBy: req.user._id });
-    if (!team) {
-      return res.status(404).json({ success: false, message: 'Team registration not found.' });
-    }
-
     let proofUrl = null;
     if (req.file) {
       proofUrl = `/uploads/${req.file.filename}`;
     }
 
-    team.payment = {
-      method: 'manual',
-      amount: 400,
-      manualTxnId: txnId.trim(),
-      manualProofUrl: proofUrl || team.payment?.manualProofUrl || null,
-      paidAt: new Date(),
-    };
-    team.status = 'payment_pending';
-    await team.save();
+    const team = await updateTeamPaymentProof(teamId, userId, {
+      txnId: txnId.trim(),
+      proofUrl,
+    });
 
-    await team.populate('problemStatement', 'title code category seatsAvailable totalSeats');
+    if (!team) {
+      return res.status(404).json({ success: false, message: 'Team registration not found.' });
+    }
 
     res.status(200).json({
       success: true,
@@ -243,10 +141,8 @@ export const submitManualPayment = async (req, res) => {
 // 3. Get current logged-in user's team status
 export const getMyTeamStatus = async (req, res) => {
   try {
-    const team = await Team.findOne({ createdBy: req.user._id }).populate(
-      'problemStatement',
-      'title code category seatsAvailable totalSeats'
-    );
+    const userId = req.user.id || req.user._id;
+    const team = await getTeamByCreator(userId);
 
     if (!team) {
       return res.status(200).json({
@@ -272,29 +168,14 @@ export const getMyTeamStatus = async (req, res) => {
 // 4. Get all registrations and active holds for the logged-in user
 export const getMyRegistrations = async (req, res) => {
   try {
-    const teams = await Team.find({ createdBy: req.user._id })
-      .populate('problemStatement', 'title code category totalSeats seatsAvailable')
-      .sort({ createdAt: -1 });
-
-    const now = new Date();
-    const activeHolds = await RegistrationHold.find({
-      userId: req.user._id,
-      status: 'active',
-      expiresAt: { $gt: now },
-    }).populate('problemId', 'title code category totalSeats seatsAvailable');
+    const userId = req.user.id || req.user._id;
+    const teams = await getTeamsByCreator(userId);
+    const activeHolds = await getUserActiveHoldsQuery(userId);
 
     res.status(200).json({
       success: true,
       teams,
-      activeHolds: activeHolds.map((h) => ({
-        holdToken: h.holdToken,
-        problem: h.problemId,
-        expiresAt: h.expiresAt,
-        remainingSeconds: Math.max(
-          0,
-          Math.floor((new Date(h.expiresAt).getTime() - now.getTime()) / 1000)
-        ),
-      })),
+      activeHolds,
     });
   } catch (error) {
     res.status(500).json({
@@ -303,4 +184,3 @@ export const getMyRegistrations = async (req, res) => {
     });
   }
 };
-

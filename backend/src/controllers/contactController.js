@@ -1,4 +1,4 @@
-import { ContactQuery } from '../models/ContactQuery.js';
+import { createContactQuery } from '../db/queries.js';
 
 export const submitContactQuery = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ export const submitContactQuery = async (req, res) => {
       });
     }
 
-    const query = await ContactQuery.create({
+    const query = await createContactQuery({
       name,
       email,
       subject: subject || 'General Query',

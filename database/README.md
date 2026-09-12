@@ -1,11 +1,10 @@
 # 🐘 Techno Spiritual Hackathon (TSH) 2026 - PostgreSQL Database System
 
-> [!IMPORTANT]
-> **Architectural Notice (Option A — Reference & Alternative Relational Architecture)**:
-> The active, live production web application runs on **MongoDB (with WiredTiger persistent disk storage in `backend/.db_data/`)**. 
+> [!NOTE]
+> **Active Production Architecture**:
+> The backend server (`backend/server.js`) runs natively on **PostgreSQL** (`pg` connection pool with auto-initialization).
+> All controllers (`auth`, `ps`, `hold`, `team`, `admin`, `contact`) execute pure parameterized SQL queries with atomic transactions, row locking (`FOR UPDATE`), and database-enforced anti-duplicate email triggers.
 > 
-> This dedicated `database/` PostgreSQL module is a production-grade **reference / alternative implementation** showcasing relational schemas, PL/pgSQL triggers, and foreign keys. The running backend controllers (`backend/src/controllers/*`) do **NOT** query PostgreSQL at runtime, and there is no hidden `DB_ENGINE` switch. Any live registration data is stored and validated directly in MongoDB.
-
 > **Hindi**: TSH 2026 Hackathon ke liye complete PostgreSQL database setup. Isme official 50 Problem Statements, strict anti-duplicate email triggers, atomic seat management, aur Docker/Cloud automation included hai.  
 > **English**: Complete PostgreSQL database setup for TSH 2026 Hackathon featuring official 50 Problem Statements, strict anti-duplicate email triggers, atomic seat management, and Docker/Cloud automation.
 
