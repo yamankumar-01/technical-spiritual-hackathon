@@ -113,15 +113,6 @@ npm run dev
 
 ---
 
-## 👑 Demo Credentials
-
-| Role | Email | Password |
-|---|---|---|
-| **Administrator** | `admin@tsh.edu` | `Admin@12345` |
-| **Sample Team Leader** | `leader@college.edu` | `Password@123` |
-
----
-
 ## 📡 API Endpoint Reference
 
 ### Authentication
