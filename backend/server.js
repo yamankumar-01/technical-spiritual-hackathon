@@ -105,6 +105,7 @@ app.get('/api/health', async (req, res) => {
     const dbCheck = await pgQuery('SELECT 1');
     res.status(200).json({
       status: 'online',
+      version: '1.0.2',
       database: 'PostgreSQL (Connected)',
       timestamp: new Date().toISOString(),
       service: 'Techno Spiritual Hackathon (TSH) API',
