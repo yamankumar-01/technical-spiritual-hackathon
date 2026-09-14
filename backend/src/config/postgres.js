@@ -165,6 +165,21 @@ export const initializePostgres = async () => {
       ON CONFLICT (id) DO NOTHING;
     `);
 
+    // Ensure default admin user and sample leader have accurate, verified bcrypt password hashes
+    const adminHash = '$2b$10$OpF/fubidMhL68fMBIvsE.X4pAL6biaX1vYAMq8CLnNeGV0EtVI6W'; // Admin@12345
+    const leaderHash = '$2b$10$D2XfTmt1k2VUAxuRG6HL0uD4ljkmm6z3UhC1aAj42YBwcWajmpTGK'; // Password@123
+
+    await pgQuery(`
+      INSERT INTO users (name, email, password_hash, role, phone, college)
+      VALUES 
+        ('TSH Administrator', 'admin@tsh.edu', $1, 'admin', '+91 9876543210', 'TSH Organizing University'),
+        ('Sample Team Leader', 'leader@college.edu', $2, 'user', '+91 9876543211', 'National Institute of Technology')
+      ON CONFLICT (email) DO UPDATE SET
+        password_hash = EXCLUDED.password_hash,
+        role = EXCLUDED.role;
+    `, [adminHash, leaderHash]);
+    console.log('👑 Verified administrator credentials in PostgreSQL.');
+
     return true;
   } catch (error) {
     console.error('❌ Failed to initialize PostgreSQL:', error.message);

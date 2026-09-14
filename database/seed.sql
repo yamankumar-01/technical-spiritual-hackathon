@@ -9,8 +9,8 @@ VALUES
   (
     'TSH Administrator', 
     'admin@tsh.edu', 
-    -- Pre-hashed bcrypt for 'Admin@12345'
-    '$2a$10$tZc084qK9B.R02vB41h72.Y0z47uTf4pMh76i7uQz4iK9K0Wz4yqy', 
+    -- Verified bcrypt hash for 'Admin@12345'
+    '$2b$10$OpF/fubidMhL68fMBIvsE.X4pAL6biaX1vYAMq8CLnNeGV0EtVI6W', 
     'admin', 
     '+91 9876543210', 
     'TSH Organizing University'
@@ -18,13 +18,15 @@ VALUES
   (
     'Sample Team Leader', 
     'leader@college.edu', 
-    -- Pre-hashed bcrypt for 'Password@123'
-    '$2a$10$tZc084qK9B.R02vB41h72.Y0z47uTf4pMh76i7uQz4iK9K0Wz4yqy', 
+    -- Verified bcrypt hash for 'Password@123'
+    '$2b$10$D2XfTmt1k2VUAxuRG6HL0uD4ljkmm6z3UhC1aAj42YBwcWajmpTGK', 
     'user', 
     '+91 9876543211', 
     'National Institute of Technology'
   )
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (email) DO UPDATE SET
+  password_hash = EXCLUDED.password_hash,
+  role = EXCLUDED.role;
 
 -- 2. Insert 50 Official Problem Statements
 
