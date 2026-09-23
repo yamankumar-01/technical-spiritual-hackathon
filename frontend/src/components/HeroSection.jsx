@@ -70,7 +70,7 @@ export const HeroSection = () => {
 
           {/* Subtitle */}
           <p className="text-sm sm:text-base lg:text-lg text-[#536159] dark:text-slate-300 font-normal leading-relaxed max-w-2xl mx-auto mb-6 sm:mb-7">
-            Synthesizing ancient mindfulness and futuristic technology. 36 hours of conscious engineering,
+            Synthesizing ancient mindfulness and futuristic technology. 24 hours of conscious engineering,
             ethical AI, and transformative social impact hosted at JECRC Foundation, Jaipur.
           </p>
 
@@ -115,7 +115,7 @@ export const HeroSection = () => {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto mb-8 sm:mb-10 max-w-md sm:max-w-none mx-auto">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto max-w-md sm:max-w-none mx-auto">
               <Link
                 to={user ? '/register-team' : '/login?redirect=/register-team'}
                 className="w-full sm:w-auto px-7 py-3.5 rounded-full text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] shadow-[0_6px_18px_rgba(46,184,138,0.35)] hover:shadow-[0_8px_24px_rgba(46,184,138,0.45)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
@@ -132,26 +132,6 @@ export const HeroSection = () => {
               </Link>
             </div>
           )}
-
-          {/* Quick Metrics - Spacious & Clean */}
-          <div className="pt-8 sm:pt-9 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-10 max-w-2xl w-full border-t border-slate-200/70 dark:border-slate-800/80 text-[#536159] dark:text-slate-400 text-center">
-            <div>
-              <p className="text-xl sm:text-2xl font-bold text-[#12141A] dark:text-white">36 Hrs</p>
-              <p className="text-[11px] sm:text-xs font-medium">Non-stop</p>
-            </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-bold text-[#12141A] dark:text-white">50</p>
-              <p className="text-[11px] sm:text-xs font-medium">Live PS</p>
-            </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-bold text-[#12141A] dark:text-white">4 Fixed</p>
-              <p className="text-[11px] sm:text-xs font-medium">Team Size</p>
-            </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-bold text-[#1E9470] dark:text-[#2EB88A]">₹1 Lakh+</p>
-              <p className="text-[11px] sm:text-xs font-medium">Prizes</p>
-            </div>
-          </div>
         </div>
       </div>
     </section>

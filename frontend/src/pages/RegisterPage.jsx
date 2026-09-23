@@ -129,7 +129,7 @@ export const RegisterPage = () => {
                   <input
                     type="text"
                     required
-                    placeholder="IIT / NIT / State Univ"
+                    placeholder="JECRC Foundation / Campus"
                     value={formData.college}
                     onChange={(e) => setFormData({ ...formData, college: e.target.value })}
                     className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-sm text-[#12141A] dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#2EB88A] focus:ring-2 focus:ring-[#2EB88A]/20 transition-colors"

@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import { initializePostgres, pgPool, pgQuery } from './src/config/postgres.js';
+import { initializePostgres, pgPool, pgQuery, closeDatabase, getActiveEngine } from './src/config/postgres.js';
 import { cleanupExpiredHolds } from './src/db/queries.js';
 import { protect } from './src/middleware/authMiddleware.js';
 
@@ -103,10 +103,11 @@ app.use('/api/contact', contactRoutes);
 app.get('/api/health', async (req, res) => {
   try {
     const dbCheck = await pgQuery('SELECT 1');
+    const engine = getActiveEngine();
     res.status(200).json({
       status: 'online',
       version: '1.0.2',
-      database: 'PostgreSQL (Connected)',
+      database: engine === 'pglite' ? 'PostgreSQL (Embedded PGlite - Online)' : 'PostgreSQL (Connected)',
       timestamp: new Date().toISOString(),
       service: 'Techno Spiritual Hackathon (TSH) API',
     });
@@ -154,15 +155,16 @@ const startServer = async () => {
     startHoldCleanupJob();
 
     const server = app.listen(PORT, () => {
-      console.log(`✨ TSH Server running on port ${PORT} [Mode: ${process.env.NODE_ENV || 'development'}] [DB: PostgreSQL]`);
+      const engine = getActiveEngine();
+      console.log(`✨ TSH Server running on port ${PORT} [Mode: ${process.env.NODE_ENV || 'development'}] [DB: ${engine === 'pglite' ? 'Embedded PGlite' : 'PostgreSQL'}]`);
     });
 
     const shutdown = async (signal) => {
       console.log(`\n🛑 Received ${signal}. Shutting down gracefully...`);
       server.close(async () => {
         try {
-          await pgPool.end();
-          console.log('🐘 PostgreSQL pool closed.');
+          await closeDatabase();
+          console.log('🐘 Database connection closed.');
         } catch (_) {}
         process.exit(0);
       });

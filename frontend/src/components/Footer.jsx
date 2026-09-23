@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Sparkles, ExternalLink } from 'lucide-react';
+import { Mail, MapPin, Sparkles, ExternalLink } from 'lucide-react';
 
 export const Footer = () => {
   return (
@@ -24,7 +24,7 @@ export const Footer = () => {
             </div>
 
             <p className="text-xs sm:text-sm text-[#536159] dark:text-slate-400 leading-relaxed pr-0 sm:pr-4">
-              A 36-hour immersive national innovation conclave challenging visionary student minds
+              A 24-hour immersive national innovation conclave challenging visionary student minds
               to engineer empathetic, mindful, and purpose-driven technological solutions for humanity.
             </p>
 
@@ -83,20 +83,8 @@ export const Footer = () => {
                   <Mail className="w-4 h-4" />
                 </div>
                 <div className="text-xs">
-                  <a href="mailto:secretariat@tsh.edu" className="hover:text-[#1E9470] dark:hover:text-[#2EB88A] transition-colors">secretariat@tsh.edu</a>
-                  <span className="mx-1.5 text-slate-300 dark:text-slate-600">/</span>
-                  <a href="mailto:info@jecrcmail.com" className="hover:text-[#1E9470] dark:hover:text-[#2EB88A] transition-colors">info@jecrcmail.com</a>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-[#DDF5EB] dark:bg-[#2EB88A]/15 text-[#1E9470] dark:text-[#2EB88A] flex items-center justify-center shrink-0">
-                  <Phone className="w-4 h-4" />
-                </div>
-                <div className="text-xs">
-                  <a href="tel:01412770232" className="hover:text-[#1E9470] dark:hover:text-[#2EB88A] transition-colors">0141-2770232</a>
-                  <span className="mx-1.5 text-slate-300 dark:text-slate-600">/</span>
-                  <a href="tel:+919876543210" className="hover:text-[#1E9470] dark:hover:text-[#2EB88A] transition-colors">+91 98765 43210</a>
+                  <span className="font-semibold text-[#12141A] dark:text-slate-200">SRC Desk: </span>
+                  <a href="mailto:src@jecrc.ac.in" className="font-medium text-[#1E9470] dark:text-[#2EB88A] hover:underline transition-colors">src@jecrc.ac.in</a>
                 </div>
               </div>
 

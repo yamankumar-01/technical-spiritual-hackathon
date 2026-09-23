@@ -44,7 +44,7 @@ export const AboutPage = () => {
           </div>
           <h2 className="text-2xl font-bold text-[#12141A] dark:text-white font-['Outfit']">Our Rigorous Mission</h2>
           <p className="text-sm text-[#536159] dark:text-slate-300 leading-relaxed">
-            TSH provides a competitive yet deeply collaborative crucible. Over 36 unbroken hours, teams of 4
+            TSH provides a competitive yet deeply collaborative crucible. Over 24 unbroken hours, teams of 4
             design production-grade prototypes addressing attention ethics, sacred agritech, acoustic
             neurology, and ancient wisdom preservation. Here, clean code and profound purpose are one.
           </p>
@@ -169,7 +169,7 @@ export const AboutPage = () => {
               <span>Welcoming India's Builders</span>
             </div>
             <p className="leading-relaxed">
-              Welcoming 200+ selected developers, designers, and thinkers to an inspiring 36-hour physical hackathon experience in the Pink City.
+              Welcoming 200+ selected developers, designers, and thinkers to an inspiring 24-hour physical hackathon experience in the Pink City.
             </p>
           </div>
         </div>

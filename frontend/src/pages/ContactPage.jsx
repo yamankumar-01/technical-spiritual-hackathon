@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { contactService } from '../services/api';
 import {
   Mail,
-  Phone,
   MapPin,
   Building2,
   Download,
@@ -124,18 +123,8 @@ export const ContactPage = () => {
                   <Mail className="w-4 h-4" />
                 </div>
                 <div>
-                  <strong className="block text-[#12141A] dark:text-slate-200">Official Email Desks:</strong>
-                  info@jecrcmail.com • secretariat@tsh.edu • support@tsh.edu
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#EBF8F2]/50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-white/5">
-                <div className="p-2 rounded-xl bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#2EB88A] shrink-0">
-                  <Phone className="w-4 h-4" />
-                </div>
-                <div>
-                  <strong className="block text-[#12141A] dark:text-slate-200">Campus Board & Helplines:</strong>
-                  0141-2770232 / 0141-2770120 (JECRC Board) • +91 98765 43210 (TSH Desk)
+                  <strong className="block text-[#12141A] dark:text-slate-200">Official SRC Desk:</strong>
+                  <a href="mailto:src@jecrc.ac.in" className="text-[#1E9470] dark:text-[#2EB88A] font-semibold hover:underline">src@jecrc.ac.in</a>
                 </div>
               </div>
 

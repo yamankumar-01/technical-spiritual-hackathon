@@ -31,20 +31,32 @@ export const pgPool = new Pool({
   ssl: isRemoteOrSsl ? { rejectUnauthorized: false } : false,
   max: 20,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 10000,
+  connectionTimeoutMillis: 2500, // Fast connection test
 });
 
 pgPool.on('error', (err) => {
-  console.error('❌ Unexpected PostgreSQL client error on idle connection:', err.message);
+  if (activeEngine !== 'pglite') {
+    console.error('❌ Unexpected PostgreSQL client error on idle connection:', err.message);
+  }
 });
 
+let activeEngine = 'none'; // 'pg' | 'pglite' | 'none'
+let pgliteInstance = null;
+
+export const getActiveEngine = () => activeEngine;
+
 /**
- * Execute parameterized query against PostgreSQL
+ * Execute parameterized query against PostgreSQL or PGlite fallback
  */
 export const pgQuery = async (text, params = []) => {
   const start = Date.now();
   try {
-    const res = await pgPool.query(text, params);
+    let res;
+    if (activeEngine === 'pglite' && pgliteInstance) {
+      res = await pgliteInstance.query(text, params);
+    } else {
+      res = await pgPool.query(text, params);
+    }
     const duration = Date.now() - start;
     if (process.env.DEBUG_SQL === 'true') {
       console.log(`Executed query (${duration}ms):`, {
@@ -69,6 +81,12 @@ export const pgQuery = async (text, params = []) => {
  * Helper to run operations within a managed transaction
  */
 export const withTransaction = async (callback) => {
+  if (activeEngine === 'pglite' && pgliteInstance) {
+    return await pgliteInstance.transaction(async (tx) => {
+      return await callback(tx);
+    });
+  }
+
   const client = await pgPool.connect();
   try {
     await client.query('BEGIN');
@@ -84,18 +102,31 @@ export const withTransaction = async (callback) => {
 };
 
 /**
- * Test connectivity to PostgreSQL
+ * Test connectivity to PostgreSQL, falling back to embedded PGlite if needed
  */
 export const testPgConnection = async () => {
   try {
     const res = await pgPool.query('SELECT current_database(), current_user, version()');
+    activeEngine = 'pg';
     console.log(
       `🐘 PostgreSQL connected: ${res.rows[0].current_database} as user "${res.rows[0].current_user}"`
     );
     return true;
   } catch (err) {
-    console.warn(`⚠️ PostgreSQL connection not available (${err.message}).`);
-    return false;
+    console.warn(`⚠️ External PostgreSQL unavailable (${err.message}). Activating embedded PGlite engine...`);
+    try {
+      const { PGlite } = await import('@electric-sql/pglite');
+      const pgliteDataDir = path.resolve(__dirname, '../../.db_data/pglite_db');
+      pgliteInstance = new PGlite(pgliteDataDir);
+      await pgliteInstance.waitReady;
+      activeEngine = 'pglite';
+      console.log(`⚡ Embedded PostgreSQL (PGlite) activated with persistent storage at: ${pgliteDataDir}`);
+      return true;
+    } catch (pglErr) {
+      console.error('❌ Failed to initialize embedded PGlite:', pglErr.message);
+      activeEngine = 'none';
+      return false;
+    }
   }
 };
 
@@ -126,7 +157,11 @@ export const initializePostgres = async () => {
       const schemaPath = path.resolve(__dirname, '../../../database/schema.sql');
       if (fs.existsSync(schemaPath)) {
         const schemaSql = fs.readFileSync(schemaPath, 'utf8');
-        await pgPool.query(schemaSql);
+        if (activeEngine === 'pglite' && pgliteInstance) {
+          await pgliteInstance.exec(schemaSql);
+        } else {
+          await pgPool.query(schemaSql);
+        }
         console.log('✅ PostgreSQL schema created successfully.');
       } else {
         console.warn(`⚠️ Schema file not found at ${schemaPath}`);
@@ -142,7 +177,11 @@ export const initializePostgres = async () => {
       const seedPath = path.resolve(__dirname, '../../../database/seed.sql');
       if (fs.existsSync(seedPath)) {
         const seedSql = fs.readFileSync(seedPath, 'utf8');
-        await pgPool.query(seedSql);
+        if (activeEngine === 'pglite' && pgliteInstance) {
+          await pgliteInstance.exec(seedSql);
+        } else {
+          await pgPool.query(seedSql);
+        }
         console.log('✅ PostgreSQL seeded with official 50 problem statements.');
       }
     } else {
@@ -160,6 +199,8 @@ export const initializePostgres = async () => {
         created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+    await pgQuery(`
       INSERT INTO global_settings (id, registration_enabled, registration_start_date, registration_end_date, hold_duration_seconds)
       VALUES (1, true, '2026-01-01 00:00:00+00', '2026-12-31 23:59:59+00', 900)
       ON CONFLICT (id) DO NOTHING;
@@ -187,10 +228,24 @@ export const initializePostgres = async () => {
   }
 };
 
+export const closeDatabase = async () => {
+  if (pgliteInstance) {
+    try {
+      await pgliteInstance.close();
+      console.log('⚡ PGlite closed.');
+    } catch (_) {}
+  }
+  try {
+    await pgPool.end();
+  } catch (_) {}
+};
+
 export default {
   pgPool,
   pgQuery,
   withTransaction,
   testPgConnection,
   initializePostgres,
+  closeDatabase,
+  getActiveEngine,
 };

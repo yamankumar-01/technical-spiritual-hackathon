@@ -51,7 +51,7 @@ export const HomePage = () => {
       step: '02',
       title: 'Select Problem Statement',
       tag: 'Track Selection',
-      desc: 'Browse all 50 approved statements and lock your track. Strictly capped at 5 teams per track nationwide.',
+      desc: 'Browse all 50 approved statements and lock your track. Strictly capped at 5 teams per track across JECRC Foundation.',
       icon: FileCode,
       actionText: 'Explore 50 Tracks',
       actionLink: '/ps',
@@ -84,7 +84,7 @@ export const HomePage = () => {
     },
     {
       q: 'Where can I explore the 50 Problem Statements?',
-      a: 'All 50 official challenge statements are available in the Problem Statements directory. Each track has a strict cap of 5 teams nationwide to preserve mentorship depth and high jury scrutiny.',
+      a: 'All 50 official challenge statements are available in the Problem Statements directory. Each track has a strict cap of 5 teams to preserve mentorship depth and high jury scrutiny.',
       link: {
         to: '/ps',
         label: 'Browse all 50 Problem Statements',
@@ -96,11 +96,11 @@ export const HomePage = () => {
     },
     {
       q: 'What is the payment and seat confirmation process?',
-      a: 'Registrations are completed through the online portal with a 15-minute slot hold. After submitting, teams complete offline payment verification at the SRC desk. Admin reviews and approves the registration to grant official confirmation.',
+      a: 'Offline payment will be done at the SRC desk. After submitting your team registration online, visit the Student Resource Center (SRC) desk to complete the payment verification and receive official confirmation for your problem statement seat.',
     },
     {
       q: 'Who is eligible to participate?',
-      a: 'Undergraduate and postgraduate students from any recognized university, polytechnic, or technical institute across India are eligible to register.',
+      a: 'Participation is exclusively open to students of JECRC Foundation. All undergraduate and postgraduate students from JECRC Foundation campuses are eligible to form a team and register.',
     },
   ];
 
