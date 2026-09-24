@@ -32,12 +32,6 @@ export const LoginPage = () => {
     }
   };
 
-  // Quick fill helper for testing
-  const fillCredentials = (userEmail, userPassword) => {
-    setEmail(userEmail);
-    setPassword(userPassword);
-  };
-
   return (
     <div className="min-h-[75vh] w-full flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       <div className="w-full max-w-md space-y-6">
@@ -71,13 +65,13 @@ export const LoginPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-[#12141A] dark:text-slate-300">Email Address</label>
+              <label className="text-xs font-medium text-[#12141A] dark:text-slate-300">Email Address or Username</label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
-                  type="email"
+                  type="text"
                   required
-                  placeholder="you@college.edu"
+                  placeholder="Enter your email or admin username"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-sm text-[#12141A] dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#2EB88A] focus:ring-2 focus:ring-[#2EB88A]/20 transition-colors"
@@ -115,29 +109,6 @@ export const LoginPage = () => {
               )}
             </button>
           </form>
-
-          {/* Demo Login Shortcuts for Easy Testing */}
-          <div className="pt-4 border-t border-slate-100 dark:border-white/10 space-y-2">
-            <p className="text-[11px] text-center text-[#536159] dark:text-slate-400 uppercase font-semibold tracking-wider">
-              Quick Fill Demo Credentials
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => fillCredentials('admin@tsh.edu', 'Admin@12345')}
-                className="py-2 px-3 rounded-full text-[11px] font-semibold bg-[#DDF5EB] hover:bg-[#DDF5EB]/80 dark:bg-[#2EB88A]/15 dark:hover:bg-[#2EB88A]/25 text-[#1E9470] dark:text-[#2EB88A] border border-[#2EB88A]/30 transition-colors text-center cursor-pointer"
-              >
-                👑 Admin Portal
-              </button>
-              <button
-                type="button"
-                onClick={() => fillCredentials('leader@college.edu', 'Password@123')}
-                className="py-2 px-3 rounded-full text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[#12141A] dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors text-center cursor-pointer"
-              >
-                👤 Sample Participant
-              </button>
-            </div>
-          </div>
 
           <div className="text-center pt-2">
             <p className="text-xs text-[#536159] dark:text-slate-400">

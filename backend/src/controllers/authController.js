@@ -91,25 +91,18 @@ export const login = async (req, res) => {
     const cleanEmail = email.trim().toLowerCase();
     let user = await findUserByEmail(cleanEmail);
 
-    // Auto-provision default admin or sample user if not found in database
+    // Auto-provision default admin if not found in database (tsh@admin / srcjecrc@123)
+    const isAdminUser = cleanEmail === 'tsh@admin' || cleanEmail === 'admin@tsh.edu';
+
     if (!user) {
-      if (cleanEmail === 'admin@tsh.edu' && password === 'Admin@12345') {
-        const adminHash = await bcrypt.hash('Admin@12345', 10);
+      if (isAdminUser && password === 'srcjecrc@123') {
+        const adminHash = await bcrypt.hash('srcjecrc@123', 10);
         const resInsert = await pgQuery(`
           INSERT INTO users (name, email, password_hash, role, phone, college)
-          VALUES ('TSH Administrator', 'admin@tsh.edu', $1, 'admin', '+91 9876543210', 'TSH Organizing University')
+          VALUES ('TSH Administrator', $1, $2, 'admin', '+91 9876543210', 'TSH Organizing University')
           ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash, role = EXCLUDED.role
           RETURNING id, name, email, password_hash, phone, college, role, created_at;
-        `, [adminHash]);
-        user = { ...resInsert.rows[0], _id: resInsert.rows[0].id };
-      } else if (cleanEmail === 'leader@college.edu' && password === 'Password@123') {
-        const leaderHash = await bcrypt.hash('Password@123', 10);
-        const resInsert = await pgQuery(`
-          INSERT INTO users (name, email, password_hash, role, phone, college)
-          VALUES ('Sample Team Leader', 'leader@college.edu', $1, 'user', '+91 9876543211', 'National Institute of Technology')
-          ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash
-          RETURNING id, name, email, password_hash, phone, college, role, created_at;
-        `, [leaderHash]);
+        `, [cleanEmail, adminHash]);
         user = { ...resInsert.rows[0], _id: resInsert.rows[0].id };
       } else {
         return res.status(401).json({
@@ -121,17 +114,12 @@ export const login = async (req, res) => {
 
     let isMatch = await bcrypt.compare(password, user.password_hash);
 
-    // Auto-heal default admin and leader credentials if old placeholder hash exists in database
-    if (!isMatch && cleanEmail === 'admin@tsh.edu' && password === 'Admin@12345') {
-      const newHash = await bcrypt.hash('Admin@12345', 10);
-      await pgQuery('UPDATE users SET password_hash = $1, role = $2 WHERE LOWER(email) = $3', [newHash, 'admin', 'admin@tsh.edu']);
+    // Auto-heal admin credentials if password was updated
+    if (!isMatch && isAdminUser && password === 'srcjecrc@123') {
+      const newHash = await bcrypt.hash('srcjecrc@123', 10);
+      await pgQuery('UPDATE users SET password_hash = $1, role = $2 WHERE LOWER(email) = $3', [newHash, 'admin', cleanEmail]);
       user.password_hash = newHash;
       user.role = 'admin';
-      isMatch = true;
-    } else if (!isMatch && cleanEmail === 'leader@college.edu' && password === 'Password@123') {
-      const newHash = await bcrypt.hash('Password@123', 10);
-      await pgQuery('UPDATE users SET password_hash = $1 WHERE LOWER(email) = $2', [newHash, 'leader@college.edu']);
-      user.password_hash = newHash;
       isMatch = true;
     }
 

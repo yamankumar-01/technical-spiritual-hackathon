@@ -806,32 +806,18 @@ export const seedDatabase = async (forceReseed = false) => {
     const existingTeamsCount = await Team.countDocuments();
     console.log(`📊 Active registered teams in database: ${existingTeamsCount}`);
 
-    // 1. Ensure admin exists
-    const adminExists = await User.findOne({ email: 'admin@tsh.edu' });
+    // 1. Ensure admin exists (tsh@admin / srcjecrc@123)
+    const adminExists = await User.findOne({ email: 'tsh@admin' });
     if (!adminExists) {
       await User.create({
         name: 'TSH Administrator',
-        email: 'admin@tsh.edu',
-        password: 'Admin@12345',
+        email: 'tsh@admin',
+        password: 'srcjecrc@123',
         phone: '+91 9876543210',
         college: 'TSH Organizing University',
         role: 'admin',
       });
-      console.log('👑 Default admin account seeded: admin@tsh.edu / Admin@12345');
-    }
-
-    // 2. Ensure sample participant account exists
-    const sampleLeaderExists = await User.findOne({ email: 'leader@college.edu' });
-    if (!sampleLeaderExists) {
-      await User.create({
-        name: 'Sample Team Leader',
-        email: 'leader@college.edu',
-        password: 'Password@123',
-        phone: '+91 9876543211',
-        college: 'National Institute of Technology',
-        role: 'user',
-      });
-      console.log('👤 Sample participant account seeded: leader@college.edu / Password@123');
+      console.log('👑 Administrator account seeded: tsh@admin / srcjecrc@123');
     }
 
     // 3. Problem Statements: only seed if not already present, or sync missing without resetting seats

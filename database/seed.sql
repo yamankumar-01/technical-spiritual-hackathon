@@ -3,26 +3,26 @@
 -- 50 Official Problem Statements, Default Admin & Sample Accounts
 -- ============================================================================
 
--- 1. Insert Default Administrator and Sample Participant
+-- 1. Insert Default Administrator
 INSERT INTO users (name, email, password_hash, role, phone, college)
 VALUES 
   (
     'TSH Administrator', 
-    'admin@tsh.edu', 
-    -- Verified bcrypt hash for 'Admin@12345'
-    '$2b$10$OpF/fubidMhL68fMBIvsE.X4pAL6biaX1vYAMq8CLnNeGV0EtVI6W', 
+    'tsh@admin', 
+    -- Verified bcrypt hash for 'srcjecrc@123'
+    '$2b$10$g0mgrC8CzwqiFV.UI.Ufbum8uhajc7KcPH7iH0.ZWrAcEksPEV75S', 
     'admin', 
     '+91 9876543210', 
     'TSH Organizing University'
   ),
   (
-    'Sample Team Leader', 
-    'leader@college.edu', 
-    -- Verified bcrypt hash for 'Password@123'
-    '$2b$10$D2XfTmt1k2VUAxuRG6HL0uD4ljkmm6z3UhC1aAj42YBwcWajmpTGK', 
-    'user', 
-    '+91 9876543211', 
-    'National Institute of Technology'
+    'TSH Administrator', 
+    'admin@tsh.edu', 
+    -- Verified bcrypt hash for 'srcjecrc@123'
+    '$2b$10$g0mgrC8CzwqiFV.UI.Ufbum8uhajc7KcPH7iH0.ZWrAcEksPEV75S', 
+    'admin', 
+    '+91 9876543210', 
+    'TSH Organizing University'
   )
 ON CONFLICT (email) DO UPDATE SET
   password_hash = EXCLUDED.password_hash,
