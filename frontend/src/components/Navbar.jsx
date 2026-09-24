@@ -13,6 +13,7 @@ import {
   ChevronDown,
   Sun,
   Moon,
+  LayoutDashboard,
 } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 
@@ -230,20 +231,35 @@ export const Navbar = () => {
         </div>
 
         {/* Mobile Action Controls */}
-        <div className="flex md:hidden items-center gap-2">
+        <div className="flex md:hidden items-center gap-1.5">
+          {user && (
+            <Link
+              to="/dashboard"
+              title="My Dashboard"
+              aria-label="My Dashboard"
+              className={`p-2 rounded-full transition-all flex items-center justify-center ${
+                isActive('/dashboard')
+                  ? 'bg-gradient-to-r from-[#2EB88A] to-[#1E9470] text-white shadow-xs'
+                  : 'bg-[#DDF5EB] dark:bg-slate-800 text-[#1E9470] dark:text-[#2EB88A]'
+              }`}
+            >
+              <LayoutDashboard className="w-4 h-4" />
+            </Link>
+          )}
+
           <button
             onClick={toggleTheme}
             aria-label={isDark ? 'Switch to Bright Mode' : 'Switch to Dark Mode'}
             className="p-2 rounded-full bg-[#DDF5EB] dark:bg-slate-800 text-[#1E9470] dark:text-[#2EB88A]"
           >
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </nav>
@@ -266,11 +282,26 @@ export const Navbar = () => {
             </Link>
           ))}
 
+          {user && (
+            <Link
+              to="/dashboard"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
+                isActive('/dashboard')
+                  ? 'bg-[#DDF5EB] text-[#1E9470] dark:bg-[#2EB88A]/20 dark:text-[#2EB88A]'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
+              }`}
+            >
+              <LayoutDashboard className="w-4 h-4 text-[#1E9470] dark:text-[#2EB88A]" />
+              <span>My Dashboard</span>
+            </Link>
+          )}
+
           {user?.role === 'admin' && (
             <Link
               to="/admin"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
+              className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
                 isActive('/admin')
                   ? 'bg-[#DDF5EB] text-[#1E9470] dark:bg-[#2EB88A]/20 dark:text-[#2EB88A]'
                   : 'text-[#536159] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
@@ -284,15 +315,42 @@ export const Navbar = () => {
           <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
             {user ? (
               <div className="space-y-3">
-                <div className="px-4 py-2 bg-slate-100 dark:bg-slate-900 rounded-lg">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-200">{user.name}</p>
+                <div className="px-4 py-3 bg-slate-100 dark:bg-slate-900 rounded-2xl space-y-1">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{user.name}</p>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[#1E9470] dark:text-[#2EB88A] bg-[#DDF5EB] dark:bg-[#2EB88A]/15 px-2 py-0.5 rounded-full">
+                      {user.role === 'admin' ? 'Admin' : myTeam ? `Team ${myTeam.teamCode || ''}` : 'Participant'}
+                    </span>
+                  </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
                   {myTeam && (
-                    <div className="mt-2">
+                    <div className="pt-1">
                       <StatusBadge status={myTeam.status} />
                     </div>
                   )}
                 </div>
+
+                {/* Direct Dashboard Link Button */}
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A] border border-[#2EB88A]/40 font-bold text-sm hover:bg-[#DDF5EB]/80 transition-all shadow-xs"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-[#1E9470] dark:text-[#2EB88A]" />
+                  <span>My Dashboard</span>
+                </Link>
+
+                {user.role === 'admin' && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300/80 dark:border-slate-700 font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                  >
+                    <ShieldAlert className="w-4 h-4 text-[#1E9470] dark:text-[#2EB88A]" />
+                    <span>Admin Panel</span>
+                  </Link>
+                )}
+
                 {!myTeam && (
                   <Link
                     to="/register-team"
@@ -304,9 +362,10 @@ export const Navbar = () => {
                 )}
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2.5 rounded-2xl text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 text-sm font-medium"
+                  className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-2xl text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 text-xs font-semibold transition-colors cursor-pointer"
                 >
-                  Sign Out
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
                 </button>
               </div>
             ) : (
