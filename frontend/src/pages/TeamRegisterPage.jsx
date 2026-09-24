@@ -311,7 +311,7 @@ export const TeamRegisterPage = () => {
     } catch (err) {
       if (err.code === 'HOLD_EXPIRED' || err.response?.data?.code === 'HOLD_EXPIRED') {
         setIsHoldExpired(true);
-        setErrorMsg('Your 15-minute registration window has expired. The temporary slot reserved for you has been released.');
+        setErrorMsg('Your registration window has expired. The temporary slot reserved for you has been released.');
       } else {
         setErrorMsg(err.message || 'Failed to submit team registration.');
       }
@@ -351,7 +351,7 @@ export const TeamRegisterPage = () => {
             Team Registration
           </h1>
           <p className="text-xs text-[#536159] dark:text-slate-400">
-            Fixed team structure: 1 Team Leader + 3 Members (Total 4 Members) • 15-Minute Slot Hold
+            Fixed team structure: 1 Team Leader + 3 Members (Total 4 Members)
           </p>
         </div>
 
@@ -382,7 +382,7 @@ export const TeamRegisterPage = () => {
             }`}
           >
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[11px]">2</span>
-            <span className="hidden sm:inline">15-Min Form (4 Members)</span>
+            <span className="hidden sm:inline">Team Details (4 Members)</span>
             <span className="sm:hidden">Form</span>
           </div>
           <div className="w-4 sm:w-8 h-0.5 bg-slate-200 dark:bg-slate-700 shrink-0" />
@@ -448,7 +448,7 @@ export const TeamRegisterPage = () => {
                 Step 1: Choose Your Problem Track
               </h2>
               <p className="text-xs text-[#5B6470] dark:text-slate-400">
-                A 15-minute slot hold will be automatically reserved for your team when you click Proceed.
+                A temporary slot hold will be automatically reserved for your team when you click Proceed.
               </p>
             </div>
 
@@ -458,7 +458,7 @@ export const TeamRegisterPage = () => {
                 disabled={processing}
                 className="px-6 py-2.5 rounded-full text-xs font-bold bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:brightness-105 text-white shadow-[0_6px_20px_rgba(46,184,138,0.25)] flex items-center gap-2 transition-all shrink-0 cursor-pointer disabled:opacity-50"
               >
-                <span>{processing ? 'Reserving 15-Min Slot...' : 'Proceed to Team Members'}</span>
+                <span>{processing ? 'Reserving Slot...' : 'Proceed to Team Members'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}
@@ -808,7 +808,7 @@ export const TeamRegisterPage = () => {
 
             <div className="space-y-2">
               <h3 className="text-xl font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
-                Your 15-minute registration window has expired.
+                Your registration window has expired.
               </h3>
               <p className="text-xs text-[#536159] dark:text-slate-300 leading-relaxed">
                 The temporary slot reserved for you has been released. To prevent slot holding, you must select the problem again to begin a new registration session.

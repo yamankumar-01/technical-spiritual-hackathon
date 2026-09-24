@@ -188,6 +188,11 @@ export const initializePostgres = async () => {
       console.log(`📊 PostgreSQL ready: ${psCount} Problem Statements registered.`);
     }
 
+    // Auto-migrate venue allocation columns on teams table if not present
+    await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS venue_room_number VARCHAR(100);`);
+    await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS venue_time_slot VARCHAR(150);`);
+    await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS venue_allocated_at TIMESTAMPTZ;`);
+
     // Ensure global settings row exists
     await pgQuery(`
       CREATE TABLE IF NOT EXISTS global_settings (

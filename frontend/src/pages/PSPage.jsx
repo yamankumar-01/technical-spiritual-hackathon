@@ -215,7 +215,7 @@ export const PSPage = () => {
             Problem Statements Repository
           </h1>
           <p className="text-xs sm:text-sm text-[#536159] dark:text-slate-400 max-w-2xl">
-            Each track has a strictly capped 5-team capacity. Reserve your slot with a 15-minute registration window.
+            Each track has a strictly capped 5-team capacity across JECRC Foundation. Reserve your team's slot.
           </p>
         </div>
 

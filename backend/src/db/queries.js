@@ -75,6 +75,13 @@ export const formatTeam = (t, members = []) => ({
     manualProofUrl: t.payment_screenshot_url,
     paidAt: t.approved_at || t.created_at,
   },
+  venue: (t.venue_room_number || t.venue_time_slot || t.venue)
+    ? {
+        roomNumber: t.venue?.roomNumber || t.venue_room_number || '',
+        timeSlot: t.venue?.timeSlot || t.venue_time_slot || '',
+        allocatedAt: t.venue?.allocatedAt || t.venue_allocated_at || null,
+      }
+    : null,
 });
 
 // ============================================================================
@@ -483,7 +490,7 @@ export const registerNewTeam = async ({ teamName, psId, userId, leader, members,
       }
       if (hold.status !== 'active' || new Date() >= new Date(hold.expires_at)) {
         await client.query(`UPDATE registration_holds SET status = 'expired' WHERE id = $1`, [hold.id]);
-        throw new Error('Your 15-minute registration window has expired. Please select the problem again.');
+        throw new Error('Your registration window has expired. Please select the problem again.');
       }
       holdId = hold.id;
     }
@@ -821,6 +828,55 @@ export const deleteTeamAdmin = async (teamId) => {
         teamCode: team.team_code,
       },
       problemStatement: psRes.rows[0] ? formatPS(psRes.rows[0]) : null,
+    };
+  });
+};
+
+export const updateTeamVenueAdmin = async (teamId, { roomNumber, timeSlot }) => {
+  return await withTransaction(async (client) => {
+    const teamRes = await client.query(`SELECT * FROM teams WHERE id = $1 FOR UPDATE`, [teamId]);
+    if (!teamRes.rows[0]) {
+      return { status: 404, message: 'Team registration not found.' };
+    }
+    const team = teamRes.rows[0];
+
+    // Only allow update if team's status is approved ('confirmed', 'finalized', or 'approved')
+    const allowedStatuses = ['approved', 'confirmed', 'finalized'];
+    if (!allowedStatuses.includes(team.status?.toLowerCase())) {
+      return {
+        status: 400,
+        message: `Venue can only be allocated to approved teams. Current team status is "${team.status.toUpperCase()}".`,
+      };
+    }
+
+    const updateRes = await client.query(
+      `UPDATE teams
+       SET venue_room_number = $1,
+           venue_time_slot = $2,
+           venue_allocated_at = CURRENT_TIMESTAMP,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = $3
+       RETURNING *`,
+      [roomNumber ? roomNumber.trim() : null, timeSlot ? timeSlot.trim() : null, teamId]
+    );
+
+    const updatedTeam = updateRes.rows[0];
+    const psRes = await client.query(`SELECT * FROM problem_statements WHERE id = $1`, [updatedTeam.problem_statement_id]);
+    const memRes = await client.query(`SELECT * FROM team_members WHERE team_id = $1 ORDER BY created_at ASC`, [teamId]);
+
+    const ps = psRes.rows[0];
+    const teamWithPs = {
+      ...updatedTeam,
+      ps_code: ps ? ps.code : '',
+      ps_title: ps ? ps.title : '',
+      ps_category: ps ? ps.category : '',
+      seats_available: ps ? ps.seats_available : 5,
+      total_seats: ps ? ps.total_seats : 5,
+    };
+
+    return {
+      status: 200,
+      team: formatTeam(teamWithPs, memRes.rows),
     };
   });
 };

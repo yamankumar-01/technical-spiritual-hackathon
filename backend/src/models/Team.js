@@ -97,6 +97,22 @@ const teamSchema = new mongoose.Schema(
       manualProofUrl: { type: String, default: null },
       paidAt: { type: Date, default: null },
     },
+    venue: {
+      roomNumber: {
+        type: String,
+        trim: true,
+        default: null,
+      },
+      timeSlot: {
+        type: String,
+        trim: true,
+        default: null,
+      },
+      allocatedAt: {
+        type: Date,
+        default: null,
+      },
+    },
     participantEmails: {
       type: [String],
       required: true,
@@ -108,6 +124,16 @@ const teamSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Auto-set venue.allocatedAt when roomNumber or timeSlot is updated
+teamSchema.pre('save', function (next) {
+  if (this.isModified('venue.roomNumber') || this.isModified('venue.timeSlot')) {
+    if (this.venue?.roomNumber || this.venue?.timeSlot) {
+      this.venue.allocatedAt = new Date();
+    }
+  }
+  next();
+});
 
 // Unique multikey index enforcing nationwide 1-email = 1-team/PS constraint at the database storage engine level
 teamSchema.index({ participantEmails: 1 }, { unique: true });

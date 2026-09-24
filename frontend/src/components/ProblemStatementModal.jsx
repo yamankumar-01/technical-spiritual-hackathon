@@ -192,7 +192,7 @@ export const ProblemStatementModal = ({
             ) : userHold ? (
               <span className="text-amber-700 dark:text-amber-400 font-semibold flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />
-                You have an active 15-min hold.
+                You have an active registration hold.
               </span>
             ) : isTempUnavailable ? (
               <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
@@ -202,7 +202,7 @@ export const ProblemStatementModal = ({
             ) : (
               <span className="text-emerald-700 dark:text-emerald-400 font-medium flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5 text-[#2EB88A]" />
-                {available} of {totalSeats} slots open. 15-minute hold upon clicking Register.
+                {available} of {totalSeats} slots open. Reserve your slot upon clicking Register.
               </span>
             )}
           </div>
@@ -261,7 +261,7 @@ export const ProblemStatementModal = ({
                 onClick={handleAction}
                 className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:brightness-105 text-white shadow-[0_6px_20px_rgba(46,184,138,0.3)] transition-all cursor-pointer"
               >
-                <span>{inRegistration ? 'Choose This PS' : 'Register (15-Min Hold)'}</span>
+                <span>{inRegistration ? 'Choose This PS' : 'Register Team'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}

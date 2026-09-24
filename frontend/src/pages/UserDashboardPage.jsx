@@ -15,6 +15,7 @@ import {
   RefreshCw,
   FileText,
   AlertCircle,
+  MapPin,
 } from 'lucide-react';
 
 export const UserDashboardPage = () => {
@@ -216,7 +217,7 @@ export const UserDashboardPage = () => {
                     No Active Registrations Found
                   </h3>
                   <p className="text-xs text-[#536159] dark:text-slate-400 max-w-sm mx-auto">
-                    Explore all 50 official Problem Statements and reserve your team's slot with a 15-minute registration window.
+                    Explore all 50 official Problem Statements and reserve your team's slot.
                   </p>
                 </div>
                 <button
@@ -315,6 +316,73 @@ export const UserDashboardPage = () => {
                             <span className="text-slate-400 italic">Issued upon SRC approval</span>
                           )}
                         </div>
+                      </div>
+
+                      {/* Your Venue Card */}
+                      <div className="p-4 sm:p-5 rounded-2xl bg-white/85 dark:bg-[#071510]/85 border border-slate-200/80 dark:border-white/10 space-y-3 shadow-2xs backdrop-blur-sm">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="p-1 rounded-lg bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A]">
+                              <MapPin className="w-4 h-4" />
+                            </span>
+                            <h4 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#12141A] dark:text-white font-['Outfit']">
+                              Your Venue
+                            </h4>
+                          </div>
+
+                          {team.venue && (team.venue.roomNumber || team.venue.timeSlot) ? (
+                            <span className="inline-flex items-center gap-1 font-mono text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-800">
+                              <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
+                              Allocated
+                            </span>
+                          ) : (
+                            <span className="font-mono text-[10px] font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
+                              Awaiting Allocation
+                            </span>
+                          )}
+                        </div>
+
+                        {team.venue && (team.venue.roomNumber || team.venue.timeSlot) ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <div className="p-3.5 rounded-xl bg-gradient-to-br from-[#DDF5EB]/60 to-emerald-50/20 dark:from-[#2EB88A]/10 dark:to-transparent border border-[#2EB88A]/30 space-y-1">
+                              <span className="text-[10.5px] uppercase font-bold text-[#1E9470] dark:text-[#2EB88A] tracking-wider block">
+                                Room Number
+                              </span>
+                              <p className="text-sm sm:text-base font-extrabold text-[#12141A] dark:text-white flex items-center gap-1.5">
+                                <Building className="w-4 h-4 text-[#1E9470] dark:text-[#2EB88A] shrink-0" />
+                                <span>{team.venue.roomNumber || 'TBA'}</span>
+                              </p>
+                              <span className="text-[11px] text-[#536159] dark:text-slate-400 block">
+                                Report to this hall/room for presentation
+                              </span>
+                            </div>
+
+                            <div className="p-3.5 rounded-xl bg-gradient-to-br from-[#DDF5EB]/60 to-emerald-50/20 dark:from-[#2EB88A]/10 dark:to-transparent border border-[#2EB88A]/30 space-y-1">
+                              <span className="text-[10.5px] uppercase font-bold text-[#1E9470] dark:text-[#2EB88A] tracking-wider block">
+                                Time Slot
+                              </span>
+                              <p className="text-sm sm:text-base font-extrabold text-[#12141A] dark:text-white flex items-center gap-1.5">
+                                <Clock className="w-4 h-4 text-[#1E9470] dark:text-[#2EB88A] shrink-0" />
+                                <span>{team.venue.timeSlot || 'TBA'}</span>
+                              </p>
+                              <span className="text-[11px] text-[#536159] dark:text-slate-400 block">
+                                Please be seated 10 mins before your slot
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="p-4 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-dashed border-slate-200 dark:border-slate-800 text-center space-y-1.5">
+                            <div className="w-8 h-8 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/15 text-[#1E9470] dark:text-[#2EB88A] flex items-center justify-center mx-auto">
+                              <MapPin className="w-4 h-4" />
+                            </div>
+                            <h5 className="text-xs sm:text-sm font-bold text-[#12141A] dark:text-white">
+                              Venue will be announced soon
+                            </h5>
+                            <p className="text-xs text-[#536159] dark:text-slate-400 max-w-md mx-auto">
+                              The organizing committee is finalizing room allocations and evaluation time slots for confirmed teams. Check back shortly!
+                            </p>
+                          </div>
+                        )}
                       </div>
 
                       {/* State Specific Callout */}

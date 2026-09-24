@@ -9,6 +9,7 @@ import {
   deleteTeamRegistration,
   exportRegistrationsExcel,
   exportRegistrationsCSV,
+  updateTeamVenue,
 } from '../controllers/adminController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { requireAdmin } from '../middleware/adminMiddleware.js';
@@ -30,6 +31,8 @@ router.get('/export-csv', exportRegistrationsCSV);
 router.get('/registrations', getAllRegistrations);
 router.post('/registrations/:id/approve', approveRegistration);
 router.post('/registrations/:id/reject', rejectRegistration);
+router.patch('/teams/:id/venue', updateTeamVenue);
+router.patch('/registrations/:id/venue', updateTeamVenue);
 router.post('/ps/reset', resetProblemStatements);
 router.get('/queries', getContactQueries);
 router.get('/ps/:id/teams', getPSTeams);

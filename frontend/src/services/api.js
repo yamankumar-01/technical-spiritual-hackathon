@@ -70,6 +70,7 @@ export const adminService = {
   getRegistrations: (params) => API.get('/admin/registrations', { params }),
   approveRegistration: (id, data) => API.post(`/admin/registrations/${id}/approve`, data),
   rejectRegistration: (id, data) => API.post(`/admin/registrations/${id}/reject`, data),
+  updateTeamVenue: (id, data) => API.patch(`/admin/teams/${id}/venue`, data),
   resetPS: () => API.post('/admin/ps/reset'),
   getQueries: () => API.get('/admin/queries'),
   getPSTeams: (id) => API.get(`/admin/ps/${id}/teams`),

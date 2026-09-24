@@ -20,6 +20,9 @@ import {
   ChevronRight,
   X,
   Download,
+  MapPin,
+  Calendar,
+  Building,
 } from 'lucide-react';
 
 export const AdminDashboardPage = () => {
@@ -63,6 +66,55 @@ export const AdminDashboardPage = () => {
   // Team deletion confirmation modal
   const [teamToDelete, setTeamToDelete] = useState(null);
   const [deletingTeam, setDeletingTeam] = useState(false);
+
+  // Venue Allocation Modal States
+  const [venueModalTeam, setVenueModalTeam] = useState(null);
+  const [venueRoomNumber, setVenueRoomNumber] = useState('');
+  const [venueTimeSlot, setVenueTimeSlot] = useState('');
+  const [savingVenue, setSavingVenue] = useState(false);
+  const [venueModalError, setVenueModalError] = useState('');
+
+  const handleOpenVenueModal = (team) => {
+    setVenueModalTeam(team);
+    setVenueRoomNumber(team.venue?.roomNumber || '');
+    setVenueTimeSlot(team.venue?.timeSlot || '');
+    setVenueModalError('');
+  };
+
+  const handleSaveVenue = async (e) => {
+    if (e) e.preventDefault();
+    if (!venueModalTeam) return;
+
+    if (!venueRoomNumber.trim() && !venueTimeSlot.trim()) {
+      setVenueModalError('Please specify at least a room number or a time slot.');
+      return;
+    }
+
+    try {
+      setSavingVenue(true);
+      setVenueModalError('');
+      const res = await adminService.updateTeamVenue(venueModalTeam._id, {
+        roomNumber: venueRoomNumber.trim(),
+        timeSlot: venueTimeSlot.trim(),
+      });
+
+      if (res.data?.success) {
+        setActionSuccessMsg(res.data.message || 'Venue allocated successfully.');
+        const updatedTeam = res.data.team;
+        setRegistrations((prev) =>
+          prev.map((t) => (t._id === updatedTeam._id ? updatedTeam : t))
+        );
+        if (inspectTeam && inspectTeam._id === updatedTeam._id) {
+          setInspectTeam(updatedTeam);
+        }
+        setVenueModalTeam(null);
+      }
+    } catch (err) {
+      setVenueModalError(err.message || 'Failed to allocate venue.');
+    } finally {
+      setSavingVenue(false);
+    }
+  };
 
   const fetchRegistrations = async () => {
     try {
@@ -439,7 +491,7 @@ export const AdminDashboardPage = () => {
         'Problem Statement Title',
         'Category Track',
         'Total Capacity',
-        'Active Holds (15-min window)',
+        'Active Form Holds',
         'Payment Pending (SRC)',
         'Confirmed / Approved',
         'Available Slots',
@@ -478,7 +530,7 @@ export const AdminDashboardPage = () => {
       ['Metric / KPI', 'Value', 'Context / Description'],
       ['Total Problem Statements', stats.totalProblems || problemStatements.length || 50, 'Configured problem statement tracks in database'],
       ['Total Maximum Capacity', stats.totalCapacity || 250, 'Max allowable teams across all 50 tracks (5 teams per problem)'],
-      ['Active Form Holds', stats.activeHolds || 0, 'Teams currently within their 15-minute temporary form reservation'],
+      ['Active Form Holds', stats.activeHolds || 0, 'Teams currently within their temporary form reservation'],
       ['Payment Pending (SRC Club)', stats.paymentPending || 0, 'Submitted teams awaiting offline payment verification at SRC Club desk'],
       ['Confirmed & Approved Teams', stats.confirmed || 0, 'Teams verified and assigned official SRC-HACK-2026-XXXX numbers'],
       ['Available Slots Remaining', stats.availableSlots !== undefined ? stats.availableSlots : 250, 'Open slots available for team registration'],
@@ -744,7 +796,7 @@ export const AdminDashboardPage = () => {
             )}
           </p>
           <span className="text-[11px] text-indigo-700/80 dark:text-indigo-400/80 block truncate">
-            15-min countdown
+            Active reservation
           </span>
         </div>
 
@@ -918,19 +970,20 @@ export const AdminDashboardPage = () => {
                   <th className="px-3 py-2.5 min-w-[170px] max-w-[240px]">Track / PS</th>
                   <th className="px-3 py-2.5 min-w-[130px]">Leader</th>
                   <th className="px-3 py-2.5 min-w-[140px] whitespace-nowrap">Payment & Status</th>
-                  <th className="px-3 py-2.5 text-left min-w-[110px] whitespace-nowrap">Actions</th>
+                  <th className="px-3 py-2.5 min-w-[140px] whitespace-nowrap">Venue</th>
+                  <th className="px-3 py-2.5 text-left min-w-[140px] whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
+                    <td colSpan={7} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
                       Loading registrations...
                     </td>
                   </tr>
                 ) : registrations.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
+                    <td colSpan={7} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
                       No registrations found matching the filters.
                     </td>
                   </tr>
@@ -1003,8 +1056,37 @@ export const AdminDashboardPage = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-2 text-left min-w-[110px] whitespace-nowrap">
-                        <div className="flex items-center justify-start gap-1 sm:gap-1.5" onClick={(e) => e.stopPropagation()}>
+                      {/* Venue Column */}
+                      <td className="px-3 py-2 min-w-[140px]">
+                        {t.venue && (t.venue.roomNumber || t.venue.timeSlot) ? (
+                          <div className="space-y-0.5">
+                            {t.venue.roomNumber && (
+                              <div className="font-bold text-xs text-[#12141A] dark:text-white flex items-center gap-1.5">
+                                <span className="p-0.5 rounded bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A]">
+                                  <MapPin className="w-3 h-3 shrink-0" />
+                                </span>
+                                <span className="truncate max-w-[140px]" title={t.venue.roomNumber}>
+                                  {t.venue.roomNumber}
+                                </span>
+                              </div>
+                            )}
+                            {t.venue.timeSlot && (
+                              <div className="text-[10px] text-[#536159] dark:text-slate-400 font-medium flex items-center gap-1">
+                                <Clock className="w-2.5 h-2.5 shrink-0 text-slate-400" />
+                                <span className="truncate max-w-[140px]" title={t.venue.timeSlot}>
+                                  {t.venue.timeSlot}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-[11px] italic text-slate-400 dark:text-slate-500">
+                            Not allocated yet
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 text-left min-w-[140px] whitespace-nowrap">
+                        <div className="flex items-center justify-start gap-1 sm:gap-1.5 flex-wrap" onClick={(e) => e.stopPropagation()}>
                           {['payment_pending', 'registered'].includes(t.status) && (
                             <>
                               <button
@@ -1047,6 +1129,26 @@ export const AdminDashboardPage = () => {
                               <CheckCircle2 className="w-3 h-3" />
                               Approved
                             </span>
+                          )}
+
+                          {/* Allocate / Update Venue Button (only when approved/confirmed/finalized) */}
+                          {['confirmed', 'finalized', 'approved'].includes(t.status?.toLowerCase()) && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenVenueModal(t);
+                              }}
+                              className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+                                t.venue?.roomNumber || t.venue?.timeSlot
+                                  ? 'bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A] border border-[#2EB88A]/40 hover:bg-[#cbf1e1] dark:hover:bg-[#2EB88A]/30 shadow-2xs'
+                                  : 'text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:shadow-md hover:shadow-[#2EB88A]/30 shadow-2xs'
+                              }`}
+                              title={t.venue?.roomNumber || t.venue?.timeSlot ? 'Update allocated venue' : 'Allocate venue to this team'}
+                            >
+                              <MapPin className="w-3 h-3 shrink-0" />
+                              <span>{t.venue?.roomNumber || t.venue?.timeSlot ? 'Update Venue' : 'Allocate Venue'}</span>
+                            </button>
                           )}
 
                           {t.status === 'rejected' && (
@@ -1503,6 +1605,53 @@ export const AdminDashboardPage = () => {
               </div>
             </div>
 
+            {/* Venue Allocation Details */}
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#1E9470] dark:text-[#2EB88A] flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>Venue Allocation</span>
+                </h4>
+                {['confirmed', 'finalized', 'approved'].includes(inspectTeam.status?.toLowerCase()) && (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenVenueModal(inspectTeam)}
+                    className="text-xs font-bold text-[#1E9470] dark:text-[#2EB88A] hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <MapPin className="w-3 h-3" />
+                    <span>{inspectTeam.venue?.roomNumber || inspectTeam.venue?.timeSlot ? 'Edit Venue' : 'Allocate Venue'}</span>
+                  </button>
+                )}
+              </div>
+              <div className="text-sm text-[#12141A] dark:text-slate-200">
+                {inspectTeam.venue && (inspectTeam.venue.roomNumber || inspectTeam.venue.timeSlot) ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
+                    <div className="p-2.5 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
+                      <span className="text-[#536159] dark:text-slate-400 font-semibold block text-[11px]">Room Number:</span>
+                      <strong className="text-[#12141A] dark:text-white text-xs">{inspectTeam.venue.roomNumber || 'Not assigned'}</strong>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
+                      <span className="text-[#536159] dark:text-slate-400 font-semibold block text-[11px]">Time Slot:</span>
+                      <strong className="text-[#12141A] dark:text-white text-xs">{inspectTeam.venue.timeSlot || 'Not assigned'}</strong>
+                    </div>
+                    {inspectTeam.venue.allocatedAt && (
+                      <div className="text-[11px] text-[#536159] dark:text-slate-400 col-span-1 sm:col-span-2 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-slate-400 shrink-0" />
+                        <span>Allocated on: {new Date(inspectTeam.venue.allocatedAt).toLocaleString()}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-400 italic">
+                    Venue not allocated yet.{' '}
+                    {['confirmed', 'finalized', 'approved'].includes(inspectTeam.status?.toLowerCase())
+                      ? 'Click Allocate Venue above to assign a room.'
+                      : 'Team must be approved before a venue can be allocated.'}
+                  </p>
+                )}
+              </div>
+            </div>
+
             {/* Actions */}
             <div className="flex items-center justify-between pt-4 border-t border-slate-200/80 dark:border-slate-800">
               <div className="flex items-center gap-2">
@@ -1538,6 +1687,17 @@ export const AdminDashboardPage = () => {
                       Approve & Deduct Seat
                     </button>
                   </>
+                )}
+
+                {['confirmed', 'finalized', 'approved'].includes(inspectTeam.status?.toLowerCase()) && (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenVenueModal(inspectTeam)}
+                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:shadow-lg hover:shadow-[#2EB88A]/25 transition-all cursor-pointer shadow-sm"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    <span>{inspectTeam.venue?.roomNumber || inspectTeam.venue?.timeSlot ? 'Update Venue' : 'Allocate Venue'}</span>
+                  </button>
                 )}
               </div>
             </div>
@@ -1817,6 +1977,146 @@ export const AdminDashboardPage = () => {
                 )}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Venue Allocation & Update Modal */}
+      {venueModalTeam && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/65 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-full max-w-md bg-white dark:bg-[#071510] border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl animate-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-200/80 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#DDF5EB] dark:bg-[#2EB88A]/20 border border-[#2EB88A]/30 flex items-center justify-center shrink-0 text-[#1E9470] dark:text-[#2EB88A]">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
+                    {venueModalTeam.venue?.roomNumber || venueModalTeam.venue?.timeSlot
+                      ? 'Update Venue Allocation'
+                      : 'Allocate Venue'}
+                  </h3>
+                  <p className="text-xs text-[#536159] dark:text-slate-400 font-mono mt-0.5">
+                    Team: <strong className="text-[#12141A] dark:text-white">{venueModalTeam.teamName}</strong> ({venueModalTeam.teamCode})
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setVenueModalTeam(null)}
+                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Error Message if any */}
+            {venueModalError && (
+              <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                <span>{venueModalError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSaveVenue} className="space-y-4">
+              {/* Room Number Input */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#536159] dark:text-slate-300 flex items-center gap-1.5">
+                  <Building className="w-3.5 h-3.5 text-[#1E9470] dark:text-[#2EB88A]" />
+                  <span>Room / Hall / Lab Number *</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., Lab 301, Block B or Audi 2"
+                  value={venueRoomNumber}
+                  onChange={(e) => setVenueRoomNumber(e.target.value)}
+                  required
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-[#12141A] dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#2EB88A] focus:ring-2 focus:ring-[#2EB88A]/20 transition-all shadow-2xs font-medium"
+                />
+              </div>
+
+              {/* Time Slot Input */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#536159] dark:text-slate-300 flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-[#1E9470] dark:text-[#2EB88A]" />
+                  <span>Presentation / Reporting Time Slot *</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., Day 1, 10:00 AM - 12:00 PM"
+                  value={venueTimeSlot}
+                  onChange={(e) => setVenueTimeSlot(e.target.value)}
+                  required
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-[#12141A] dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#2EB88A] focus:ring-2 focus:ring-[#2EB88A]/20 transition-all shadow-2xs font-medium"
+                />
+
+                {/* Quick Presets */}
+                <div className="pt-1">
+                  <span className="text-[10px] uppercase font-bold text-[#536159] dark:text-slate-400 tracking-wider block mb-1">
+                    Quick Presets:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      'Day 1, 10:00 AM - 12:00 PM',
+                      'Day 1, 02:00 PM - 04:00 PM',
+                      'Day 2, 09:00 AM - 11:00 AM',
+                      'Day 2, 01:00 PM - 03:00 PM',
+                    ].map((slot) => (
+                      <button
+                        key={slot}
+                        type="button"
+                        onClick={() => setVenueTimeSlot(slot)}
+                        className={`text-[10.5px] font-semibold px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
+                          venueTimeSlot === slot
+                            ? 'bg-[#DDF5EB] dark:bg-[#2EB88A]/25 border-[#2EB88A] text-[#1E9470] dark:text-[#2EB88A] font-bold shadow-2xs'
+                            : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-[#536159] dark:text-slate-300 hover:border-[#2EB88A]/50'
+                        }`}
+                      >
+                        {slot}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Status Note */}
+              <div className="p-3 rounded-xl bg-[#DDF5EB]/60 dark:bg-[#2EB88A]/10 border border-[#2EB88A]/20 text-[11px] text-[#1E9470] dark:text-[#2EB88A] flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-[#2EB88A]" />
+                <span>
+                  Team is approved. This venue will appear on the student dashboard immediately.
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-200/80 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setVenueModalTeam(null)}
+                  disabled={savingVenue}
+                  className="px-4 py-2 rounded-full text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[#12141A] dark:text-slate-200 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingVenue}
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:shadow-md hover:shadow-[#2EB88A]/30 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {savingVenue ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving Venue...</span>
+                    </>
+                  ) : (
+                    <>
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span>Save Venue</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

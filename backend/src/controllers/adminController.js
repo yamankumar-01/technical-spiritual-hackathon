@@ -7,6 +7,7 @@ import {
   getContactQueriesAdmin,
   resetAllProblemStatements,
   getAllProblemStatements,
+  updateTeamVenueAdmin,
 } from '../db/queries.js';
 import * as XLSX from 'xlsx';
 
@@ -416,5 +417,40 @@ export const exportRegistrationsCSV = async (req, res) => {
   } catch (error) {
     console.error('Export CSV error:', error);
     res.status(500).json({ success: false, message: 'Failed to generate CSV export.' });
+  }
+};
+
+// 10. Allocate or update venue for an approved team
+export const updateTeamVenue = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { roomNumber, timeSlot } = req.body;
+
+    if (!roomNumber && !timeSlot) {
+      return res.status(400).json({
+        success: false,
+        message: 'Room number and/or time slot must be provided.',
+      });
+    }
+
+    const result = await updateTeamVenueAdmin(id, { roomNumber, timeSlot });
+    if (result.status !== 200) {
+      return res.status(result.status).json({
+        success: false,
+        message: result.message,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Venue updated successfully for team "${result.team.teamName}".`,
+      team: result.team,
+      data: result.team,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to update venue allocation.',
+    });
   }
 };
