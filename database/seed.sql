@@ -3,21 +3,12 @@
 -- 50 Official Problem Statements, Default Admin & Sample Accounts
 -- ============================================================================
 
--- 1. Insert Default Administrator
+-- 1. Insert Default Administrator (tsh@admin / srcjecrc@123)
 INSERT INTO users (name, email, password_hash, role, phone, college)
 VALUES 
   (
     'TSH Administrator', 
     'tsh@admin', 
-    -- Verified bcrypt hash for 'srcjecrc@123'
-    '$2b$10$g0mgrC8CzwqiFV.UI.Ufbum8uhajc7KcPH7iH0.ZWrAcEksPEV75S', 
-    'admin', 
-    '+91 9876543210', 
-    'TSH Organizing University'
-  ),
-  (
-    'TSH Administrator', 
-    'admin@tsh.edu', 
     -- Verified bcrypt hash for 'srcjecrc@123'
     '$2b$10$g0mgrC8CzwqiFV.UI.Ufbum8uhajc7KcPH7iH0.ZWrAcEksPEV75S', 
     'admin', 

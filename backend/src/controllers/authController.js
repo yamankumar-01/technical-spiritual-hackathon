@@ -92,17 +92,17 @@ export const login = async (req, res) => {
     let user = await findUserByEmail(cleanEmail);
 
     // Auto-provision default admin if not found in database (tsh@admin / srcjecrc@123)
-    const isAdminUser = cleanEmail === 'tsh@admin' || cleanEmail === 'admin@tsh.edu';
+    const isAdminUser = cleanEmail === 'tsh@admin';
 
     if (!user) {
       if (isAdminUser && password === 'srcjecrc@123') {
         const adminHash = await bcrypt.hash('srcjecrc@123', 10);
         const resInsert = await pgQuery(`
           INSERT INTO users (name, email, password_hash, role, phone, college)
-          VALUES ('TSH Administrator', $1, $2, 'admin', '+91 9876543210', 'TSH Organizing University')
+          VALUES ('TSH Administrator', 'tsh@admin', $1, 'admin', '+91 9876543210', 'TSH Organizing University')
           ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash, role = EXCLUDED.role
           RETURNING id, name, email, password_hash, phone, college, role, created_at;
-        `, [cleanEmail, adminHash]);
+        `, [adminHash]);
         user = { ...resInsert.rows[0], _id: resInsert.rows[0].id };
       } else {
         return res.status(401).json({
@@ -117,7 +117,7 @@ export const login = async (req, res) => {
     // Auto-heal admin credentials if password was updated
     if (!isMatch && isAdminUser && password === 'srcjecrc@123') {
       const newHash = await bcrypt.hash('srcjecrc@123', 10);
-      await pgQuery('UPDATE users SET password_hash = $1, role = $2 WHERE LOWER(email) = $3', [newHash, 'admin', cleanEmail]);
+      await pgQuery('UPDATE users SET password_hash = $1, role = $2 WHERE LOWER(email) = $3', [newHash, 'admin', 'tsh@admin']);
       user.password_hash = newHash;
       user.role = 'admin';
       isMatch = true;

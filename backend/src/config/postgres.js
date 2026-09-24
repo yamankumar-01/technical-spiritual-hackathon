@@ -212,19 +212,25 @@ export const initializePostgres = async () => {
     `);
 
     // Ensure administrator user has accurate, verified bcrypt password hash for 'srcjecrc@123'
-    // Username / Email: tsh@admin (and alias admin@tsh.edu)
+    // Username / Email: tsh@admin exclusively
     const adminHash = '$2b$10$g0mgrC8CzwqiFV.UI.Ufbum8uhajc7KcPH7iH0.ZWrAcEksPEV75S'; // srcjecrc@123
 
-    await pgQuery(`
+    const tshAdminRes = await pgQuery(`
       INSERT INTO users (name, email, password_hash, role, phone, college)
-      VALUES 
-        ('TSH Administrator', 'tsh@admin', $1, 'admin', '+91 9876543210', 'TSH Organizing University'),
-        ('TSH Administrator', 'admin@tsh.edu', $1, 'admin', '+91 9876543210', 'TSH Organizing University')
+      VALUES ('TSH Administrator', 'tsh@admin', $1, 'admin', '+91 9876543210', 'TSH Organizing University')
       ON CONFLICT (email) DO UPDATE SET
         password_hash = EXCLUDED.password_hash,
-        role = EXCLUDED.role;
+        role = EXCLUDED.role
+      RETURNING id;
     `, [adminHash]);
-    console.log('👑 Verified administrator credentials (tsh@admin) in PostgreSQL.');
+
+    // Cleanly transfer any legacy admin references to tsh@admin and remove admin@tsh.edu
+    if (tshAdminRes.rows[0]) {
+      const tshAdminId = tshAdminRes.rows[0].id;
+      await pgQuery(`UPDATE teams SET created_by = $1 WHERE created_by IN (SELECT id FROM users WHERE LOWER(email) = 'admin@tsh.edu')`, [tshAdminId]);
+    }
+    await pgQuery(`DELETE FROM users WHERE LOWER(email) = 'admin@tsh.edu'`);
+    console.log('👑 Verified exclusive administrator credentials (tsh@admin) in PostgreSQL.');
 
     return true;
   } catch (error) {
