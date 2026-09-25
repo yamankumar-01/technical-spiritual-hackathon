@@ -193,6 +193,31 @@ export const initializePostgres = async () => {
     await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS venue_time_slot VARCHAR(150);`);
     await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS venue_allocated_at TIMESTAMPTZ;`);
 
+    // Auto-migrate permanent offline registration backup archive table (zero data loss vault)
+    await pgQuery(`
+      CREATE TABLE IF NOT EXISTS offline_registrations_backup (
+        id SERIAL PRIMARY KEY,
+        team_id UUID,
+        team_name VARCHAR(255) NOT NULL,
+        team_code VARCHAR(50),
+        problem_statement_id UUID,
+        ps_code VARCHAR(50),
+        ps_title VARCHAR(255),
+        leader_name VARCHAR(255),
+        leader_email VARCHAR(255),
+        leader_phone VARCHAR(50),
+        leader_college VARCHAR(255),
+        members_data JSONB,
+        payment_status VARCHAR(50) DEFAULT 'pending',
+        payment_method VARCHAR(50) DEFAULT 'src_desk',
+        payment_amount INTEGER DEFAULT 400,
+        venue_room_number VARCHAR(100),
+        venue_time_slot VARCHAR(150),
+        registered_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+        snapshot_json JSONB
+      );
+    `);
+
     // Ensure global settings row exists
     await pgQuery(`
       CREATE TABLE IF NOT EXISTS global_settings (

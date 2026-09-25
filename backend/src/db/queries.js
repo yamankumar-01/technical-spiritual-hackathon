@@ -1,5 +1,7 @@
 import { pgQuery, withTransaction } from '../config/postgres.js';
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
 // ============================================================================
 // FORMATTERS FOR FRONTEND JSON CONTRACT COMPATIBILITY
@@ -577,6 +579,68 @@ export const registerNewTeam = async ({ teamName, psId, userId, leader, members 
         ]
       );
       insertedMembers.push(mRes.rows[0]);
+    }
+
+    // 8. DUPLICATE PERSISTENCE: Save permanent snapshot to offline_registrations_backup table
+    try {
+      await client.query(
+        `INSERT INTO offline_registrations_backup (
+          team_id, team_name, team_code, problem_statement_id, ps_code, ps_title,
+          leader_name, leader_email, leader_phone, leader_college, members_data,
+          payment_status, payment_method, payment_amount, snapshot_json
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+        [
+          team.id,
+          team.team_name,
+          team.team_code,
+          ps.id,
+          ps.code,
+          ps.title,
+          team.leader_name,
+          team.leader_email,
+          team.leader_phone,
+          team.leader_college,
+          JSON.stringify(insertedMembers),
+          team.payment_status || 'pending',
+          team.payment_method || 'src_desk',
+          team.payment_amount || 400,
+          JSON.stringify({ team, members: insertedMembers, ps: { id: ps.id, code: ps.code, title: ps.title } }),
+        ]
+      );
+    } catch (offlineErr) {
+      console.warn('⚠️ Offline table backup notice:', offlineErr.message);
+    }
+
+    // 9. ZERO DATA LOSS DISK VAULT: Append snapshot to local file vault
+    try {
+      const backupDir = path.resolve('backups');
+      if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
+      const record = {
+        registeredAt: new Date().toISOString(),
+        teamId: team.id,
+        teamName: team.team_name,
+        teamCode: team.team_code,
+        problemStatement: { id: ps.id, code: ps.code, title: ps.title },
+        leader: {
+          name: team.leader_name,
+          email: team.leader_email,
+          phone: team.leader_phone,
+          college: team.leader_college,
+        },
+        members: insertedMembers.map((m) => ({
+          name: m.name,
+          email: m.email,
+          phone: m.phone,
+          college: m.college,
+        })),
+      };
+      fs.appendFileSync(
+        path.join(backupDir, 'offline_registrations_vault.jsonl'),
+        JSON.stringify(record) + '\n',
+        'utf8'
+      );
+    } catch (vaultErr) {
+      console.warn('⚠️ Disk vault backup notice:', vaultErr.message);
     }
 
     const teamWithPs = {

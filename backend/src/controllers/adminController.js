@@ -9,6 +9,7 @@ import {
   getAllProblemStatements,
   updateTeamVenueAdmin,
 } from '../db/queries.js';
+import { pgQuery } from '../config/postgres.js';
 import * as XLSX from 'xlsx';
 
 // 1. Get all registrations with filtering and comprehensive capacity statistics
@@ -452,5 +453,19 @@ export const updateTeamVenue = async (req, res) => {
       success: false,
       message: error.message || 'Failed to update venue allocation.',
     });
+  }
+};
+
+// 11. Retrieve all permanent offline backup registrations
+export const getOfflineBackupRegistrations = async (req, res) => {
+  try {
+    const resBackup = await pgQuery(`SELECT * FROM offline_registrations_backup ORDER BY registered_at DESC`);
+    res.status(200).json({
+      success: true,
+      count: resBackup.rows.length,
+      data: resBackup.rows,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to retrieve offline backups.' });
   }
 };

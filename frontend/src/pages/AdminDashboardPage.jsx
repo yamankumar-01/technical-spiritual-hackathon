@@ -716,17 +716,35 @@ export const AdminDashboardPage = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={handleExportExcel}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[#2EB88A] hover:bg-[#1E9470] text-white transition-all shadow-sm hover:shadow-md cursor-pointer"
+            title="Download full offline master table (.xlsx)"
+          >
+            <Download className="w-4 h-4" />
+            <span>Download Offline Table (Excel)</span>
+          </button>
+
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-[#12141A] dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer"
+            title="Download offline CSV format"
+          >
+            <FileText className="w-4 h-4 text-[#2EB88A]" />
+            <span>CSV</span>
+          </button>
+
           <button
             onClick={() => {
               fetchRegistrations();
               fetchPSSeats();
               fetchQueries();
             }}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-[#12141A] dark:text-slate-200 border border-slate-200 dark:border-slate-800 hover:border-[#2EB88A] transition-all shadow-xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-[#12141A] dark:text-slate-200 border border-slate-200 dark:border-slate-800 hover:border-[#2EB88A] transition-all shadow-xs cursor-pointer"
           >
             <RefreshCw className="w-4 h-4 text-[#2EB88A]" />
-            <span>Refresh Data</span>
+            <span>Refresh</span>
           </button>
         </div>
       </div>

@@ -10,6 +10,7 @@ import {
   exportRegistrationsExcel,
   exportRegistrationsCSV,
   updateTeamVenue,
+  getOfflineBackupRegistrations,
 } from '../controllers/adminController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { requireAdmin } from '../middleware/adminMiddleware.js';
@@ -37,5 +38,6 @@ router.post('/ps/reset', resetProblemStatements);
 router.get('/queries', getContactQueries);
 router.get('/ps/:id/teams', getPSTeams);
 router.delete('/teams/:id', deleteTeamRegistration);
+router.get('/offline-backups', getOfflineBackupRegistrations);
 
 export default router;
