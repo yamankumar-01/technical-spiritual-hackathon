@@ -7,8 +7,8 @@ export const AboutPage = () => {
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-16">
       {/* Header Section */}
       <div className="text-center max-w-3xl mx-auto space-y-6">
-        <div className="w-28 h-28 sm:w-36 sm:h-36 mx-auto rounded-full bg-white dark:bg-[#071510] border-2 border-[#2EB88A]/40 p-2.5 sm:p-3.5 shadow-xl flex items-center justify-center overflow-hidden">
-          <img src="/tsh-logo.png" alt="TSH Logo" className="w-full h-full object-contain rounded-full" />
+        <div className="w-28 h-28 sm:w-36 sm:h-36 mx-auto rounded-full p-0 shadow-xl flex items-center justify-center overflow-hidden">
+          <img src="/tsh-logo.png" alt="TSH Logo" className="w-full h-full object-cover rounded-full" />
         </div>
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/15 border border-[#2EB88A]/30 text-[#1E9470] dark:text-[#2EB88A] text-xs font-bold uppercase tracking-wider shadow-[0_4px_12px_rgba(46,184,138,0.15)]">
           <span>The Story of TSH</span>
