@@ -41,8 +41,8 @@ export const RegisterPage = () => {
       <div className="w-full max-w-md space-y-6">
         <div className="p-8 sm:p-10 rounded-3xl bg-white/95 dark:bg-[#071510]/95 backdrop-blur-md border border-white/80 dark:border-white/10 shadow-[0_15px_45px_rgba(18,20,26,0.08)] space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-3xl bg-white border border-slate-200/80 dark:border-white/10 p-2.5 flex items-center justify-center shadow-[0_8px_24px_rgba(46,184,138,0.15)] overflow-hidden">
-              <img src="/tsh-logo.png" alt="TSH Logo" className="w-full h-full object-contain" />
+            <div className="w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full bg-white border border-slate-200/80 dark:border-white/10 p-2 flex items-center justify-center shadow-[0_8px_24px_rgba(46,184,138,0.15)] overflow-hidden">
+              <img src="/tsh-logo.png" alt="TSH Logo" className="w-full h-full object-contain rounded-full" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-[#12141A] dark:text-white font-['Outfit']">
               Create TSH Account

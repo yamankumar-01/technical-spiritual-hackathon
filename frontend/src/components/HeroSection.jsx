@@ -55,10 +55,21 @@ export const HeroSection = () => {
           />
         </div>
 
+        {/* Top-Right Round Logo Badge */}
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8 z-20">
+          <div className="w-14 h-14 sm:w-20 sm:h-20 lg:w-28 lg:h-28 rounded-full bg-white dark:bg-[#071510] border-2 border-[#2EB88A]/50 shadow-[0_8px_30px_rgba(46,184,138,0.22)] p-1.5 sm:p-2.5 flex items-center justify-center hover:scale-105 transition-all duration-300 group">
+            <img
+              src="/tsh-logo.png"
+              alt="TSH Official Logo"
+              className="w-full h-full object-contain rounded-full"
+            />
+          </div>
+        </div>
+
         {/* Hero Content - Centered with Generous Breathing Room */}
         <div className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center">
           {/* Tag / Badge */}
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/15 text-[#1E9470] dark:text-[#2EB88A] text-xs font-semibold shadow-sm border border-[#2EB88A]/25 mb-4 sm:mb-5">
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/15 text-[#1E9470] dark:text-[#2EB88A] text-xs font-semibold shadow-sm border border-[#2EB88A]/25 mb-4 sm:mb-5 max-w-[78%] sm:max-w-none text-center">
             <span className="w-2 h-2 rounded-full bg-[#2EB88A] animate-pulse" />
             <span className="tracking-wide">National Techno Spiritual Conclave • JECRC Foundation, Jaipur</span>
           </div>
