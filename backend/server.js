@@ -4,7 +4,6 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { initializePostgres, pgPool, pgQuery, closeDatabase, getActiveEngine } from './src/config/postgres.js';
-import { cleanupExpiredHolds } from './src/db/queries.js';
 import { protect } from './src/middleware/authMiddleware.js';
 
 import authRoutes from './src/routes/authRoutes.js';
@@ -130,29 +129,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Periodic expired holds cleanup job (runs every 60 seconds)
-const startHoldCleanupJob = () => {
-  setInterval(async () => {
-    try {
-      const modifiedCount = await cleanupExpiredHolds();
-      if (modifiedCount > 0) {
-        console.log(`🧹 Cleaned up ${modifiedCount} expired registration holds.`);
-      }
-    } catch (err) {
-      if (err.code !== 'ECONNREFUSED') {
-        console.error('Error during hold cleanup job:', err.message);
-      }
-    }
-  }, 60000);
-};
-
 // Initialize database and start server
 const startServer = async () => {
   try {
     console.log('🚀 Connecting and bootstrapping PostgreSQL database...');
     await initializePostgres();
-
-    startHoldCleanupJob();
 
     const server = app.listen(PORT, () => {
       const engine = getActiveEngine();

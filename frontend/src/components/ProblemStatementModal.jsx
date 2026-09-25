@@ -10,10 +10,8 @@ export const ProblemStatementModal = ({
   onSelect,
   isSelected = false,
   inRegistration = false,
-  userHold = null,
   userTeam = null,
   onRegister = null,
-  onRetry = null,
 }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -39,7 +37,7 @@ export const ProblemStatementModal = ({
   const totalSeats = data.capacity || data.totalSeats || 5;
   const available = data.available !== undefined ? data.available : data.seatsAvailable ?? 5;
   const isAvailable = available > 0;
-  const isTempUnavailable = available <= 0 || data.registrationState === 'TEMPORARILY_UNAVAILABLE';
+  const isBooked = available <= 0 || data.registrationState === 'BOOKED';
   const isClosed = data.registrationState === 'CLOSED';
   const isNotStarted = data.registrationState === 'NOT_STARTED';
 
@@ -47,10 +45,6 @@ export const ProblemStatementModal = ({
     onClose();
     if (userTeam) {
       navigate('/dashboard');
-      return;
-    }
-    if (userHold) {
-      navigate(`/register-team?psId=${ps._id}&holdToken=${userHold.holdToken}`);
       return;
     }
     if (inRegistration && onSelect) {
@@ -92,8 +86,8 @@ export const ProblemStatementModal = ({
                     ? 'text-rose-700 dark:text-rose-400 border-rose-500/30 bg-rose-50 dark:bg-rose-500/10'
                     : isNotStarted
                     ? 'text-amber-700 dark:text-amber-400 border-amber-500/30 bg-amber-50 dark:bg-amber-500/10'
-                    : isTempUnavailable
-                    ? 'text-amber-700 dark:text-amber-400 border-amber-500/30 bg-amber-50 dark:bg-amber-500/10'
+                    : isBooked
+                    ? 'text-rose-700 dark:text-rose-400 border-rose-500/30 bg-rose-50 dark:bg-rose-500/10'
                     : 'text-emerald-700 dark:text-emerald-300 border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10'
                 }`}
               >
@@ -101,8 +95,8 @@ export const ProblemStatementModal = ({
                   ? 'Registration Closed'
                   : isNotStarted
                   ? 'Registration Not Started'
-                  : isTempUnavailable
-                  ? 'Temporarily Unavailable (0 Slots)'
+                  : isBooked
+                  ? 'All Slots Booked (0 Slots)'
                   : `${available}/${totalSeats} Slots Available`}
               </span>
             </div>
@@ -189,20 +183,15 @@ export const ProblemStatementModal = ({
                 <CheckCircle className="w-3.5 h-3.5" />
                 Team registered for this track.
               </span>
-            ) : userHold ? (
-              <span className="text-amber-700 dark:text-amber-400 font-semibold flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" />
-                You have an active registration hold.
-              </span>
-            ) : isTempUnavailable ? (
-              <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
+            ) : isBooked ? (
+              <span className="text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1">
                 <Lock className="w-3.5 h-3.5" />
-                All slots currently reserved by filling participants.
+                All slots booked (0 of {totalSeats} open).
               </span>
             ) : (
               <span className="text-emerald-700 dark:text-emerald-400 font-medium flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5 text-[#2EB88A]" />
-                {available} of {totalSeats} slots open. Reserve your slot upon clicking Register.
+                {available} of {totalSeats} slots open. Slots are allocated in real-time.
               </span>
             )}
           </div>
@@ -224,14 +213,6 @@ export const ProblemStatementModal = ({
                 <span>View Registration</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
-            ) : userHold ? (
-              <button
-                onClick={handleAction}
-                className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white shadow-md transition-all cursor-pointer"
-              >
-                <span>Continue Registration</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
             ) : isClosed ? (
               <button
                 disabled
@@ -246,15 +227,12 @@ export const ProblemStatementModal = ({
               >
                 Registration Not Started
               </button>
-            ) : isTempUnavailable ? (
+            ) : isBooked ? (
               <button
-                onClick={() => {
-                  if (onRetry) onRetry(ps);
-                }}
-                className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-md transition-all cursor-pointer"
+                disabled
+                className="flex-1 sm:flex-initial px-6 py-2.5 rounded-full text-xs font-bold bg-rose-100 dark:bg-rose-900/40 text-rose-600 cursor-not-allowed"
               >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Try Again</span>
+                All Slots Booked
               </button>
             ) : (
               <button

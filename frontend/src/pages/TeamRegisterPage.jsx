@@ -36,12 +36,8 @@ export const TeamRegisterPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshingSeats, setRefreshingSeats] = useState(false);
 
-  // 15-Minute Temporary Hold State
-  const [holdToken, setHoldToken] = useState('');
-  const [holdExpiresAt, setHoldExpiresAt] = useState(null);
-  const [remainingSeconds, setRemainingSeconds] = useState(900);
-  const [isHoldExpired, setIsHoldExpired] = useState(false);
-  const [tempUnavailableNotice, setTempUnavailableNotice] = useState('');
+  // Modal State for Slots Booked
+  const [slotsBookedModalOpen, setSlotsBookedModalOpen] = useState(false);
 
   // Form State
   const [selectedPS, setSelectedPS] = useState(null);
@@ -91,7 +87,6 @@ export const TeamRegisterPage = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const preselectedPSId = params.get('psId');
-    const paramHoldToken = params.get('holdToken');
 
     const initPage = async () => {
       try {
@@ -104,31 +99,9 @@ export const TeamRegisterPage = () => {
             const match = res.data.data.find((p) => p._id === preselectedPSId);
             if (match) {
               setSelectedPS(match);
-
-              // Check if user already has an active hold for this PS
-              if (user) {
-                try {
-                  const holdCheck = await psService.getActiveHold(preselectedPSId);
-                  if (holdCheck.data?.success && holdCheck.data.hasActiveHold) {
-                    setHoldToken(holdCheck.data.hold.holdToken);
-                    setHoldExpiresAt(holdCheck.data.hold.expiresAt);
-                    setRemainingSeconds(holdCheck.data.hold.duration);
-                    setIsHoldExpired(false);
-                    setStep(2); // Resume filling form
-                  } else if (paramHoldToken) {
-                    // Try to re-acquire or verify hold
-                    const acquireRes = await psService.acquireHold(preselectedPSId);
-                    if (acquireRes.data?.success) {
-                      setHoldToken(acquireRes.data.holdToken);
-                      setHoldExpiresAt(acquireRes.data.expiresAt);
-                      setRemainingSeconds(acquireRes.data.duration);
-                      setIsHoldExpired(false);
-                      setStep(2);
-                    }
-                  }
-                } catch (holdErr) {
-                  console.error('Error verifying active hold:', holdErr);
-                }
+              const avail = match.available !== undefined ? match.available : match.seatsAvailable ?? 5;
+              if (avail > 0) {
+                setStep(2);
               }
             }
           }
@@ -153,31 +126,6 @@ export const TeamRegisterPage = () => {
     }
   }, [myTeam]);
 
-  // 15-Minute Countdown Timer (Authoritative from server expiresAt)
-  useEffect(() => {
-    if (step !== 2 || !holdExpiresAt || isHoldExpired) return;
-
-    const interval = setInterval(() => {
-      const now = Date.now();
-      const expires = new Date(holdExpiresAt).getTime();
-      const diff = Math.max(0, Math.floor((expires - now) / 1000));
-      setRemainingSeconds(diff);
-
-      if (diff <= 0) {
-        clearInterval(interval);
-        setIsHoldExpired(true);
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [step, holdExpiresAt, isHoldExpired]);
-
-  const formatCountdown = (secs) => {
-    const mins = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${String(mins).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  };
-
   // Member field updater
   const updateMember = (index, field, value) => {
     setMembers((prev) =>
@@ -185,8 +133,8 @@ export const TeamRegisterPage = () => {
     );
   };
 
-  // Step 1 to Step 2: Acquire 15-minute slot hold atomically
-  const handleProceedToMembers = async () => {
+  // Step 1 to Step 2: Proceed to fill team details (no temporary hold)
+  const handleProceedToMembers = () => {
     if (!selectedPS) {
       setErrorMsg('Please select a Problem Statement to proceed.');
       return;
@@ -194,9 +142,7 @@ export const TeamRegisterPage = () => {
 
     const available = selectedPS.available !== undefined ? selectedPS.available : selectedPS.seatsAvailable ?? 5;
     if (available <= 0) {
-      setTempUnavailableNotice(
-        'Temporarily unavailable. All available slots are currently occupied. Another participant may currently be filling the last available slot. Please try again after a few minutes.'
-      );
+      setSlotsBookedModalOpen(true);
       return;
     }
 
@@ -205,60 +151,14 @@ export const TeamRegisterPage = () => {
       return;
     }
 
-    try {
-      setProcessing(true);
-      setErrorMsg('');
-      setTempUnavailableNotice('');
-
-      // Atomically check capacity and acquire 15-minute hold
-      const res = await psService.acquireHold(selectedPS._id);
-      if (res.data?.success) {
-        setHoldToken(res.data.holdToken);
-        setHoldExpiresAt(res.data.expiresAt);
-        setRemainingSeconds(res.data.duration || 900);
-        setIsHoldExpired(false);
-        setStep(2);
-      } else if (res.data?.code === 'TEMPORARILY_UNAVAILABLE') {
-        setTempUnavailableNotice(
-          res.data.message ||
-            'Temporarily unavailable. All available slots are currently occupied. Another participant may currently be filling the last available slot. Please try again after a few minutes.'
-        );
-      }
-    } catch (err) {
-      if (err.code === 'TEMPORARILY_UNAVAILABLE' || err.response?.data?.code === 'TEMPORARILY_UNAVAILABLE') {
-        setTempUnavailableNotice(
-          err.response?.data?.message ||
-            'Temporarily unavailable. All available slots are currently occupied. Another participant may currently be filling the last available slot. Please try again after a few minutes.'
-        );
-      } else {
-        setErrorMsg(err.message || 'Failed to acquire slot hold.');
-      }
-    } finally {
-      setProcessing(false);
-    }
-  };
-
-  // User resets and re-selects problem upon window expiration
-  const handleSelectProblemAgain = () => {
-    setHoldToken('');
-    setHoldExpiresAt(null);
-    setRemainingSeconds(900);
-    setIsHoldExpired(false);
     setErrorMsg('');
-    setTempUnavailableNotice('');
-    setStep(1);
-    navigate('/ps');
+    setStep(2);
   };
 
-  // Step 2 to Step 3: Submit team details with holdToken
+  // Step 2 to Step 3: Submit team details
   const handleSaveTeamDetails = async (e) => {
     e.preventDefault();
     setErrorMsg('');
-
-    if (isHoldExpired || remainingSeconds <= 0) {
-      setIsHoldExpired(true);
-      return;
-    }
 
     if (!teamName.trim()) {
       setErrorMsg('Please provide a team name.');
@@ -319,7 +219,6 @@ export const TeamRegisterPage = () => {
       const payload = {
         teamName: teamName.trim(),
         psId: selectedPS._id,
-        holdToken, // Authoritative hold token
         leader: {
           ...leader,
           name: leaderName,
@@ -347,9 +246,8 @@ export const TeamRegisterPage = () => {
         await refreshTeamStatus();
       }
     } catch (err) {
-      if (err.code === 'HOLD_EXPIRED' || err.response?.data?.code === 'HOLD_EXPIRED') {
-        setIsHoldExpired(true);
-        setErrorMsg('Your registration window has expired. The temporary slot reserved for you has been released.');
+      if (err.code === 'SLOTS_EXHAUSTED' || err.message?.includes('All slots are booked')) {
+        setSlotsBookedModalOpen(true);
       } else {
         setErrorMsg(err.message || 'Failed to submit team registration.');
       }
@@ -447,36 +345,6 @@ export const TeamRegisterPage = () => {
         </div>
       )}
 
-      {/* Temporarily Unavailable Notice (Requirement 6 & 29) */}
-      {tempUnavailableNotice && (
-        <div className="p-5 rounded-3xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700/60 shadow-md space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900/60 text-amber-600 flex items-center justify-center shrink-0">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-sm font-bold text-amber-950 dark:text-amber-100">
-                Temporarily unavailable
-              </h3>
-              <p className="text-xs text-amber-900 dark:text-amber-200 leading-relaxed">
-                {tempUnavailableNotice}
-              </p>
-            </div>
-          </div>
-          <div className="flex justify-end gap-2 pt-1">
-            <button
-              type="button"
-              onClick={handleRefreshSeats}
-              disabled={refreshingSeats}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 transition-all shadow-xs"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${refreshingSeats ? 'animate-spin' : ''}`} />
-              <span>Try Again</span>
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* STEP 1: SELECT PROBLEM STATEMENT */}
       {step === 1 && (
         <div className="space-y-6">
@@ -486,17 +354,16 @@ export const TeamRegisterPage = () => {
                 Step 1: Choose Your Problem Track
               </h2>
               <p className="text-xs text-[#5B6470] dark:text-slate-400">
-                A temporary slot hold will be automatically reserved for your team when you click Proceed.
+                Select a problem statement to register your team. Slots are confirmed upon final submission.
               </p>
             </div>
 
             {selectedPS && (
               <button
                 onClick={handleProceedToMembers}
-                disabled={processing}
-                className="px-6 py-2.5 rounded-full text-xs font-bold bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:brightness-105 text-white shadow-[0_6px_20px_rgba(46,184,138,0.25)] flex items-center gap-2 transition-all shrink-0 cursor-pointer disabled:opacity-50"
+                className="px-6 py-2.5 rounded-full text-xs font-bold bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:brightness-105 text-white shadow-[0_6px_20px_rgba(46,184,138,0.25)] flex items-center gap-2 transition-all shrink-0 cursor-pointer"
               >
-                <span>{processing ? 'Reserving Slot...' : 'Proceed to Team Members'}</span>
+                <span>Proceed to Team Members</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}
@@ -591,10 +458,9 @@ export const TeamRegisterPage = () => {
               <button
                 type="button"
                 onClick={handleProceedToMembers}
-                disabled={processing}
-                className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:brightness-105 active:scale-95 shadow-sm transition-all flex items-center gap-2 cursor-pointer shrink-0 disabled:opacity-50"
+                className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:brightness-105 active:scale-95 shadow-sm transition-all flex items-center gap-2 cursor-pointer shrink-0"
               >
-                <span>{processing ? 'Reserving...' : 'Proceed to Step 2'}</span>
+                <span>Proceed to Step 2</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -602,31 +468,35 @@ export const TeamRegisterPage = () => {
         </div>
       )}
 
-      {/* STEP 2: FIXED 4-MEMBER TEAM DETAILS WITH 15-MINUTE COUNTDOWN */}
+      {/* STEP 2: FIXED 4-MEMBER TEAM DETAILS */}
       {step === 2 && (
         <form onSubmit={handleSaveTeamDetails} className="space-y-6">
-          {/* Prominent 15-Minute Countdown Banner (Requirements 8, 9, 10) */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-600/60 shadow-md flex flex-col sm:flex-row items-center justify-between gap-3">
+          {/* Selected Track Real-Time Slot Availability Banner */}
+          <div className="p-4 sm:p-5 rounded-3xl bg-[#DDF5EB]/60 dark:bg-[#2EB88A]/10 border-2 border-[#2EB88A]/40 shadow-md flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-3 text-center sm:text-left">
-              <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0 font-mono text-base font-black">
-                ⏱
+              <div className="w-10 h-10 rounded-2xl bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A] flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-xs sm:text-sm font-extrabold text-amber-950 dark:text-amber-100">
-                  Complete registration within{' '}
-                  <span className="font-mono text-base sm:text-lg text-amber-700 dark:text-amber-300 font-black px-2 py-0.5 rounded-lg bg-amber-200/60 dark:bg-amber-900/60 border border-amber-300 dark:border-amber-700 ml-1">
-                    {formatCountdown(remainingSeconds)}
+                <div className="text-xs sm:text-sm font-extrabold text-[#12141A] dark:text-white">
+                  Selected Track:{' '}
+                  <span className="font-mono text-sm sm:text-base text-[#1E9470] dark:text-[#2EB88A] font-bold">
+                    {selectedPS?.code} - {selectedPS?.title}
                   </span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-amber-800/90 dark:text-amber-300/80 mt-0.5">
-                  This slot is temporarily reserved for you while you complete the form.
+                <p className="text-[11px] sm:text-xs text-[#536159] dark:text-slate-300 mt-0.5">
+                  Current Availability:{' '}
+                  <span className="font-bold text-[#1E9470] dark:text-[#2EB88A]">
+                    {selectedPS?.available !== undefined ? selectedPS.available : selectedPS?.seatsAvailable ?? 5} / {selectedPS?.capacity || selectedPS?.totalSeats || 5} slots available
+                  </span>
+                  {' '}• Slots are verified and reserved in real-time upon clicking Submit.
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              <span className="font-mono text-xs font-bold text-amber-800 dark:text-amber-300 bg-amber-200/60 dark:bg-amber-900/50 px-3 py-1 rounded-full border border-amber-300 dark:border-amber-700">
-                Track: {selectedPS?.code}
+              <span className="font-mono text-xs font-bold text-[#1E9470] dark:text-[#2EB88A] bg-[#DDF5EB] dark:bg-[#2EB88A]/20 px-3.5 py-1.5 rounded-full border border-[#2EB88A]/40">
+                {selectedPS?.available !== undefined ? selectedPS.available : selectedPS?.seatsAvailable ?? 5} Slots Left
               </span>
             </div>
           </div>
@@ -659,11 +529,10 @@ export const TeamRegisterPage = () => {
             <input
               type="text"
               required
-              disabled={isHoldExpired}
               value={teamName}
               onChange={(e) => setTeamName(e.target.value)}
               placeholder="e.g. SoulSync Innovators"
-              className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-sm text-[#12141A] dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-[#2EB88A] disabled:opacity-50"
+              className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-sm text-[#12141A] dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-[#2EB88A]"
             />
           </div>
 
@@ -682,10 +551,9 @@ export const TeamRegisterPage = () => {
                 <input
                   type="text"
                   required
-                  disabled={isHoldExpired}
                   value={leader.name}
                   onChange={(e) => setLeader({ ...leader, name: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white disabled:opacity-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white"
                 />
               </div>
 
@@ -694,10 +562,9 @@ export const TeamRegisterPage = () => {
                 <input
                   type="email"
                   required
-                  disabled={isHoldExpired}
                   value={leader.email}
                   onChange={(e) => setLeader({ ...leader, email: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white disabled:opacity-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white"
                 />
               </div>
 
@@ -706,10 +573,9 @@ export const TeamRegisterPage = () => {
                 <input
                   type="tel"
                   required
-                  disabled={isHoldExpired}
                   value={leader.phone}
                   onChange={(e) => setLeader({ ...leader, phone: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white disabled:opacity-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white"
                 />
               </div>
 
@@ -718,10 +584,9 @@ export const TeamRegisterPage = () => {
                 <input
                   type="text"
                   required
-                  disabled={isHoldExpired}
                   value={leader.branch}
                   onChange={(e) => setLeader({ ...leader, branch: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white disabled:opacity-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white"
                 />
               </div>
 
@@ -729,9 +594,8 @@ export const TeamRegisterPage = () => {
                 <label className="text-xs text-slate-500 dark:text-slate-400">Academic Year *</label>
                 <select
                   value={leader.year}
-                  disabled={isHoldExpired}
                   onChange={(e) => setLeader({ ...leader, year: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white disabled:opacity-50"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white"
                 >
                   <option value="1st Year">1st Year</option>
                   <option value="2nd Year">2nd Year</option>
@@ -761,10 +625,9 @@ export const TeamRegisterPage = () => {
                   <input
                     type="text"
                     required
-                    disabled={isHoldExpired}
                     value={members[idx].name}
                     onChange={(e) => updateMember(idx, 'name', e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white disabled:opacity-50"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white"
                   />
                 </div>
 
@@ -773,10 +636,9 @@ export const TeamRegisterPage = () => {
                   <input
                     type="email"
                     required
-                    disabled={isHoldExpired}
                     value={members[idx].email}
                     onChange={(e) => updateMember(idx, 'email', e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white disabled:opacity-50"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white"
                   />
                 </div>
 
@@ -785,10 +647,9 @@ export const TeamRegisterPage = () => {
                   <input
                     type="tel"
                     required
-                    disabled={isHoldExpired}
                     value={members[idx].phone}
                     onChange={(e) => updateMember(idx, 'phone', e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white disabled:opacity-50"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white"
                   />
                 </div>
 
@@ -797,10 +658,9 @@ export const TeamRegisterPage = () => {
                   <input
                     type="text"
                     required
-                    disabled={isHoldExpired}
                     value={members[idx].branch}
                     onChange={(e) => updateMember(idx, 'branch', e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white disabled:opacity-50"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white"
                   />
                 </div>
 
@@ -808,9 +668,8 @@ export const TeamRegisterPage = () => {
                   <label className="text-xs text-slate-500 dark:text-slate-400">Academic Year *</label>
                   <select
                     value={members[idx].year || '3rd Year'}
-                    disabled={isHoldExpired}
                     onChange={(e) => updateMember(idx, 'year', e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white disabled:opacity-50"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-[#12141A] dark:text-white"
                   >
                     <option value="1st Year">1st Year</option>
                     <option value="2nd Year">2nd Year</option>
@@ -826,39 +685,44 @@ export const TeamRegisterPage = () => {
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="submit"
-              disabled={processing || isHoldExpired}
+              disabled={processing}
               className="px-8 py-3.5 rounded-full text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] shadow-[0_6px_20px_rgba(46,184,138,0.3)] hover:brightness-105 transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer"
             >
-              <span>{processing ? 'Submitting Registration...' : 'Submit Registration (Hold → Payment Pending)'}</span>
+              <span>{processing ? 'Submitting Registration...' : 'Submit Team Registration'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </form>
       )}
 
-      {/* 15-Minute Hold Expiration Modal (Requirements 21, 22, 23, 24) */}
-      {isHoldExpired && (
+      {/* All Slots Booked Popup Modal */}
+      {slotsBookedModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-fade-in">
           <div className="w-full max-w-md p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0c1420] border-2 border-rose-400 dark:border-rose-600 shadow-2xl space-y-5 text-center">
             <div className="w-14 h-14 rounded-full bg-rose-100 dark:bg-rose-900/50 text-rose-600 flex items-center justify-center mx-auto text-xl font-bold">
-              ⏱
+              <AlertCircle className="w-7 h-7" />
             </div>
 
             <div className="space-y-2">
               <h3 className="text-xl font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
-                Your registration window has expired.
+                All Slots Booked
               </h3>
-              <p className="text-xs text-[#536159] dark:text-slate-300 leading-relaxed">
-                The temporary slot reserved for you has been released. To prevent slot holding, you must select the problem again to begin a new registration session.
+              <p className="text-sm text-[#536159] dark:text-slate-300 leading-relaxed font-medium">
+                All slots are booked. Please proceed with the remaining Problem Statements.
               </p>
             </div>
 
             <button
               type="button"
-              onClick={handleSelectProblemAgain}
+              onClick={() => {
+                setSlotsBookedModalOpen(false);
+                setSelectedPS(null);
+                setStep(1);
+                handleRefreshSeats();
+              }}
               className="w-full py-3.5 rounded-full text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 shadow-md transition-all cursor-pointer"
             >
-              SELECT PROBLEM AGAIN
+              Proceed with Remaining Problem Statements
             </button>
           </div>
         </div>

@@ -78,16 +78,24 @@ export const registerTeam = async (req, res) => {
       data: result.team,
     });
   } catch (error) {
-    if (error.message.includes('DUPLICATE_EMAIL_VIOLATION') || error.message.includes('already registered')) {
+    if (error.code === 'SLOTS_EXHAUSTED' || error.message.includes('All slots are booked')) {
+      return res.status(409).json({
+        success: false,
+        code: 'SLOTS_EXHAUSTED',
+        message: 'All slots are booked. Please proceed with the remaining Problem Statements.',
+      });
+    }
+    if (error.code === 'DUPLICATE_EMAIL_VIOLATION' || error.message.includes('already registered')) {
       return res.status(400).json({
         success: false,
+        code: 'DUPLICATE_EMAIL_VIOLATION',
         message: error.message,
       });
     }
-    if (error.message.includes('expired') || error.message.includes('no longer valid')) {
+    if (error.code === 'ALREADY_REGISTERED') {
       return res.status(400).json({
         success: false,
-        code: 'HOLD_EXPIRED',
+        code: 'ALREADY_REGISTERED',
         message: error.message,
       });
     }

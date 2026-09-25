@@ -382,47 +382,27 @@ export const getAllPSCapacity = async () => {
   const settings = await getGlobalSettings();
   const now = new Date();
 
-  // Aggregate active holds
-  const holdsRes = await pgQuery(`
-    SELECT problem_statement_id, COUNT(*) AS count 
-    FROM registration_holds 
-    WHERE status = 'active' AND expires_at > CURRENT_TIMESTAMP 
-    GROUP BY problem_statement_id
-  `);
-  const holdMap = new Map(holdsRes.rows.map((r) => [r.problem_statement_id, parseInt(r.count, 10)]));
-
-  // Aggregate pending teams
-  const pendingRes = await pgQuery(`
+  // Aggregate registered teams
+  const registeredRes = await pgQuery(`
     SELECT problem_statement_id, COUNT(*) AS count 
     FROM teams 
-    WHERE status = 'payment_pending' 
+    WHERE status IN ('payment_pending', 'confirmed', 'registered', 'finalized') 
     GROUP BY problem_statement_id
   `);
-  const pendingMap = new Map(pendingRes.rows.map((r) => [r.problem_statement_id, parseInt(r.count, 10)]));
-
-  // Aggregate confirmed teams
-  const confirmedRes = await pgQuery(`
-    SELECT problem_statement_id, COUNT(*) AS count 
-    FROM teams 
-    WHERE status IN ('confirmed', 'finalized') 
-    GROUP BY problem_statement_id
-  `);
-  const confirmedMap = new Map(confirmedRes.rows.map((r) => [r.problem_statement_id, parseInt(r.count, 10)]));
+  const registeredMap = new Map(registeredRes.rows.map((r) => [r.problem_statement_id, parseInt(r.count, 10)]));
 
   const data = problemsRes.rows.map((ps) => {
     const capacity = ps.total_seats || 5;
-    const holds = holdMap.get(ps.id) || 0;
-    const pending = pendingMap.get(ps.id) || 0;
-    const conf = confirmedMap.get(ps.id) || 0;
-    const occupied = holds + pending + conf;
-    const available = Math.max(0, capacity - occupied);
+    const registered = registeredMap.get(ps.id) || 0;
+    // Accurate real-time available slots: never negative and bounded by total capacity
+    const available = Math.max(0, Math.min(ps.seats_available, capacity - registered));
 
     let registrationState = 'AVAILABLE';
     if (!settings.registrationEnabled) registrationState = 'DISABLED';
     else if (now < new Date(settings.registrationStartDate)) registrationState = 'NOT_STARTED';
     else if (now > new Date(settings.registrationEndDate)) registrationState = 'CLOSED';
     else if (ps.is_active === false) registrationState = 'DISABLED';
-    else if (available <= 0) registrationState = 'TEMPORARILY_UNAVAILABLE';
+    else if (available <= 0) registrationState = 'BOOKED';
 
     return {
       _id: ps.id,
@@ -436,13 +416,13 @@ export const getAllPSCapacity = async () => {
       totalSeats: capacity,
       seatsAvailable: available,
       capacity,
-      activeHolds: holds,
-      paymentPending: pending,
-      confirmed: conf,
-      occupied,
+      activeHolds: 0,
+      paymentPending: registered,
+      confirmed: 0,
+      occupied: registered,
       available,
       registrationState,
-      registration_enabled: ps.is_active !== false,
+      registration_enabled: ps.is_active !== false && available > 0,
     };
   });
 
@@ -456,46 +436,55 @@ export const getAllPSCapacity = async () => {
 // 5. TEAMS & REGISTRATION
 // ============================================================================
 
-export const registerNewTeam = async ({ teamName, psId, userId, leader, members, holdToken }) => {
+export const registerNewTeam = async ({ teamName, psId, userId, leader, members }) => {
   const leaderEmail = leader.email.trim().toLowerCase();
   const memberEmails = members.map((m) => m.email.trim().toLowerCase());
   const allEmails = [leaderEmail, ...memberEmails];
 
   return await withTransaction(async (client) => {
-    // 1. Check holdToken if provided
-    let holdId = null;
-    if (holdToken) {
-      const holdRes = await client.query(
-        `SELECT * FROM registration_holds WHERE hold_token = $1 AND user_id = $2 AND problem_statement_id = $3`,
-        [holdToken, userId, psId]
-      );
-      const hold = holdRes.rows[0];
-      if (!hold) {
-        throw new Error('This registration session is no longer valid. Please select the problem again.');
-      }
-      if (hold.status === 'consumed') {
-        // Idempotency: return existing team if already consumed
-        const existingTeamRes = await client.query(
-          `SELECT t.*, ps.code AS ps_code, ps.title AS ps_title, ps.category AS ps_category, ps.seats_available, ps.total_seats
-           FROM teams t
-           JOIN problem_statements ps ON ps.id = t.problem_statement_id
-           WHERE t.hold_token = $1 LIMIT 1`,
-          [holdToken]
-        );
-        if (existingTeamRes.rows[0]) {
-          const t = existingTeamRes.rows[0];
-          const memRes = await client.query(`SELECT * FROM team_members WHERE team_id = $1 ORDER BY created_at ASC`, [t.id]);
-          return { isDuplicate: true, team: formatTeam(t, memRes.rows) };
-        }
-      }
-      if (hold.status !== 'active' || new Date() >= new Date(hold.expires_at)) {
-        await client.query(`UPDATE registration_holds SET status = 'expired' WHERE id = $1`, [hold.id]);
-        throw new Error('Your registration window has expired. Please select the problem again.');
-      }
-      holdId = hold.id;
+    // 1. ATOMIC CHECK & EXCLUSIVE ROW LOCK ON PROBLEM STATEMENT
+    // 'FOR UPDATE' acquires an exclusive lock on this specific problem statement row.
+    // If two teams click Submit at the exact same moment, the database serializes them:
+    // the second team waits and reads the updated count only after the first transaction commits.
+    const psRes = await client.query(
+      `SELECT id, code, title, category, seats_available, total_seats, is_active
+       FROM problem_statements
+       WHERE id = $1
+       FOR UPDATE`,
+      [psId]
+    );
+
+    if (!psRes.rows[0]) {
+      const err = new Error('Problem statement not found.');
+      err.code = 'NOT_FOUND';
+      throw err;
     }
 
-    // 2. Check for email conflicts in other teams
+    const ps = psRes.rows[0];
+
+    // Check if slots are available right now at submission time
+    if (ps.seats_available <= 0 || ps.is_active === false) {
+      const err = new Error('All slots are booked. Please proceed with the remaining Problem Statements.');
+      err.code = 'SLOTS_EXHAUSTED';
+      throw err;
+    }
+
+    // 2. Check if user already submitted registration for this problem
+    const teamCheck = await client.query(
+      `SELECT id, team_name, status FROM teams 
+       WHERE (created_by = $1 OR leader_id = $1)
+         AND problem_statement_id = $2
+         AND status IN ('payment_pending', 'confirmed', 'registered', 'finalized')
+       LIMIT 1`,
+      [userId, psId]
+    );
+    if (teamCheck.rows[0]) {
+      const err = new Error(`You have already registered team "${teamCheck.rows[0].team_name}" for this problem statement (Status: ${teamCheck.rows[0].status.toUpperCase()}).`);
+      err.code = 'ALREADY_REGISTERED';
+      throw err;
+    }
+
+    // 3. Check for email conflicts in other teams
     const conflictQuery = `
       SELECT t.team_name, ps.code AS ps_code, ps.title AS ps_title, LOWER(t.leader_email) AS clashing_email
       FROM teams t
@@ -514,25 +503,45 @@ export const registerNewTeam = async ({ teamName, psId, userId, leader, members,
     const conflictRes = await client.query(conflictQuery, [allEmails]);
     if (conflictRes.rows[0]) {
       const c = conflictRes.rows[0];
-      throw new Error(
+      const err = new Error(
         `The email "${c.clashing_email}" is already registered with team "${c.team_name}" for Problem Statement ${c.ps_code} (${c.ps_title}). An email can only be assigned to one Problem Statement.`
       );
+      err.code = 'DUPLICATE_EMAIL_VIOLATION';
+      throw err;
     }
 
-    // 3. Generate random teamCode
+    // 4. ATOMIC SLOT DECREMENT (Decreases count by 1, guaranteed safe and never negative)
+    const decrementRes = await client.query(
+      `UPDATE problem_statements
+       SET seats_available = seats_available - 1,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = $1 AND seats_available > 0
+       RETURNING seats_available, total_seats`,
+      [psId]
+    );
+
+    if (!decrementRes.rows[0]) {
+      const err = new Error('All slots are booked. Please proceed with the remaining Problem Statements.');
+      err.code = 'SLOTS_EXHAUSTED';
+      throw err;
+    }
+
+    const updatedSeats = decrementRes.rows[0].seats_available;
+
+    // 5. Generate random teamCode
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const teamCode = `TSH-${randomSuffix}`;
 
-    // 4. Insert into teams table
+    // 6. Insert into teams table
     const teamInsertRes = await client.query(
       `INSERT INTO teams (
         team_name, team_code, problem_statement_id, leader_id, created_by,
         leader_name, leader_email, leader_phone, leader_college, leader_branch, leader_year,
-        hold_token, status, payment_status, payment_method, payment_amount
+        status, payment_status, payment_method, payment_amount
        ) VALUES (
         $1, $2, $3, $4, $4,
         $5, $6, $7, $8, $9, $10,
-        $11, 'payment_pending', 'pending', 'src_desk', 400
+        'payment_pending', 'pending', 'src_desk', 400
        ) RETURNING *`,
       [
         teamName.trim(),
@@ -545,13 +554,12 @@ export const registerNewTeam = async ({ teamName, psId, userId, leader, members,
         leader.college ? leader.college.trim() : 'JECRC Foundation',
         leader.branch || '',
         leader.year || '',
-        holdToken || null,
       ]
     );
 
     const team = teamInsertRes.rows[0];
 
-    // 5. Insert team members
+    // 7. Insert team members
     const insertedMembers = [];
     for (const m of members) {
       const mRes = await client.query(
@@ -571,21 +579,12 @@ export const registerNewTeam = async ({ teamName, psId, userId, leader, members,
       insertedMembers.push(mRes.rows[0]);
     }
 
-    // 6. Mark hold consumed
-    if (holdId) {
-      await client.query(`UPDATE registration_holds SET status = 'consumed' WHERE id = $1`, [holdId]);
-    }
-
-    // 7. Fetch problem statement metadata for response
-    const psRes = await client.query(`SELECT * FROM problem_statements WHERE id = $1`, [psId]);
-    const ps = psRes.rows[0];
-
     const teamWithPs = {
       ...team,
       ps_code: ps.code,
       ps_title: ps.title,
       ps_category: ps.category,
-      seats_available: ps.seats_available,
+      seats_available: updatedSeats,
       total_seats: ps.total_seats,
     };
 
@@ -781,6 +780,10 @@ export const approveTeamAdmin = async (teamId, notes) => {
 
 export const rejectTeamAdmin = async (teamId, notes) => {
   return await withTransaction(async (client) => {
+    const currentTeamRes = await client.query(`SELECT problem_statement_id, status FROM teams WHERE id = $1`, [teamId]);
+    if (!currentTeamRes.rows[0]) return null;
+    const currentTeam = currentTeamRes.rows[0];
+
     const updateRes = await client.query(
       `UPDATE teams
        SET status = 'rejected',
@@ -793,6 +796,18 @@ export const rejectTeamAdmin = async (teamId, notes) => {
     );
     if (!updateRes.rows[0]) return null;
     const updatedTeam = updateRes.rows[0];
+
+    // If team was not previously rejected, restore 1 seat to problem statement
+    if (currentTeam.status !== 'rejected') {
+      await client.query(
+        `UPDATE problem_statements 
+         SET seats_available = LEAST(total_seats, seats_available + 1),
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = $1`,
+        [currentTeam.problem_statement_id]
+      );
+    }
+
     const psRes = await client.query(`SELECT * FROM problem_statements WHERE id = $1`, [updatedTeam.problem_statement_id]);
     const memRes = await client.query(`SELECT * FROM team_members WHERE team_id = $1 ORDER BY created_at ASC`, [teamId]);
 
