@@ -54,9 +54,9 @@ export const TeamRegisterPage = () => {
     year: '3rd Year',
   });
   const [members, setMembers] = useState([
-    { name: '', phone: '', email: '', branch: '', year: '' },
-    { name: '', phone: '', email: '', branch: '', year: '' },
-    { name: '', phone: '', email: '', branch: '', year: '' },
+    { name: '', phone: '', email: '', branch: '', year: '3rd Year' },
+    { name: '', phone: '', email: '', branch: '', year: '3rd Year' },
+    { name: '', phone: '', email: '', branch: '', year: '3rd Year' },
   ]);
 
   const [registeredTeam, setRegisteredTeam] = useState(null);
@@ -180,9 +180,9 @@ export const TeamRegisterPage = () => {
 
   // Member field updater
   const updateMember = (index, field, value) => {
-    const updated = [...members];
-    updated[index][field] = value;
-    setMembers(updated);
+    setMembers((prev) =>
+      prev.map((m, i) => (i === index ? { ...m, [field]: value } : m))
+    );
   };
 
   // Step 1 to Step 2: Acquire 15-minute slot hold atomically
@@ -266,24 +266,48 @@ export const TeamRegisterPage = () => {
     }
 
     // Validate leader
-    if (!leader.name || !leader.phone || !leader.email || !leader.branch || !leader.year) {
-      setErrorMsg('Please fill in all leader details.');
+    const leaderName = (leader.name || '').trim();
+    const leaderPhone = (leader.phone || '').trim();
+    const leaderEmail = (leader.email || '').trim();
+    const leaderBranch = (leader.branch || '').trim();
+    const leaderYear = (leader.year || '3rd Year').trim();
+
+    if (!leaderName || !leaderPhone || !leaderEmail || !leaderBranch || !leaderYear) {
+      const missing = [];
+      if (!leaderName) missing.push('Full Name');
+      if (!leaderEmail) missing.push('Email');
+      if (!leaderPhone) missing.push('Phone Number');
+      if (!leaderBranch) missing.push('Branch');
+      if (!leaderYear) missing.push('Academic Year');
+      setErrorMsg(`Please fill in ${missing.join(', ')} for Team Leader.`);
       return;
     }
 
     // Validate 3 members
     for (let i = 0; i < 3; i++) {
       const m = members[i];
-      if (!m.name || !m.phone || !m.email || !m.branch || !m.year) {
-        setErrorMsg(`Please fill in all fields for Team Member ${i + 1}.`);
+      const name = (m.name || '').trim();
+      const phone = (m.phone || '').trim();
+      const email = (m.email || '').trim();
+      const branch = (m.branch || '').trim();
+      const year = (m.year || '3rd Year').trim();
+
+      if (!name || !phone || !email || !branch || !year) {
+        const missing = [];
+        if (!name) missing.push('Full Name');
+        if (!email) missing.push('Email');
+        if (!phone) missing.push('Phone Number');
+        if (!branch) missing.push('Branch');
+        if (!year) missing.push('Academic Year');
+        setErrorMsg(`Please fill in ${missing.join(', ')} for Team Member ${i + 1}.`);
         return;
       }
     }
 
     // Client-side anti-duplicate check: All 4 emails must be unique
-    const leaderEmail = leader.email.trim().toLowerCase();
-    const memberEmails = members.map((m) => m.email.trim().toLowerCase());
-    const allEmails = [leaderEmail, ...memberEmails];
+    const leaderEmailClean = leaderEmail.toLowerCase();
+    const memberEmails = members.map((m) => (m.email || '').trim().toLowerCase());
+    const allEmails = [leaderEmailClean, ...memberEmails];
 
     if (new Set(allEmails).size !== allEmails.length) {
       setErrorMsg('All team member emails must be unique. Duplicate email addresses are not allowed within the team roster.');
@@ -296,8 +320,22 @@ export const TeamRegisterPage = () => {
         teamName: teamName.trim(),
         psId: selectedPS._id,
         holdToken, // Authoritative hold token
-        leader,
-        members,
+        leader: {
+          ...leader,
+          name: leaderName,
+          phone: leaderPhone,
+          email: leaderEmailClean,
+          branch: leaderBranch,
+          year: leaderYear,
+        },
+        members: members.map((m) => ({
+          ...m,
+          name: (m.name || '').trim(),
+          phone: (m.phone || '').trim(),
+          email: (m.email || '').trim().toLowerCase(),
+          branch: (m.branch || '').trim(),
+          year: (m.year || '3rd Year').trim(),
+        })),
       };
 
       const res = await teamService.registerTeam(payload);
