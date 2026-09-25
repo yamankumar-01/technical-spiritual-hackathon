@@ -100,7 +100,7 @@ export const HomePage = () => {
     },
     {
       q: 'Who is eligible to participate?',
-      a: 'Participation is exclusively open to students of JECRC Foundation. All undergraduate and postgraduate students from JECRC Foundation campuses are eligible to form a team and register.',
+      a: 'Participation is exclusively open to students of JECRC Foundation. All undergraduate students from JECRC Foundation campuses are eligible to form a team and register.',
     },
   ];
 
