@@ -213,7 +213,7 @@ export const initializePostgres = async () => {
 
     // Ensure administrator user has accurate, verified bcrypt password hash for 'srcjecrc@123'
     // Username / Email: tsh@admin exclusively
-    const adminHash = '$2b$10$g0mgrC8CzwqiFV.UI.Ufbum8uhajc7KcPH7iH0.ZWrAcEksPEV75S'; // srcjecrc@123
+    const adminHash = '$2b$10$rxR.V8l0aiQ5FDtLz4YEeOCsUlAg.lESRjCUOOrotVymycgB0KNr.'; // srcjecrc@123
 
     const tshAdminRes = await pgQuery(`
       INSERT INTO users (name, email, password_hash, role, phone, college)

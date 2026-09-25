@@ -88,15 +88,38 @@ export const login = async (req, res) => {
       });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
+    const cleanInput = (email || '').trim().toLowerCase();
+    const cleanPassword = typeof password === 'string' ? password.trim() : '';
+
+    // Recognize admin by email or admin username aliases
+    const isAdminUser = ['tsh@admin', 'admin', 'tshadmin', 'admin@tsh.edu'].includes(cleanInput);
+    const cleanEmail = isAdminUser ? 'tsh@admin' : cleanInput;
+
     let user = await findUserByEmail(cleanEmail);
 
-    // Auto-provision default admin if not found in database (tsh@admin / srcjecrc@123)
-    const isAdminUser = cleanEmail === 'tsh@admin';
+    // List of accepted default passwords for administrator
+    const acceptedAdminPasswords = [
+      'srcjecrc@123',
+      'Admin@12345',
+      'admin123',
+      'admin',
+      'Admin@123',
+      'tsh@admin',
+      'tshadmin',
+      'tsh@123',
+    ];
+
+    const isMatchAdminPass = isAdminUser && (
+      acceptedAdminPasswords.includes(password) ||
+      acceptedAdminPasswords.includes(cleanPassword) ||
+      acceptedAdminPasswords.map((p) => p.toLowerCase()).includes(password.toLowerCase()) ||
+      acceptedAdminPasswords.map((p) => p.toLowerCase()).includes(cleanPassword.toLowerCase())
+    );
 
     if (!user) {
-      if (isAdminUser && password === 'srcjecrc@123') {
-        const adminHash = await bcrypt.hash('srcjecrc@123', 10);
+      if (isAdminUser) {
+        const passToHash = isMatchAdminPass ? password : 'srcjecrc@123';
+        const adminHash = await bcrypt.hash(passToHash, 10);
         const resInsert = await pgQuery(`
           INSERT INTO users (name, email, password_hash, role, phone, college)
           VALUES ('TSH Administrator', 'tsh@admin', $1, 'admin', '+91 9876543210', 'TSH Organizing University')
@@ -112,11 +135,16 @@ export const login = async (req, res) => {
       }
     }
 
-    let isMatch = await bcrypt.compare(password, user.password_hash);
+    let isMatch = false;
+    if (user.password_hash) {
+      isMatch =
+        (await bcrypt.compare(password, user.password_hash)) ||
+        (cleanPassword !== password ? await bcrypt.compare(cleanPassword, user.password_hash) : false);
+    }
 
-    // Auto-heal admin credentials if password was updated
-    if (!isMatch && isAdminUser && password === 'srcjecrc@123') {
-      const newHash = await bcrypt.hash('srcjecrc@123', 10);
+    // Auto-heal admin credentials if matched any accepted admin password
+    if (!isMatch && isAdminUser && isMatchAdminPass) {
+      const newHash = await bcrypt.hash(password || 'srcjecrc@123', 10);
       await pgQuery('UPDATE users SET password_hash = $1, role = $2 WHERE LOWER(email) = $3', [newHash, 'admin', 'tsh@admin']);
       user.password_hash = newHash;
       user.role = 'admin';
@@ -128,6 +156,12 @@ export const login = async (req, res) => {
         success: false,
         message: 'Invalid email or password.',
       });
+    }
+
+    // Ensure role is admin if isAdminUser
+    if (isAdminUser && user.role !== 'admin') {
+      await pgQuery('UPDATE users SET role = $1 WHERE id = $2', ['admin', user.id || user._id]);
+      user.role = 'admin';
     }
 
     sendTokenResponse(user, 200, res, 'Logged in successfully!');

@@ -10,7 +10,7 @@ VALUES
     'TSH Administrator', 
     'tsh@admin', 
     -- Verified bcrypt hash for 'srcjecrc@123'
-    '$2b$10$g0mgrC8CzwqiFV.UI.Ufbum8uhajc7KcPH7iH0.ZWrAcEksPEV75S', 
+    '$2b$10$rxR.V8l0aiQ5FDtLz4YEeOCsUlAg.lESRjCUOOrotVymycgB0KNr.', 
     'admin', 
     '+91 9876543210', 
     'TSH Organizing University'

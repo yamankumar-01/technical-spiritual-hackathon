@@ -23,8 +23,12 @@ export const LoginPage = () => {
     setError('');
 
     try {
-      await login(email, password);
-      navigate(redirectPath);
+      const data = await login(email, password);
+      if (data?.user?.role === 'admin' && redirectPath === '/') {
+        navigate('/admin');
+      } else {
+        navigate(redirectPath);
+      }
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
