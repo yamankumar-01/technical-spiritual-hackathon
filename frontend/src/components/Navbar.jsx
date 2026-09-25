@@ -61,8 +61,8 @@ export const Navbar = () => {
       >
         {/* Brand Logo with Official TSH Emblem - Balanced and Centered */}
         <Link to="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0 mr-2 lg:mr-4">
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center p-0 shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all overflow-hidden shrink-0">
-            <img src="/tsh-logo.png" alt="TSH Logo" className="w-full h-full object-cover rounded-full" />
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border border-slate-200/90 dark:border-slate-700/80 flex items-center justify-center p-1 shadow-xs group-hover:border-[#2EB88A]/60 group-hover:shadow-md group-hover:scale-105 transition-all overflow-hidden shrink-0">
+            <img src="/tsh-logo.png" alt="TSH Logo" className="w-full h-full object-contain" />
           </div>
           <div className="flex flex-col justify-center">
             <span className="font-extrabold text-sm sm:text-base tracking-tight text-[#12141A] dark:text-white font-['Outfit'] group-hover:text-[#2EB88A] transition-colors leading-none">
