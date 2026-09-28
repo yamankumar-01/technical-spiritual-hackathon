@@ -50,7 +50,7 @@ export const HeroSection = () => {
         {/* TSH Emblem Watermark in Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
           <img
-            src="/tsh-emblem.png"
+            src="/tsh-logo.png"
             alt="TSH Watermark"
             className="w-[340px] sm:w-[500px] lg:w-[620px] max-w-full aspect-square object-contain opacity-[0.07] sm:opacity-[0.08] dark:opacity-[0.06] transition-opacity"
           />
@@ -58,21 +58,6 @@ export const HeroSection = () => {
 
         {/* Hero Content - Centered with Generous Breathing Room */}
         <div className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center">
-          {/* Centered Official TSH Emblem Medallion */}
-          <div className="relative mb-5 sm:mb-6 group">
-            {/* Ambient Cyan/Sky Glow Behind Emblem */}
-            <div className="absolute -inset-2.5 rounded-full bg-gradient-to-r from-sky-400/50 via-cyan-400/40 to-indigo-500/50 blur-xl opacity-75 group-hover:opacity-100 transition duration-500 animate-pulse pointer-events-none" />
-            
-            {/* Medallion Disc */}
-            <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full p-2 sm:p-2.5 bg-white shadow-[0_12px_40px_rgba(14,165,233,0.35)] border-2 border-sky-400/70 hover:border-cyan-300 flex items-center justify-center transition-all duration-300 group-hover:scale-105">
-              <img
-                src="/tsh-emblem.png"
-                alt="Techno Spiritual Hackathon Official Emblem"
-                className="w-full h-full object-contain filter drop-shadow-xs select-none"
-              />
-            </div>
-          </div>
-
           {/* Tag / Badge */}
           <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 text-xs font-semibold shadow-xs border border-sky-200/70 dark:border-sky-800/50 mb-4 sm:mb-5">
             <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
