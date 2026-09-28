@@ -50,9 +50,9 @@ export const HeroSection = () => {
         {/* TSH Emblem Watermark in Background */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
           <img
-            src="/tsh-logo.png"
+            src="/tsh-logo-transparent.png"
             alt="TSH Watermark"
-            className="w-[340px] sm:w-[500px] lg:w-[620px] max-w-full aspect-square object-contain opacity-[0.07] sm:opacity-[0.08] dark:opacity-[0.06] transition-opacity"
+            className="w-[340px] sm:w-[500px] lg:w-[620px] max-w-full aspect-square object-contain opacity-[0.12] dark:opacity-[0.14] transition-opacity"
           />
         </div>
 
