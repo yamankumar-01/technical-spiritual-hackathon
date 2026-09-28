@@ -12,7 +12,7 @@ export const ThemeProvider = ({ children }) => {
     } catch (e) {
       // ignore storage access errors
     }
-    return 'dark'; // Default to dark mode
+    return 'light'; // Default to light mode
   });
 
   useEffect(() => {
