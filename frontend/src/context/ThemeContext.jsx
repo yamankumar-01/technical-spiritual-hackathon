@@ -3,34 +3,44 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  // Website is permanently locked to dark theme
-  const theme = 'dark';
-
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.add('dark');
-    root.classList.remove('light');
-    root.setAttribute('data-theme', 'dark');
+  const [theme, setTheme] = useState(() => {
     try {
-      localStorage.setItem('tsh-theme', 'dark');
+      const saved = localStorage.getItem('tsh-theme');
+      if (saved === 'light' || saved === 'dark') {
+        return saved;
+      }
     } catch (e) {
       // ignore storage access errors
     }
-  }, []);
+    return 'dark'; // Default to dark mode
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    } else {
+      root.classList.remove('dark');
+      root.classList.add('light');
+    }
+    root.setAttribute('data-theme', theme);
+    try {
+      localStorage.setItem('tsh-theme', theme);
+    } catch (e) {
+      // ignore storage access errors
+    }
+  }, [theme]);
 
   const toggleTheme = () => {
-    // Permanent dark mode - no-op to ensure backwards compatibility
-  };
-
-  const setTheme = () => {
-    // Permanent dark mode - no-op
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
   return (
     <ThemeContext.Provider
       value={{
-        theme: 'dark',
-        isDark: true,
+        theme,
+        isDark: theme === 'dark',
         toggleTheme,
         setTheme,
       }}

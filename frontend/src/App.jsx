@@ -5,6 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import ThemeToggleFloating from './components/ThemeToggleFloating';
 
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -87,6 +88,7 @@ function AppContent() {
         </Routes>
       </main>
       <Footer />
+      <ThemeToggleFloating />
     </div>
   </div>
 );

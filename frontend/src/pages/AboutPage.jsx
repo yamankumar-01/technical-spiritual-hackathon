@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Printer, Copy, Check, FileText, Sparkles } from 'lucide-react';
+import { Printer, Copy, Check, FileText, Sun, Moon, Sparkles } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 export const AboutPage = () => {
   const [copied, setCopied] = useState(false);
+  const { isDark, toggleTheme } = useTheme();
 
   const fullTextContent = `Techno Spiritual Hackathon (TSH)
 (Step-by-Step Plan)
@@ -69,6 +71,21 @@ B. Step-by-Step Process
           <span>Official Event Architecture & Operational Plan</span>
         </div>
         <div className="flex items-center gap-2">
+          {/* Quick Light/Dark Mode Switcher */}
+          <button
+            onClick={toggleTheme}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-100 border border-slate-200/90 dark:border-slate-700/80 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300 transition-all shadow-xs cursor-pointer"
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            {isDark ? (
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+            ) : (
+              <Moon className="w-3.5 h-3.5 text-sky-600" />
+            )}
+            <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>
+          </button>
+
           <button
             onClick={handleCopy}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700/80 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300 transition-all shadow-xs cursor-pointer"
