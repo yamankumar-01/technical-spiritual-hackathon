@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Printer, Copy, Check, FileText } from 'lucide-react';
+import { Printer, Copy, Check, FileText, Sparkles } from 'lucide-react';
 
 export const AboutPage = () => {
   const [copied, setCopied] = useState(false);
@@ -61,17 +61,17 @@ B. Step-by-Step Process
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-16 font-sans">
       {/* Top action toolbar (hidden on print) */}
-      <div className="flex items-center justify-between gap-3 mb-4 print:hidden">
-        <div className="flex items-center gap-2 text-xs font-semibold text-[#1E9470] dark:text-[#2EB88A]">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5 print:hidden">
+        <div className="flex items-center gap-2 text-xs font-semibold text-sky-600 dark:text-sky-400">
           <FileText className="w-4 h-4" />
           <span>Official Event Architecture & Operational Plan</span>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={handleCopy}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-[#2EB88A]/50 hover:text-[#1E9470] dark:hover:text-[#2EB88A] transition-all shadow-xs cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700/80 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300 transition-all shadow-xs cursor-pointer"
             title="Copy plan to clipboard"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
@@ -79,7 +79,7 @@ B. Step-by-Step Process
           </button>
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-[#2EB88A]/50 hover:text-[#1E9470] dark:hover:text-[#2EB88A] transition-all shadow-xs cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700/80 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300 transition-all shadow-xs cursor-pointer"
             title="Print or Save as PDF"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -88,21 +88,25 @@ B. Step-by-Step Process
         </div>
       </div>
 
-      {/* Main Page Container with Round Border */}
-      <div className="bg-white dark:bg-[#071510] rounded-[28px] sm:rounded-[36px] border-2 border-slate-200 dark:border-slate-700/80 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] p-6 sm:p-10 md:p-14 transition-colors duration-200">
+      {/* Main Page Container with Round Border & Frosted Cyber-Zen Look */}
+      <div className="bg-white/92 dark:bg-slate-900/85 backdrop-blur-xl rounded-[28px] sm:rounded-[36px] border border-slate-200/90 dark:border-slate-800/80 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.07)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] p-6 sm:p-10 md:p-14 transition-all duration-300">
         
         {/* Document Header */}
         <header className="text-center pb-8 border-b border-slate-200/80 dark:border-slate-800">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#D32F2F] dark:text-[#EF4444] font-['Outfit'] tracking-tight">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-semibold tracking-wider uppercase text-sky-600 dark:text-sky-400 bg-sky-500/10 mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>Official Roadmap 2026</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-sky-600 via-indigo-600 to-amber-500 dark:from-sky-400 dark:via-cyan-300 dark:to-amber-400 bg-clip-text text-transparent font-display tracking-tight">
             Techno Spiritual Hackathon (TSH)
           </h1>
-          <h2 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-200 mt-1 font-['Outfit']">
+          <h2 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-200 mt-1 font-display">
             (Step-by-Step Plan)
           </h2>
         </header>
 
         {/* Document Body */}
-        <div className="pt-8 space-y-8 sm:space-y-10 text-slate-800 dark:text-slate-200 font-['Poppins',sans-serif]">
+        <div className="pt-8 space-y-8 sm:space-y-10 text-slate-800 dark:text-slate-200 font-sans">
           
           {/* Section A */}
           <section className="space-y-3">

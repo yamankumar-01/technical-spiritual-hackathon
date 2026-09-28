@@ -36,18 +36,18 @@ export const ProblemStatementCard = ({ ps, onViewDetails, onSelect, isSelected =
           handleCardClick(e);
         }
       }}
-      className={`group relative flex flex-col justify-between rounded-3xl p-6 cursor-pointer transition-all duration-200 text-left outline-none ${
+      className={`group relative flex flex-col justify-between rounded-3xl p-6 cursor-pointer transition-all duration-300 text-left outline-none backdrop-blur-xl ${
         isFull
-          ? 'bg-slate-100/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-white/5 opacity-60'
+          ? 'bg-slate-100/70 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/60 opacity-60'
           : isSelected
-          ? 'bg-white dark:bg-[#071510] border-2 border-[#2EB88A] shadow-[0_12px_36px_rgba(46,184,138,0.25)] ring-4 ring-[#2EB88A]/20'
-          : 'bg-white/95 dark:bg-[#071510]/95 hover:bg-white dark:hover:bg-[#0a1e17] border border-white/80 dark:border-white/10 hover:border-[#2EB88A]/40 shadow-[0_10px_30px_rgba(18,20,26,0.06)] hover:shadow-[0_14px_38px_rgba(46,184,138,0.12)] hover:-translate-y-1'
+          ? 'bg-white/95 dark:bg-slate-900/90 border-2 border-sky-500 shadow-[0_12px_36px_rgba(14,165,233,0.25)] ring-4 ring-sky-500/20'
+          : 'bg-white/85 dark:bg-slate-900/80 hover:bg-white/95 dark:hover:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800/80 hover:border-sky-500/40 shadow-[0_10px_30px_rgba(15,23,42,0.06)] hover:shadow-[0_14px_38px_rgba(14,165,233,0.14)] hover:-translate-y-1'
       }`}
     >
       <div>
         {/* Top Track & Seat Tag */}
         <div className="flex items-center justify-between gap-2 mb-3.5">
-          <span className="font-mono text-xs font-bold text-[#1E9470] dark:text-[#2EB88A] bg-[#DDF5EB] dark:bg-[#2EB88A]/20 px-3 py-1 rounded-full border border-[#2EB88A]/30">
+          <span className="font-mono text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/50 px-3 py-1 rounded-full border border-sky-200 dark:border-sky-800/60 shadow-xs">
             {ps.code}
           </span>
 
@@ -70,20 +70,20 @@ export const ProblemStatementCard = ({ ps, onViewDetails, onSelect, isSelected =
         </div>
 
         {/* Problem Statement Title */}
-        <h3 className="text-base sm:text-lg font-bold text-[#12141A] dark:text-white font-['Outfit'] leading-snug mb-2.5 min-h-[50px] group-hover:text-[#1E9470] dark:group-hover:text-[#2EB88A] transition-colors">
+        <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-display leading-snug mb-2.5 min-h-[50px] group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
           {ps.title}
         </h3>
 
         {/* Category Pill */}
         <div className="mb-4">
-          <span className="text-xs font-medium text-[#536159] dark:text-slate-300 bg-slate-100 dark:bg-slate-800/80 px-3 py-1 rounded-full border border-slate-200/80 dark:border-slate-700/60">
+          <span className="text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800/80 px-3 py-1 rounded-full border border-slate-200/80 dark:border-slate-700/60">
             {ps.category || 'Techno-Spiritual Track'}
           </span>
         </div>
 
         {/* Mini Seat Progress Bar */}
         <div className="space-y-1 mb-2">
-          <div className="flex justify-between text-[11px] font-medium text-[#536159] dark:text-slate-400">
+          <div className="flex justify-between text-[11px] font-medium text-slate-500 dark:text-slate-400">
             <span>Seat Allocation</span>
             <span>{isFull ? '100% Booked' : `${totalSeats - seatsLeft} / ${totalSeats} Booked`}</span>
           </div>
@@ -97,8 +97,8 @@ export const ProblemStatementCard = ({ ps, onViewDetails, onSelect, isSelected =
       </div>
 
       {/* Footer info: Click anywhere hint or Select button */}
-      <div className="pt-3 border-t border-slate-100 dark:border-white/10 flex items-center justify-between text-xs text-[#536159] dark:text-slate-400">
-        <span className="flex items-center gap-1 group-hover:text-[#1E9470] dark:group-hover:text-[#2EB88A] transition-colors">
+      <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+        <span className="flex items-center gap-1 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
           <span>Click box to view full details</span>
           <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
         </span>
@@ -114,8 +114,8 @@ export const ProblemStatementCard = ({ ps, onViewDetails, onSelect, isSelected =
               isFull
                 ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed'
                 : isSelected
-                ? 'bg-emerald-500 text-white font-extrabold shadow-[0_4px_12px_rgba(16,185,129,0.3)]'
-                : 'bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:brightness-105 text-white font-bold shadow-[0_4px_12px_rgba(46,184,138,0.3)]'
+                ? 'bg-sky-500 text-white font-extrabold shadow-[0_4px_12px_rgba(14,165,233,0.35)]'
+                : 'bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold shadow-[0_4px_14px_rgba(14,165,233,0.3)]'
             }`}
           >
             {isSelected ? (

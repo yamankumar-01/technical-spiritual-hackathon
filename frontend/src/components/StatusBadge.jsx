@@ -6,18 +6,18 @@ export const StatusBadge = ({ status, className = '' }) => {
     case 'finalized':
       return (
         <span
-          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#EBF8F2] dark:bg-[#2EB88A]/15 text-[#1E9470] dark:text-[#2EB88A] border border-[#2EB88A]/30 shadow-xs whitespace-nowrap ${className}`}
+          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-700/60 shadow-xs whitespace-nowrap ${className}`}
         >
-          <Sparkles className="w-3 h-3 text-[#1E9470] dark:text-[#2EB88A] shrink-0" />
+          <Sparkles className="w-3 h-3 text-sky-600 dark:text-sky-400 shrink-0" />
           Finalized
         </span>
       );
     case 'confirmed':
       return (
         <span
-          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#DDF5EB] dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-700/50 shadow-xs whitespace-nowrap ${className}`}
+          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/50 shadow-xs whitespace-nowrap ${className}`}
         >
-          <CheckCircle2 className="w-3 h-3 text-teal-600 dark:text-teal-400 shrink-0" />
+          <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
           Confirmed ✅
         </span>
       );

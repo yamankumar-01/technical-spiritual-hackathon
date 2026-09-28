@@ -704,14 +704,14 @@ export const AdminDashboardPage = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/80 dark:border-slate-800">
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-[#DDF5EB] dark:bg-[#2EB88A]/15 text-[#1E9470] dark:text-[#2EB88A] tracking-wide">
-            <ShieldCheck className="w-4 h-4" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold bg-sky-50 dark:bg-sky-950/60 border border-sky-300 dark:border-sky-800/60 text-sky-600 dark:text-sky-400 tracking-wide shadow-xs">
+            <ShieldCheck className="w-4 h-4 text-sky-500" />
             <span>ADMINISTRATOR CONTROL HUB</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#12141A] dark:text-white font-['Outfit'] tracking-tight mt-1.5">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white font-display tracking-tight mt-1.5">
             TSH Registrations & Seat Allocations
           </h1>
-          <p className="text-sm text-[#536159] dark:text-slate-400 mt-1">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Review manual payments, approve teams, release seats, and manage allocations.
           </p>
         </div>
@@ -719,7 +719,7 @@ export const AdminDashboardPage = () => {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={handleExportExcel}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[#2EB88A] hover:bg-[#1E9470] text-white transition-all shadow-sm hover:shadow-md cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white transition-all shadow-[0_4px_14px_rgba(14,165,233,0.3)] cursor-pointer"
             title="Download full offline master table (.xlsx)"
           >
             <Download className="w-4 h-4" />
@@ -728,10 +728,10 @@ export const AdminDashboardPage = () => {
 
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-[#12141A] dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-white/90 dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer shadow-xs"
             title="Download offline CSV format"
           >
-            <FileText className="w-4 h-4 text-[#2EB88A]" />
+            <FileText className="w-4 h-4 text-sky-500" />
             <span>CSV</span>
           </button>
 
@@ -741,9 +741,9 @@ export const AdminDashboardPage = () => {
               fetchPSSeats();
               fetchQueries();
             }}
-            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-[#12141A] dark:text-slate-200 border border-slate-200 dark:border-slate-800 hover:border-[#2EB88A] transition-all shadow-xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-white/90 dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 hover:border-sky-400 transition-all shadow-xs cursor-pointer"
           >
-            <RefreshCw className="w-4 h-4 text-[#2EB88A]" />
+            <RefreshCw className="w-4 h-4 text-sky-500" />
             <span>Refresh</span>
           </button>
         </div>
@@ -751,9 +751,9 @@ export const AdminDashboardPage = () => {
 
       {/* Notifications */}
       {actionSuccessMsg && (
-        <div className="p-4 rounded-2xl bg-[#DDF5EB] dark:bg-emerald-950/30 border border-[#2EB88A]/30 text-[#1E9470] dark:text-emerald-300 text-sm font-medium flex items-center justify-between shadow-xs">
+        <div className="p-4 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-800/60 text-sky-700 dark:text-sky-300 text-sm font-medium flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-[#2EB88A] shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-sky-500 shrink-0" />
             <span>{actionSuccessMsg}</span>
           </div>
           <button onClick={() => setActionSuccessMsg('')} className="text-xs font-bold hover:underline cursor-pointer">
@@ -1010,15 +1010,15 @@ export const AdminDashboardPage = () => {
                     <tr
                       key={t._id}
                       onClick={() => setInspectTeam(t)}
-                      className="hover:bg-[#DDF5EB]/30 dark:hover:bg-[#2EB88A]/10 transition-colors cursor-pointer group"
+                      className="hover:bg-sky-50/50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
                       title="Click row to inspect team details"
                     >
-                      <td className="px-2.5 py-2 text-center font-mono font-bold text-xs text-[#536159] dark:text-slate-400 whitespace-nowrap">
+                      <td className="px-2.5 py-2 text-center font-mono font-bold text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
                         {idx + 1}
                       </td>
                       <td className="px-3 py-2 min-w-[125px]">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="font-mono font-bold text-xs text-[#1E9470] dark:text-[#2EB88A] whitespace-nowrap">
+                          <span className="font-mono font-bold text-xs text-sky-600 dark:text-sky-400 whitespace-nowrap">
                             {t.teamCode}
                           </span>
                           {t.registrationNumber && (
@@ -1028,26 +1028,26 @@ export const AdminDashboardPage = () => {
                             </span>
                           )}
                         </div>
-                        <div className="font-bold text-[#12141A] dark:text-white text-xs leading-tight line-clamp-1 mt-0.5" title={t.teamName}>
+                        <div className="font-bold text-slate-900 dark:text-white text-xs leading-tight line-clamp-1 mt-0.5" title={t.teamName}>
                           {t.teamName}
                         </div>
                       </td>
                       <td className="px-3 py-2 min-w-[170px] max-w-[240px]">
-                        <div className="font-semibold text-xs text-[#12141A] dark:text-slate-200 leading-snug line-clamp-2" title={t.problemStatement?.title}>
+                        <div className="font-semibold text-xs text-slate-900 dark:text-slate-200 leading-snug line-clamp-2" title={t.problemStatement?.title}>
                           {t.problemStatement?.title || 'Unknown PS'}
                         </div>
-                        <div className="text-[10px] text-[#536159] dark:text-slate-400 font-mono mt-0.5 font-medium">
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5 font-medium">
                           {t.problemStatement?.code}
                         </div>
                       </td>
                       <td className="px-3 py-2 min-w-[130px]">
-                        <div className="font-semibold text-xs text-[#12141A] dark:text-white leading-tight truncate max-w-[140px]" title={t.leader?.name}>
+                        <div className="font-semibold text-xs text-slate-900 dark:text-white leading-tight truncate max-w-[140px]" title={t.leader?.name}>
                           {t.leader?.name}
                         </div>
-                        <div className="text-[10px] text-[#536159] dark:text-slate-400 truncate max-w-[140px] leading-tight mt-0.5" title={t.leader?.email}>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[140px] leading-tight mt-0.5" title={t.leader?.email}>
                           {t.leader?.email}
                         </div>
-                        <div className="text-[10px] text-[#536159] dark:text-slate-400 font-mono mt-0.5">
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
                           {t.leader?.phone}
                         </div>
                       </td>
@@ -1055,7 +1055,7 @@ export const AdminDashboardPage = () => {
                         <div>
                           <StatusBadge status={t.status} />
                           <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[10px] font-semibold text-[#536159] dark:text-slate-400 font-mono">
+                            <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 font-mono">
                               Fee: ₹{t.payment?.amount || 400}
                             </span>
                             {t.payment?.manualProofUrl && (
@@ -1065,7 +1065,7 @@ export const AdminDashboardPage = () => {
                                   e.stopPropagation();
                                   handleViewSlip(t.payment.manualProofUrl);
                                 }}
-                                className="inline-flex items-center gap-1 text-[9.5px] font-semibold text-[#1E9470] dark:text-[#2EB88A] hover:underline bg-[#DDF5EB] dark:bg-[#2EB88A]/20 px-1.5 py-0.5 rounded transition-colors cursor-pointer"
+                                className="inline-flex items-center gap-1 text-[9.5px] font-semibold text-sky-600 dark:text-sky-400 hover:underline bg-sky-50 dark:bg-sky-950/60 px-1.5 py-0.5 rounded transition-colors cursor-pointer"
                               >
                                 <ExternalLink className="w-2.5 h-2.5" />
                                 Slip
@@ -1079,8 +1079,8 @@ export const AdminDashboardPage = () => {
                         {t.venue && (t.venue.roomNumber || t.venue.timeSlot) ? (
                           <div className="space-y-0.5">
                             {t.venue.roomNumber && (
-                              <div className="font-bold text-xs text-[#12141A] dark:text-white flex items-center gap-1.5">
-                                <span className="p-0.5 rounded bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A]">
+                              <div className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+                                <span className="p-0.5 rounded bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400">
                                   <MapPin className="w-3 h-3 shrink-0" />
                                 </span>
                                 <span className="truncate max-w-[140px]" title={t.venue.roomNumber}>
@@ -1089,7 +1089,7 @@ export const AdminDashboardPage = () => {
                               </div>
                             )}
                             {t.venue.timeSlot && (
-                              <div className="text-[10px] text-[#536159] dark:text-slate-400 font-medium flex items-center gap-1">
+                              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
                                 <Clock className="w-2.5 h-2.5 shrink-0 text-slate-400" />
                                 <span className="truncate max-w-[140px]" title={t.venue.timeSlot}>
                                   {t.venue.timeSlot}
@@ -1113,7 +1113,7 @@ export const AdminDashboardPage = () => {
                                   handleApprove(t._id);
                                 }}
                                 title="Approve upon payment"
-                                className="px-2.5 py-1 min-w-[56px] text-center rounded-lg text-xs font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:shadow-md hover:shadow-[#2EB88A]/30 transition-all cursor-pointer whitespace-nowrap"
+                                className="px-2.5 py-1 min-w-[56px] text-center rounded-lg text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-xs transition-all cursor-pointer whitespace-nowrap"
                               >
                                 Approve
                               </button>
@@ -1136,7 +1136,7 @@ export const AdminDashboardPage = () => {
                                 e.stopPropagation();
                                 handleApprove(t._id);
                               }}
-                              className="px-3 py-1 min-w-[60px] text-center rounded-lg text-xs font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:shadow-md hover:shadow-[#2EB88A]/30 shadow-2xs transition-all cursor-pointer whitespace-nowrap"
+                              className="px-3 py-1 min-w-[60px] text-center rounded-lg text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-xs transition-all cursor-pointer whitespace-nowrap"
                             >
                               Finalize
                             </button>
@@ -1159,8 +1159,8 @@ export const AdminDashboardPage = () => {
                               }}
                               className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 ${
                                 t.venue?.roomNumber || t.venue?.timeSlot
-                                  ? 'bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A] border border-[#2EB88A]/40 hover:bg-[#cbf1e1] dark:hover:bg-[#2EB88A]/30 shadow-2xs'
-                                  : 'text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:shadow-md hover:shadow-[#2EB88A]/30 shadow-2xs'
+                                  ? 'bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border border-sky-300 dark:border-sky-800 hover:bg-sky-100 dark:hover:bg-sky-900/40 shadow-2xs'
+                                  : 'text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-2xs'
                               }`}
                               title={t.venue?.roomNumber || t.venue?.timeSlot ? 'Update allocated venue' : 'Allocate venue to this team'}
                             >
@@ -1189,16 +1189,16 @@ export const AdminDashboardPage = () => {
       {activeTab === 'capacity_breakdown' && (
         <div className="space-y-5">
           {/* Capacity Logic Info Header */}
-          <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#DDF5EB]/70 dark:bg-[#2EB88A]/10 border border-[#2EB88A]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-300 dark:border-sky-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="flex h-2.5 w-2.5 rounded-full bg-[#2EB88A] animate-pulse" />
-                <h3 className="text-sm sm:text-base font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
+                <span className="flex h-2.5 w-2.5 rounded-full bg-sky-500 animate-pulse" />
+                <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white font-display">
                   Real-time Problem Statement Capacity Matrix
                 </h3>
               </div>
-              <p className="text-xs text-[#536159] dark:text-slate-300">
-                Formula: <strong className="text-[#1E9470] dark:text-[#2EB88A]">Occupied</strong> = Active Holds (15m) + Payment Pending + Confirmed. <strong className="text-[#1E9470] dark:text-[#2EB88A]">Available</strong> = Capacity (5) - Occupied.
+              <p className="text-xs text-slate-600 dark:text-slate-300">
+                Formula: <strong className="text-sky-600 dark:text-sky-400">Occupied</strong> = Active Holds (15m) + Payment Pending + Confirmed. <strong className="text-sky-600 dark:text-sky-400">Available</strong> = Capacity (5) - Occupied.
               </p>
             </div>
 
@@ -1206,7 +1206,7 @@ export const AdminDashboardPage = () => {
               <button
                 type="button"
                 onClick={handleExportExcel}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#2EB88A] to-[#1E9470] text-white hover:from-[#1E9470] hover:to-[#16785a] transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 text-white hover:from-sky-400 hover:to-indigo-500 transition-all cursor-pointer shadow-xs"
                 title="Download complete registration records & capacity matrix as Microsoft Excel (.xlsx)"
               >
                 <Download className="w-3.5 h-3.5" />
@@ -1215,15 +1215,15 @@ export const AdminDashboardPage = () => {
               <button
                 type="button"
                 onClick={handleExportCSV}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-[#2EB88A]/40 text-[#1E9470] dark:text-[#2EB88A] hover:bg-slate-50 dark:hover:bg-slate-800 transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-sky-300 dark:border-sky-800 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-800 transition-all cursor-pointer shadow-xs"
                 title="Download CSV format"
               >
-                <Download className="w-3.5 h-3.5 text-[#2EB88A]" />
+                <Download className="w-3.5 h-3.5 text-sky-500" />
                 <span>CSV</span>
               </button>
               <button
                 onClick={fetchCapacityBreakdown}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-[#2EB88A]/40 text-[#1E9470] dark:text-[#2EB88A] hover:bg-slate-50 dark:hover:bg-slate-800 transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-sky-300 dark:border-sky-800 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-800 transition-all cursor-pointer shadow-xs"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loadingCapacity ? 'animate-spin' : ''}`} />
                 <span>Refresh Matrix</span>
@@ -1239,15 +1239,15 @@ export const AdminDashboardPage = () => {
               placeholder="Filter by PS code, title, category..."
               value={capacitySearch}
               onChange={(e) => setCapacitySearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-[#12141A] dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-[#2EB88A] focus:ring-2 focus:ring-[#2EB88A]/20 transition-all shadow-xs"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all shadow-xs"
             />
           </div>
 
           {/* Capacity Breakdown Table */}
-          <div className="overflow-x-auto rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-[#071510]/95 shadow-sm">
+          <div className="overflow-x-auto rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 shadow-sm">
             <table className="w-full text-left border-collapse min-w-[1100px]">
               <thead>
-                <tr className="border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 text-[#536159] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">
+                <tr className="border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-wider">
                   <th className="px-4 sm:px-5 py-3.5 min-w-[120px] whitespace-nowrap">PS Code</th>
                   <th className="px-4 sm:px-5 py-3.5 min-w-[260px] max-w-[340px]">Title & Track</th>
                   <th className="px-4 sm:px-5 py-3.5 text-center min-w-[90px] whitespace-nowrap">Capacity</th>
@@ -1262,9 +1262,9 @@ export const AdminDashboardPage = () => {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
                 {loadingCapacity ? (
                   <tr>
-                    <td colSpan={9} className="px-5 py-12 text-center text-[#536159] dark:text-slate-400">
+                    <td colSpan={9} className="px-5 py-12 text-center text-slate-500 dark:text-slate-400">
                       <div className="flex flex-col items-center justify-center space-y-2">
-                        <RefreshCw className="w-6 h-6 animate-spin text-[#2EB88A]" />
+                        <RefreshCw className="w-6 h-6 animate-spin text-sky-500" />
                         <span>Loading capacity breakdown...</span>
                       </div>
                     </td>
@@ -1284,7 +1284,7 @@ export const AdminDashboardPage = () => {
                     if (filtered.length === 0) {
                       return (
                         <tr>
-                          <td colSpan={9} className="px-5 py-10 text-center text-[#536159] dark:text-slate-400">
+                          <td colSpan={9} className="px-5 py-10 text-center text-slate-500 dark:text-slate-400">
                             No problem statements found matching "{capacitySearch}".
                           </td>
                         </tr>
@@ -1294,21 +1294,21 @@ export const AdminDashboardPage = () => {
                     return filtered.map((item) => {
                       const isFull = item.available <= 0;
                       return (
-                        <tr key={item.problemId} className="hover:bg-[#DDF5EB]/20 dark:hover:bg-[#2EB88A]/5 transition-colors">
-                          <td className="px-4 sm:px-5 py-3.5 font-mono font-bold text-xs text-[#1E9470] dark:text-[#2EB88A] whitespace-nowrap">
-                            <span className="px-2.5 py-1 rounded-lg bg-[#DDF5EB] dark:bg-[#2EB88A]/15 border border-[#2EB88A]/30">
+                        <tr key={item.problemId} className="hover:bg-sky-50/30 dark:hover:bg-slate-800/40 transition-colors">
+                          <td className="px-4 sm:px-5 py-3.5 font-mono font-bold text-xs text-sky-600 dark:text-sky-400 whitespace-nowrap">
+                            <span className="px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-sky-950/60 border border-sky-300 dark:border-sky-800">
                               {item.code}
                             </span>
                           </td>
                           <td className="px-4 sm:px-5 py-3.5 min-w-[260px] max-w-[340px]">
-                            <div className="font-bold text-sm text-[#12141A] dark:text-white leading-snug break-words">
+                            <div className="font-bold text-sm text-slate-900 dark:text-white leading-snug break-words">
                               {item.title}
                             </div>
-                            <div className="text-xs text-[#536159] dark:text-slate-400 mt-1 font-medium">
+                            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
                               {item.category}
                             </div>
                           </td>
-                          <td className="px-5 py-4 text-center font-bold text-sm text-[#12141A] dark:text-slate-200">
+                          <td className="px-5 py-4 text-center font-bold text-sm text-slate-900 dark:text-slate-200">
                             {item.capacity || 5}
                           </td>
                           <td className="px-5 py-4 text-center">
@@ -1366,7 +1366,7 @@ export const AdminDashboardPage = () => {
                                 };
                                 handleOpenPSTeams(psObj);
                               }}
-                              className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-[#12141A] dark:text-slate-200 hover:bg-[#DDF5EB] hover:text-[#1E9470] dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs"
+                              className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-sky-50 hover:text-sky-600 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs"
                             >
                               View Teams
                             </button>
@@ -1385,12 +1385,12 @@ export const AdminDashboardPage = () => {
       {/* TAB 3: PROBLEM STATEMENT SEATS MANAGER */}
       {activeTab === 'ps_seats' && (
         <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[#DDF5EB]/60 dark:bg-[#2EB88A]/10 border border-[#2EB88A]/30 text-xs sm:text-sm text-[#1E9470] dark:text-[#2EB88A]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-300 dark:border-sky-800/60 text-xs sm:text-sm text-sky-700 dark:text-sky-300">
             <div className="flex items-center gap-2 font-medium">
-              <span className="flex h-2.5 w-2.5 rounded-full bg-[#2EB88A] animate-pulse" />
+              <span className="flex h-2.5 w-2.5 rounded-full bg-sky-500 animate-pulse" />
               <span>Click any Problem Statement card below to view registered teams or delete registrations to free seats.</span>
             </div>
-            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-white dark:bg-slate-900 border border-[#2EB88A]/30">
+            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-white dark:bg-slate-900 border border-sky-300 dark:border-sky-800/60">
               {problemStatements.length} Problem Statements Active
             </span>
           </div>
@@ -1402,26 +1402,26 @@ export const AdminDashboardPage = () => {
                 <div
                   key={ps._id}
                   onClick={() => handleOpenPSTeams(ps)}
-                  className="group p-6 rounded-2xl bg-white/95 dark:bg-[#071510]/95 border border-slate-200/80 dark:border-white/10 shadow-sm space-y-4 hover:border-[#2EB88A] hover:shadow-lg hover:shadow-[#2EB88A]/10 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex flex-col justify-between"
+                  className="group p-6 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4 hover:border-sky-400 hover:shadow-lg hover:shadow-sky-500/10 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex flex-col justify-between"
                   title="Click to view registered teams"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-bold text-[#1E9470] dark:text-[#2EB88A] bg-[#DDF5EB] dark:bg-[#2EB88A]/15 px-3 py-1 rounded-full border border-[#2EB88A]/20">
+                      <span className="font-mono text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-3 py-1 rounded-full border border-sky-200 dark:border-sky-800/60">
                         {ps.code}
                       </span>
                       <span
                         className={`text-xs font-bold px-3 py-1 rounded-full border ${
                           ps.seatsAvailable <= 0
                             ? 'text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40'
-                            : 'text-[#1E9470] dark:text-[#2EB88A] border-[#2EB88A]/30 bg-[#EBF8F2] dark:bg-[#2EB88A]/15'
+                            : 'text-sky-600 dark:text-sky-400 border-sky-300 dark:border-sky-800/60 bg-sky-50 dark:bg-sky-950/60'
                         }`}
                       >
                         {ps.seatsAvailable <= 0 ? '0/5 Seats (FULL)' : `${ps.seatsAvailable}/5 Seats Available`}
                       </span>
                     </div>
 
-                    <h3 className="text-base font-bold text-[#12141A] dark:text-white font-['Outfit'] line-clamp-2 group-hover:text-[#1E9470] dark:group-hover:text-[#2EB88A] transition-colors">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white font-display line-clamp-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
                       {ps.title}
                     </h3>
 
@@ -1477,18 +1477,18 @@ export const AdminDashboardPage = () => {
                   </tr>
                 ) : (
                   queries.map((q) => (
-                    <tr key={q._id} className="hover:bg-[#DDF5EB]/20 dark:hover:bg-[#2EB88A]/5 transition-colors">
+                    <tr key={q._id} className="hover:bg-sky-50/30 dark:hover:bg-slate-800/40 transition-colors">
                       <td className="px-5 py-4">
-                        <div className="font-bold text-sm text-[#12141A] dark:text-white">{q.name}</div>
-                        <div className="text-xs text-[#536159] dark:text-slate-400">{q.email}</div>
+                        <div className="font-bold text-sm text-slate-900 dark:text-white">{q.name}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">{q.email}</div>
                       </td>
-                      <td className="px-5 py-4 font-bold text-sm text-[#1E9470] dark:text-[#2EB88A]">
+                      <td className="px-5 py-4 font-bold text-sm text-sky-600 dark:text-sky-400 font-display">
                         {q.subject}
                       </td>
-                      <td className="px-5 py-4 max-w-md text-sm text-[#12141A] dark:text-slate-200">
+                      <td className="px-5 py-4 max-w-md text-sm text-slate-900 dark:text-slate-200">
                         {q.message}
                       </td>
-                      <td className="px-5 py-4 text-xs font-mono text-[#536159] dark:text-slate-400">
+                      <td className="px-5 py-4 text-xs font-mono text-slate-500 dark:text-slate-400">
                         {new Date(q.createdAt).toLocaleString()}
                       </td>
                     </tr>
@@ -1502,12 +1502,12 @@ export const AdminDashboardPage = () => {
 
       {/* Team Inspection Modal */}
       {inspectTeam && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
-          <div className="w-full max-w-2xl bg-white dark:bg-[#071510] border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl overflow-y-auto max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
+          <div className="w-full max-w-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div className="flex items-center justify-between pb-4 border-b border-slate-200/80 dark:border-slate-800">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-[#1E9470] dark:text-[#2EB88A] font-bold bg-[#DDF5EB] dark:bg-[#2EB88A]/15 px-3 py-1 rounded-full">
+                  <span className="text-xs font-mono text-sky-600 dark:text-sky-400 font-bold bg-sky-50 dark:bg-sky-950/60 px-3 py-1 rounded-full border border-sky-300 dark:border-sky-800/60">
                     {inspectTeam.teamCode}
                   </span>
                   {inspectTeam.registrationNumber ? (
@@ -1521,7 +1521,7 @@ export const AdminDashboardPage = () => {
                     </span>
                   )}
                 </div>
-                <h3 className="text-xl sm:text-2xl font-extrabold text-[#12141A] dark:text-white font-['Outfit'] mt-1">
+                <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-display mt-1">
                   {inspectTeam.teamName}
                 </h3>
               </div>
@@ -1530,37 +1530,37 @@ export const AdminDashboardPage = () => {
 
             {/* Problem Statement */}
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#536159] dark:text-slate-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Chosen Problem Statement
               </span>
-              <p className="text-base font-bold text-[#12141A] dark:text-white">
+              <p className="text-base font-bold text-slate-900 dark:text-white font-display">
                 {inspectTeam.problemStatement?.title}
               </p>
-              <p className="text-xs font-mono text-[#536159] dark:text-slate-400">
+              <p className="text-xs font-mono text-slate-500 dark:text-slate-400">
                 Code: {inspectTeam.problemStatement?.code}
               </p>
             </div>
 
             {/* Leader Details */}
-            <div className="p-4 rounded-2xl bg-[#EBF8F2] dark:bg-[#2EB88A]/10 border border-[#2EB88A]/30 space-y-2">
-              <h4 className="text-xs font-bold uppercase text-[#1E9470] dark:text-[#2EB88A]">
+            <div className="p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-300 dark:border-sky-800/60 space-y-2">
+              <h4 className="text-xs font-bold uppercase text-sky-600 dark:text-sky-400">
                 Team Leader
               </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-[#12141A] dark:text-slate-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-slate-900 dark:text-slate-200">
                 <div>
-                  <span className="text-[#536159] dark:text-slate-400 font-semibold">Name:</span>{' '}
+                  <span className="text-slate-500 dark:text-slate-400 font-semibold">Name:</span>{' '}
                   {inspectTeam.leader?.name}
                 </div>
                 <div>
-                  <span className="text-[#536159] dark:text-slate-400 font-semibold">Email:</span>{' '}
+                  <span className="text-slate-500 dark:text-slate-400 font-semibold">Email:</span>{' '}
                   {inspectTeam.leader?.email}
                 </div>
                 <div>
-                  <span className="text-[#536159] dark:text-slate-400 font-semibold">Phone:</span>{' '}
+                  <span className="text-slate-500 dark:text-slate-400 font-semibold">Phone:</span>{' '}
                   {inspectTeam.leader?.phone}
                 </div>
                 <div>
-                  <span className="text-[#536159] dark:text-slate-400 font-semibold">Branch & Year:</span>{' '}
+                  <span className="text-slate-500 dark:text-slate-400 font-semibold">Branch & Year:</span>{' '}
                   {inspectTeam.leader?.branch} • {inspectTeam.leader?.year}
                 </div>
               </div>
@@ -1568,7 +1568,7 @@ export const AdminDashboardPage = () => {
 
             {/* 3 Members */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#536159] dark:text-slate-400">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Team Members (3)
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1577,10 +1577,10 @@ export const AdminDashboardPage = () => {
                     key={i}
                     className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 text-xs space-y-1"
                   >
-                    <p className="font-bold text-sm text-[#12141A] dark:text-white break-words">{m.name}</p>
-                    <p className="text-[#536159] dark:text-slate-400 break-all text-[11px]">{m.email}</p>
-                    <p className="text-[#536159] dark:text-slate-400 font-mono">{m.phone}</p>
-                    <p className="text-[#536159] dark:text-slate-400">
+                    <p className="font-bold text-sm text-slate-900 dark:text-white break-words">{m.name}</p>
+                    <p className="text-slate-500 dark:text-slate-400 break-all text-[11px]">{m.email}</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-mono">{m.phone}</p>
+                    <p className="text-slate-500 dark:text-slate-400">
                       {m.branch} • {m.year}
                     </p>
                   </div>
@@ -1590,10 +1590,10 @@ export const AdminDashboardPage = () => {
 
             {/* Payment Details */}
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-2">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#1E9470] dark:text-[#2EB88A]">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
                 Registration Fee & SRC Verification
               </h4>
-              <div className="text-sm text-[#12141A] dark:text-slate-200 space-y-1.5">
+              <div className="text-sm text-slate-900 dark:text-slate-200 space-y-1.5">
                 <p>
                   Collection Mode: <strong>Student Resource Center (SRC) In-Person Desk</strong>
                 </p>
@@ -1613,7 +1613,7 @@ export const AdminDashboardPage = () => {
                     <button
                       type="button"
                       onClick={() => handleViewSlip(inspectTeam.payment.manualProofUrl)}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A] hover:bg-[#cbf1e1] text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 hover:bg-sky-100 text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer border border-sky-300 dark:border-sky-800"
                     >
                       <ExternalLink className="w-4 h-4" />
                       View Uploaded Payment Slip
@@ -1626,7 +1626,7 @@ export const AdminDashboardPage = () => {
             {/* Venue Allocation Details */}
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-2">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#1E9470] dark:text-[#2EB88A] flex items-center gap-1.5">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5" />
                   <span>Venue Allocation</span>
                 </h4>
@@ -1634,7 +1634,7 @@ export const AdminDashboardPage = () => {
                   <button
                     type="button"
                     onClick={() => handleOpenVenueModal(inspectTeam)}
-                    className="text-xs font-bold text-[#1E9470] dark:text-[#2EB88A] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <MapPin className="w-3 h-3" />
                     <span>{inspectTeam.venue?.roomNumber || inspectTeam.venue?.timeSlot ? 'Edit Venue' : 'Allocate Venue'}</span>
@@ -1725,27 +1725,27 @@ export const AdminDashboardPage = () => {
 
       {/* Problem Statement Registered Teams Modal */}
       {selectedPSForTeams && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/65 backdrop-blur-sm">
-          <div className="w-full max-w-4xl bg-white dark:bg-[#071510] border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl overflow-y-auto max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
+          <div className="w-full max-w-4xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl overflow-y-auto max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800">
               <div className="space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <span className="text-xs font-mono text-[#1E9470] dark:text-[#2EB88A] font-bold bg-[#DDF5EB] dark:bg-[#2EB88A]/15 px-3 py-1 rounded-full border border-[#2EB88A]/20">
+                  <span className="text-xs font-mono text-sky-600 dark:text-sky-400 font-bold bg-sky-50 dark:bg-sky-950/60 px-3 py-1 rounded-full border border-sky-300 dark:border-sky-800/60">
                     {selectedPSForTeams.code}
                   </span>
                   <span
                     className={`text-xs font-bold px-3 py-1 rounded-full border ${
                       selectedPSForTeams.seatsAvailable <= 0
                         ? 'text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40'
-                        : 'text-[#1E9470] dark:text-[#2EB88A] border-[#2EB88A]/30 bg-[#EBF8F2] dark:bg-[#2EB88A]/15'
+                        : 'text-sky-600 dark:text-sky-400 border-sky-300 dark:border-sky-800/60 bg-sky-50 dark:bg-sky-950/60'
                     }`}
                   >
                     {selectedPSForTeams.seatsAvailable <= 0
                       ? '0/5 Seats Available (FULL)'
                       : `${selectedPSForTeams.seatsAvailable}/5 Seats Available`}
                   </span>
-                  <span className="text-xs font-semibold text-[#536159] dark:text-slate-400">
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                     ({Math.max(0, 5 - (selectedPSForTeams.seatsAvailable || 0))} of 5 Allocated)
                   </span>
                 </div>
@@ -1773,26 +1773,26 @@ export const AdminDashboardPage = () => {
 
             {/* Content: Loading vs Empty vs Team List */}
             {loadingPSTeams ? (
-              <div className="py-14 flex flex-col items-center justify-center space-y-3 text-[#536159] dark:text-slate-400">
-                <RefreshCw className="w-8 h-8 animate-spin text-[#2EB88A]" />
+              <div className="py-14 flex flex-col items-center justify-center space-y-3 text-slate-500 dark:text-slate-400">
+                <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
                 <p className="text-sm font-medium">Fetching registered teams for {selectedPSForTeams.code}...</p>
               </div>
             ) : psTeams.length === 0 ? (
               <div className="py-12 px-6 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800 text-center space-y-3">
-                <div className="w-14 h-14 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/15 border border-[#2EB88A]/20 flex items-center justify-center mx-auto text-[#1E9470] dark:text-[#2EB88A]">
+                <div className="w-14 h-14 rounded-full bg-sky-50 dark:bg-sky-950/60 border border-sky-300 dark:border-sky-800/60 flex items-center justify-center mx-auto text-sky-600 dark:text-sky-400">
                   <Users className="w-7 h-7" />
                 </div>
-                <h4 className="text-lg font-bold text-[#12141A] dark:text-white font-['Outfit']">
+                <h4 className="text-lg font-bold text-slate-900 dark:text-white font-display">
                   No Teams Registered Yet
                 </h4>
-                <p className="text-sm text-[#536159] dark:text-slate-400 max-w-md mx-auto">
+                <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
                   There are currently no teams registered under problem statement{' '}
-                  <strong className="text-[#12141A] dark:text-white">{selectedPSForTeams.code}</strong>. All 5 seats are completely open and available.
+                  <strong className="text-slate-900 dark:text-white">{selectedPSForTeams.code}</strong>. All 5 seats are completely open and available.
                 </p>
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center justify-between text-xs font-bold text-[#536159] dark:text-slate-400 uppercase tracking-wider px-1">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">
                   <span>Registered Teams ({psTeams.length})</span>
                   <span>Seats: {selectedPSForTeams.seatsAvailable}/5 Available</span>
                 </div>
@@ -1801,15 +1801,15 @@ export const AdminDashboardPage = () => {
                   {psTeams.map((team) => (
                     <div
                       key={team._id}
-                      className="p-5 sm:p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-4 hover:border-[#2EB88A]/40 transition-colors"
+                      className="p-5 sm:p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-4 hover:border-sky-400/40 transition-colors"
                     >
                       {/* Team Header */}
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/60 dark:border-slate-800">
                         <div className="flex items-center gap-3">
-                          <span className="font-mono text-xs font-bold text-[#1E9470] dark:text-[#2EB88A] bg-[#DDF5EB] dark:bg-[#2EB88A]/20 px-3 py-1 rounded-full border border-[#2EB88A]/20">
+                          <span className="font-mono text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-3 py-1 rounded-full border border-sky-300 dark:border-sky-800/60">
                             {team.teamCode}
                           </span>
-                          <h4 className="text-base sm:text-lg font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
+                          <h4 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white font-display">
                             {team.teamName}
                           </h4>
                           <StatusBadge status={team.status} />
@@ -1829,7 +1829,7 @@ export const AdminDashboardPage = () => {
                       {/* Team Leader & Details */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
                         <div className="p-3.5 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 space-y-1">
-                          <span className="text-xs font-bold uppercase tracking-wider text-[#1E9470] dark:text-[#2EB88A] block">
+                          <span className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 block">
                             Team Leader
                           </span>
                           <p className="font-bold text-[#12141A] dark:text-white">
@@ -2002,21 +2002,21 @@ export const AdminDashboardPage = () => {
       {/* Venue Allocation & Update Modal */}
       {venueModalTeam && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/65 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-white dark:bg-[#071510] border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl animate-in zoom-in-95 duration-150">
+          <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl animate-in zoom-in-95 duration-150">
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-200/80 dark:border-slate-800">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#DDF5EB] dark:bg-[#2EB88A]/20 border border-[#2EB88A]/30 flex items-center justify-center shrink-0 text-[#1E9470] dark:text-[#2EB88A]">
+                <div className="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950/60 border border-sky-300 dark:border-sky-800/60 flex items-center justify-center shrink-0 text-sky-600 dark:text-sky-400">
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
+                  <h3 className="text-lg font-extrabold text-slate-900 dark:text-white font-display">
                     {venueModalTeam.venue?.roomNumber || venueModalTeam.venue?.timeSlot
                       ? 'Update Venue Allocation'
                       : 'Allocate Venue'}
                   </h3>
-                  <p className="text-xs text-[#536159] dark:text-slate-400 font-mono mt-0.5">
-                    Team: <strong className="text-[#12141A] dark:text-white">{venueModalTeam.teamName}</strong> ({venueModalTeam.teamCode})
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                    Team: <strong className="text-slate-900 dark:text-white">{venueModalTeam.teamName}</strong> ({venueModalTeam.teamCode})
                   </p>
                 </div>
               </div>
@@ -2040,8 +2040,8 @@ export const AdminDashboardPage = () => {
             <form onSubmit={handleSaveVenue} className="space-y-4">
               {/* Room Number Input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#536159] dark:text-slate-300 flex items-center gap-1.5">
-                  <Building className="w-3.5 h-3.5 text-[#1E9470] dark:text-[#2EB88A]" />
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  <Building className="w-3.5 h-3.5 text-sky-500" />
                   <span>Room / Hall / Lab Number *</span>
                 </label>
                 <input
@@ -2050,14 +2050,14 @@ export const AdminDashboardPage = () => {
                   value={venueRoomNumber}
                   onChange={(e) => setVenueRoomNumber(e.target.value)}
                   required
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-[#12141A] dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#2EB88A] focus:ring-2 focus:ring-[#2EB88A]/20 transition-all shadow-2xs font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all shadow-2xs font-medium"
                 />
               </div>
 
               {/* Time Slot Input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#536159] dark:text-slate-300 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-[#1E9470] dark:text-[#2EB88A]" />
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-sky-500" />
                   <span>Presentation / Reporting Time Slot *</span>
                 </label>
                 <input
@@ -2066,12 +2066,12 @@ export const AdminDashboardPage = () => {
                   value={venueTimeSlot}
                   onChange={(e) => setVenueTimeSlot(e.target.value)}
                   required
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-[#12141A] dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#2EB88A] focus:ring-2 focus:ring-[#2EB88A]/20 transition-all shadow-2xs font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all shadow-2xs font-medium"
                 />
 
                 {/* Quick Presets */}
                 <div className="pt-1">
-                  <span className="text-[10px] uppercase font-bold text-[#536159] dark:text-slate-400 tracking-wider block mb-1">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider block mb-1">
                     Quick Presets:
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -2087,8 +2087,8 @@ export const AdminDashboardPage = () => {
                         onClick={() => setVenueTimeSlot(slot)}
                         className={`text-[10.5px] font-semibold px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
                           venueTimeSlot === slot
-                            ? 'bg-[#DDF5EB] dark:bg-[#2EB88A]/25 border-[#2EB88A] text-[#1E9470] dark:text-[#2EB88A] font-bold shadow-2xs'
-                            : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-[#536159] dark:text-slate-300 hover:border-[#2EB88A]/50'
+                            ? 'bg-sky-50 dark:bg-sky-950/60 border-sky-400 text-sky-600 dark:text-sky-400 font-bold shadow-2xs'
+                            : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-sky-400/50'
                         }`}
                       >
                         {slot}
@@ -2099,8 +2099,8 @@ export const AdminDashboardPage = () => {
               </div>
 
               {/* Status Note */}
-              <div className="p-3 rounded-xl bg-[#DDF5EB]/60 dark:bg-[#2EB88A]/10 border border-[#2EB88A]/20 text-[11px] text-[#1E9470] dark:text-[#2EB88A] flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 shrink-0 text-[#2EB88A]" />
+              <div className="p-3 rounded-xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-300 dark:border-sky-800/60 text-[11px] text-sky-700 dark:text-sky-300 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-sky-500" />
                 <span>
                   Team is approved. This venue will appear on the student dashboard immediately.
                 </span>
@@ -2112,14 +2112,14 @@ export const AdminDashboardPage = () => {
                   type="button"
                   onClick={() => setVenueModalTeam(null)}
                   disabled={savingVenue}
-                  className="px-4 py-2 rounded-full text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[#12141A] dark:text-slate-200 transition-all cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 rounded-full text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-all cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={savingVenue}
-                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:shadow-md hover:shadow-[#2EB88A]/30 transition-all cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-[0_4px_14px_rgba(14,165,233,0.3)] transition-all cursor-pointer disabled:opacity-50"
                 >
                   {savingVenue ? (
                     <>

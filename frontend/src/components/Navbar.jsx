@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
 import {
   Sparkles,
   Menu,
@@ -11,15 +10,12 @@ import {
   LogOut,
   ShieldAlert,
   ChevronDown,
-  Sun,
-  Moon,
   LayoutDashboard,
 } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 
 export const Navbar = () => {
   const { user, myTeam, logout } = useAuth();
-  const { theme, toggleTheme, isDark } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -55,20 +51,20 @@ export const Navbar = () => {
       <nav
         className={`rounded-full px-3.5 sm:px-5 py-2 border flex items-center justify-between transition-all duration-300 min-h-[58px] sm:min-h-[62px] ${
           scrolled
-            ? 'bg-white/30 dark:bg-[#071510]/40 backdrop-blur-xl shadow-lg border-white/40 dark:border-white/10'
-            : 'bg-white/95 dark:bg-[#071510]/95 backdrop-blur-md shadow-[0_10px_30px_rgba(18,20,26,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.3)] border-white/85 dark:border-white/10'
+            ? 'bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl shadow-lg border-white/50 dark:border-slate-700/60'
+            : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-[0_10px_30px_rgba(18,20,26,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] border-white/85 dark:border-slate-800'
         }`}
       >
         {/* Brand Logo with Official TSH Emblem - Balanced and Centered */}
         <Link to="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0 mr-2 lg:mr-4">
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border border-slate-200/90 dark:border-slate-700/80 flex items-center justify-center p-1 shadow-xs group-hover:border-[#2EB88A]/60 group-hover:shadow-md group-hover:scale-105 transition-all overflow-hidden shrink-0">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border border-slate-200/90 dark:border-slate-700/80 flex items-center justify-center p-1 shadow-xs group-hover:border-sky-500/60 group-hover:shadow-md group-hover:scale-105 transition-all overflow-hidden shrink-0">
             <img src="/tsh-logo.png" alt="TSH Logo" className="w-full h-full object-contain" />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="font-extrabold text-sm sm:text-base tracking-tight text-[#12141A] dark:text-white font-['Outfit'] group-hover:text-[#2EB88A] transition-colors leading-none">
-              TSH <span className="text-[#2EB88A]">2026</span>
+            <span className="font-extrabold text-sm sm:text-base tracking-tight text-[#12141A] dark:text-white font-display group-hover:text-sky-500 transition-colors leading-none">
+              TSH <span className="text-sky-500">2026</span>
             </span>
-            <span className="text-[10px] sm:text-[11px] text-[#536159] dark:text-slate-400 font-medium tracking-wide hidden sm:block leading-none mt-1">
+            <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium tracking-wide hidden sm:block leading-none mt-1">
               Techno Spiritual Hackathon
             </span>
           </div>
@@ -82,8 +78,8 @@ export const Navbar = () => {
               to={link.path}
               className={`h-9 px-3 lg:px-3.5 rounded-full text-xs lg:text-[13px] xl:text-sm font-medium transition-all inline-flex items-center justify-center whitespace-nowrap leading-none shrink-0 ${
                 isActive(link.path)
-                  ? 'text-[#1E9470] dark:text-[#2EB88A] bg-[#DDF5EB] dark:bg-[#2EB88A]/15 font-semibold shadow-xs'
-                  : 'text-[#536159] hover:text-[#12141A] hover:bg-slate-100/80 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60'
+                  ? 'text-sky-600 dark:text-sky-400 bg-sky-500/10 dark:bg-sky-400/15 font-semibold shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60'
               }`}
             >
               {link.name}
@@ -95,8 +91,8 @@ export const Navbar = () => {
               to="/dashboard"
               className={`h-9 px-3 lg:px-3.5 rounded-full text-xs lg:text-[13px] xl:text-sm font-medium transition-all inline-flex items-center justify-center whitespace-nowrap leading-none shrink-0 ${
                 isActive('/dashboard')
-                  ? 'text-[#1E9470] dark:text-[#2EB88A] bg-[#DDF5EB] dark:bg-[#2EB88A]/15 font-semibold shadow-xs'
-                  : 'text-[#536159] hover:text-[#12141A] hover:bg-slate-100/80 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60'
+                  ? 'text-sky-600 dark:text-sky-400 bg-sky-500/10 dark:bg-sky-400/15 font-semibold shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60'
               }`}
             >
               My Dashboard
@@ -108,32 +104,18 @@ export const Navbar = () => {
               to="/admin"
               className={`h-9 px-3 lg:px-3.5 rounded-full text-xs lg:text-[13px] xl:text-sm font-semibold inline-flex items-center justify-center gap-1.5 transition-all whitespace-nowrap leading-none shrink-0 ${
                 isActive('/admin')
-                  ? 'text-[#1E9470] dark:text-[#2EB88A] bg-[#DDF5EB] dark:bg-[#2EB88A]/15 font-bold shadow-xs ring-1 ring-[#2EB88A]/30'
-                  : 'text-[#536159] dark:text-slate-300 hover:text-[#12141A] dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60'
+                  ? 'text-sky-600 dark:text-sky-400 bg-sky-500/10 dark:bg-sky-400/15 font-bold shadow-xs ring-1 ring-sky-500/30'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60'
               }`}
             >
-              <ShieldAlert className="w-3.5 h-3.5 text-[#1E9470] dark:text-[#2EB88A] shrink-0" />
+              <ShieldAlert className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400 shrink-0" />
               <span>Admin Panel</span>
             </Link>
           )}
         </div>
 
-        {/* Right Action / Theme Toggle / Auth Buttons */}
+        {/* Right Action / Auth Buttons */}
         <div className="hidden md:flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Bright / Dark Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            title={isDark ? 'Switch to Bright Mode' : 'Switch to Dark Mode'}
-            aria-label={isDark ? 'Switch to Bright Mode' : 'Switch to Dark Mode'}
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-[#DDF5EB]/80 hover:bg-[#DDF5EB] dark:bg-slate-800 dark:hover:bg-slate-700 text-[#1E9470] dark:text-[#2EB88A] transition-all shadow-xs group cursor-pointer shrink-0"
-          >
-            {isDark ? (
-              <Sun className="w-4 h-4 transition-transform duration-300 group-hover:rotate-45" />
-            ) : (
-              <Moon className="w-4 h-4 text-[#1E9470] transition-transform duration-300 group-hover:-rotate-12" />
-            )}
-          </button>
-
           {user ? (
             <div className="relative shrink-0">
               <button
@@ -170,9 +152,9 @@ export const Navbar = () => {
                   <Link
                     to="/dashboard"
                     onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2.5 text-xs text-[#1E9470] dark:text-[#2EB88A] hover:bg-[#DDF5EB]/50 dark:hover:bg-[#2EB88A]/10 font-semibold transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 text-xs text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40 font-semibold transition-colors"
                   >
-                    <Users className="w-4 h-4 text-[#2EB88A]" />
+                    <Users className="w-4 h-4 text-sky-500" />
                     My Registrations & Slots
                   </Link>
 
@@ -180,9 +162,9 @@ export const Navbar = () => {
                     <Link
                       to="/register-team"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-xs text-[#1E9470] hover:bg-slate-50 dark:hover:bg-slate-800/80 font-medium"
+                      className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-sky-50 dark:hover:bg-slate-800/80 font-medium"
                     >
-                      <Sparkles className="w-4 h-4 text-[#2EB88A]" />
+                      <Sparkles className="w-4 h-4 text-sky-500" />
                       Register Team (Leader + 3)
                     </Link>
                   )}
@@ -191,9 +173,9 @@ export const Navbar = () => {
                     <Link
                       to="/admin"
                       onClick={() => setUserDropdownOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-xs text-[#1E9470] dark:text-[#2EB88A] hover:bg-[#DDF5EB]/50 dark:hover:bg-[#2EB88A]/10 font-semibold transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-xs text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40 font-semibold transition-colors"
                     >
-                      <ShieldAlert className="w-4 h-4 text-[#1E9470] dark:text-[#2EB88A]" />
+                      <ShieldAlert className="w-4 h-4 text-sky-500" />
                       Admin Dashboard
                     </Link>
                   )}
@@ -214,7 +196,7 @@ export const Navbar = () => {
                 to="/login"
                 className={`h-9 px-3.5 sm:px-4 rounded-full text-xs sm:text-sm font-medium transition-all inline-flex items-center justify-center whitespace-nowrap leading-none ${
                   isActive('/login')
-                    ? 'text-[#1E9470] dark:text-[#2EB88A] bg-[#DDF5EB] dark:bg-[#2EB88A]/15 font-semibold shadow-xs'
+                    ? 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 font-semibold shadow-xs'
                     : 'text-[#536159] hover:text-[#12141A] hover:bg-slate-100/80 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/60'
                 }`}
               >
@@ -222,7 +204,7 @@ export const Navbar = () => {
               </Link>
               <Link
                 to="/register"
-                className="h-9 px-4 sm:px-5 rounded-full text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] shadow-[0_4px_14px_rgba(46,184,138,0.35)] hover:shadow-[0_6px_20px_rgba(46,184,138,0.45)] hover:scale-[1.02] active:scale-[0.98] transition-all inline-flex items-center justify-center whitespace-nowrap leading-none"
+                className="h-9 px-4 sm:px-5 rounded-full text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-sky-500 to-indigo-600 shadow-[0_4px_14px_rgba(14,165,233,0.35)] hover:shadow-[0_6px_20px_rgba(14,165,233,0.45)] hover:scale-[1.02] active:scale-[0.98] transition-all inline-flex items-center justify-center whitespace-nowrap leading-none"
               >
                 Register
               </Link>
@@ -239,21 +221,13 @@ export const Navbar = () => {
               aria-label="My Dashboard"
               className={`p-2 rounded-full transition-all flex items-center justify-center ${
                 isActive('/dashboard')
-                  ? 'bg-gradient-to-r from-[#2EB88A] to-[#1E9470] text-white shadow-xs'
-                  : 'bg-[#DDF5EB] dark:bg-slate-800 text-[#1E9470] dark:text-[#2EB88A]'
+                  ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-xs'
+                  : 'bg-sky-50 dark:bg-slate-800 text-sky-600 dark:text-sky-400'
               }`}
             >
               <LayoutDashboard className="w-4 h-4" />
             </Link>
           )}
-
-          <button
-            onClick={toggleTheme}
-            aria-label={isDark ? 'Switch to Bright Mode' : 'Switch to Dark Mode'}
-            className="p-2 rounded-full bg-[#DDF5EB] dark:bg-slate-800 text-[#1E9470] dark:text-[#2EB88A]"
-          >
-            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -266,7 +240,7 @@ export const Navbar = () => {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 p-4 rounded-3xl bg-white/95 dark:bg-[#071510]/95 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-2xl space-y-3">
+        <div className="md:hidden mt-2 p-4 rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-white/80 dark:border-slate-800 shadow-2xl space-y-3">
           {navLinks.map((link) => (
             <Link
               key={link.path}
@@ -274,7 +248,7 @@ export const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
               className={`block px-4 py-2.5 rounded-2xl text-sm font-medium transition-all ${
                 isActive(link.path)
-                  ? 'bg-[#DDF5EB] text-[#1E9470] dark:bg-[#2EB88A]/20 dark:text-[#2EB88A] font-semibold'
+                  ? 'bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400 font-semibold'
                   : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
               }`}
             >
@@ -288,11 +262,11 @@ export const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
               className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
                 isActive('/dashboard')
-                  ? 'bg-[#DDF5EB] text-[#1E9470] dark:bg-[#2EB88A]/20 dark:text-[#2EB88A]'
+                  ? 'bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400'
                   : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
               }`}
             >
-              <LayoutDashboard className="w-4 h-4 text-[#1E9470] dark:text-[#2EB88A]" />
+              <LayoutDashboard className="w-4 h-4 text-sky-500" />
               <span>My Dashboard</span>
             </Link>
           )}
@@ -303,11 +277,11 @@ export const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
               className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
                 isActive('/admin')
-                  ? 'bg-[#DDF5EB] text-[#1E9470] dark:bg-[#2EB88A]/20 dark:text-[#2EB88A]'
-                  : 'text-[#536159] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
+                  ? 'bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
               }`}
             >
-              <ShieldAlert className="w-4 h-4 text-[#1E9470] dark:text-[#2EB88A]" />
+              <ShieldAlert className="w-4 h-4 text-sky-500" />
               <span>Admin Panel</span>
             </Link>
           )}
@@ -318,7 +292,7 @@ export const Navbar = () => {
                 <div className="px-4 py-3 bg-slate-100 dark:bg-slate-900 rounded-2xl space-y-1">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{user.name}</p>
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[#1E9470] dark:text-[#2EB88A] bg-[#DDF5EB] dark:bg-[#2EB88A]/15 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-2 py-0.5 rounded-full border border-sky-300 dark:border-sky-800/60">
                       {user.role === 'admin' ? 'Admin' : myTeam ? `Team ${myTeam.teamCode || ''}` : 'Participant'}
                     </span>
                   </div>
@@ -334,9 +308,9 @@ export const Navbar = () => {
                 <Link
                   to="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A] border border-[#2EB88A]/40 font-bold text-sm hover:bg-[#DDF5EB]/80 transition-all shadow-xs"
+                  className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 border border-sky-300 dark:border-sky-800 font-bold text-sm hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-all shadow-xs"
                 >
-                  <LayoutDashboard className="w-4 h-4 text-[#1E9470] dark:text-[#2EB88A]" />
+                  <LayoutDashboard className="w-4 h-4 text-sky-500" />
                   <span>My Dashboard</span>
                 </Link>
 
@@ -346,7 +320,7 @@ export const Navbar = () => {
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300/80 dark:border-slate-700 font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
                   >
-                    <ShieldAlert className="w-4 h-4 text-[#1E9470] dark:text-[#2EB88A]" />
+                    <ShieldAlert className="w-4 h-4 text-sky-500" />
                     <span>Admin Panel</span>
                   </Link>
                 )}
@@ -355,7 +329,7 @@ export const Navbar = () => {
                   <Link
                     to="/register-team"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block text-center py-2.5 px-4 rounded-full bg-gradient-to-r from-[#2EB88A] to-[#1E9470] text-white font-semibold text-sm shadow-md"
+                    className="block text-center py-2.5 px-4 rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-semibold text-sm shadow-[0_4px_14px_rgba(14,165,233,0.3)]"
                   >
                     Register Team Now
                   </Link>
@@ -375,7 +349,7 @@ export const Navbar = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`text-center py-2.5 px-4 rounded-full font-medium text-sm transition-all ${
                     isActive('/login')
-                      ? 'bg-[#DDF5EB] text-[#1E9470] dark:bg-[#2EB88A]/20 dark:text-[#2EB88A] font-semibold shadow-xs'
+                      ? 'bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400 font-semibold shadow-xs'
                       : 'bg-slate-100 dark:bg-slate-800 text-[#12141A] dark:text-slate-200 border border-slate-200 dark:border-slate-700'
                   }`}
                 >
@@ -384,7 +358,7 @@ export const Navbar = () => {
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-center py-2.5 px-4 rounded-full bg-gradient-to-r from-[#2EB88A] to-[#1E9470] text-white font-semibold text-sm shadow-sm"
+                  className="text-center py-2.5 px-4 rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-semibold text-sm shadow-sm"
                 >
                   Sign Up
                 </Link>

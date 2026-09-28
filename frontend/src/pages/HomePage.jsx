@@ -126,16 +126,16 @@ export const HomePage = () => {
       <HeroSection />
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 pb-16">
-        {/* Registration Process Section (Replaced Five Pillars) */}
+        {/* Registration Process Section */}
         <section id="registration-process" className="space-y-10">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#1E9470] dark:text-[#2EB88A] px-3.5 py-1 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/15">
+            <span className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 px-3.5 py-1 rounded-full bg-sky-50 dark:bg-sky-950/50 border border-sky-200/70 dark:border-sky-800/50 font-display">
               Registration Journey
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white font-display">
               How to Register for TSH 2026
             </h2>
-            <p className="text-xs sm:text-sm text-[#536159] dark:text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-sans">
               Follow these four structured steps in order to lock your problem statement and confirm your team seat.
             </p>
           </div>
@@ -146,36 +146,36 @@ export const HomePage = () => {
               return (
                 <div
                   key={idx}
-                  className="relative group bg-white/95 dark:bg-[#071510]/95 backdrop-blur-md rounded-3xl p-6 sm:p-7 shadow-[0_10px_30px_rgba(18,20,26,0.06)] border border-white/85 dark:border-white/10 hover:border-[#2EB88A]/40 hover:shadow-[0_15px_35px_rgba(46,184,138,0.12)] hover:-translate-y-1 transition-all flex flex-col justify-between h-full"
+                  className="relative group bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl p-6 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] border border-slate-200/80 dark:border-slate-800/80 hover:border-sky-500/50 hover:shadow-[0_15px_35px_rgba(14,165,233,0.15)] hover:-translate-y-1 transition-all flex flex-col justify-between h-full"
                 >
                   <div className="space-y-4">
                     {/* Header: Step Number Pill + Duotone Icon */}
                     <div className="flex items-center justify-between">
-                      <span className="w-11 h-11 rounded-2xl bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A] font-mono text-sm font-bold flex items-center justify-center shadow-xs">
+                      <span className="w-11 h-11 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 font-mono text-sm font-bold flex items-center justify-center shadow-2xs">
                         {stepItem.step}
                       </span>
-                      <div className="w-11 h-11 rounded-2xl bg-[#EBF8F2] dark:bg-slate-800 text-[#2EB88A] flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <div className="w-11 h-11 rounded-2xl bg-sky-50/80 dark:bg-slate-800 text-sky-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <IconComponent className="w-5 h-5" />
                       </div>
                     </div>
 
                     <div className="space-y-1.5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[#1E9470] dark:text-[#2EB88A] font-mono">
+                      <span className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 font-mono">
                         {stepItem.tag}
                       </span>
-                      <h3 className="text-lg font-bold text-[#12141A] dark:text-slate-100 leading-snug">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-snug font-display">
                         {stepItem.title}
                       </h3>
-                      <p className="text-sm text-[#46544c] dark:text-slate-300 leading-relaxed pt-1">
+                      <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1 font-sans">
                         {stepItem.desc}
                       </p>
                     </div>
                   </div>
 
-                  <div className="pt-5 mt-4 border-t border-slate-100 dark:border-white/5">
+                  <div className="pt-5 mt-4 border-t border-slate-100 dark:border-slate-800/60">
                     <Link
                       to={stepItem.actionLink}
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#1E9470] dark:text-[#2EB88A] group-hover:text-[#12141A] dark:group-hover:text-white transition-colors"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-sky-600 dark:text-sky-400 group-hover:text-indigo-600 dark:group-hover:text-white transition-colors font-display"
                     >
                       <span>{stepItem.actionText}</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -190,7 +190,7 @@ export const HomePage = () => {
           <div className="text-center pt-2">
             <Link
               to="/register-team"
-              className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] shadow-[0_6px_20px_rgba(46,184,138,0.35)] hover:shadow-[0_8px_25px_rgba(46,184,138,0.45)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+              className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-sky-500 to-indigo-600 shadow-[0_6px_20px_rgba(14,165,233,0.35)] hover:shadow-[0_8px_25px_rgba(14,165,233,0.45)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer font-display"
             >
               <span>Begin Team Registration</span>
               <ArrowRight className="w-4 h-4" />
@@ -198,16 +198,16 @@ export const HomePage = () => {
           </div>
         </section>
 
-        {/* Official Event Documentation & Download Section (Matches Uploaded Screenshot) */}
-        <section id="event-documentation" className="space-y-6 pt-6 border-t border-[#D2F0E3] dark:border-white/10">
-          <div className="p-6 sm:p-8 lg:p-10 rounded-3xl bg-white/95 dark:bg-[#071510]/95 backdrop-blur-md border border-white/80 dark:border-white/10 shadow-[0_12px_36px_rgba(18,20,26,0.06)] space-y-6">
+        {/* Official Event Documentation & Download Section */}
+        <section id="event-documentation" className="space-y-6 pt-6 border-t border-slate-200/80 dark:border-slate-800/80">
+          <div className="p-6 sm:p-8 lg:p-10 rounded-3xl bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 shadow-[0_12px_36px_rgba(0,0,0,0.06)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.4)] space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <h3 className="text-lg sm:text-xl font-bold text-[#12141A] dark:text-white font-['Outfit'] flex items-center gap-2.5">
-                  <FileText className="w-5 h-5 text-[#2EB88A]" />
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-display flex items-center gap-2.5">
+                  <FileText className="w-5 h-5 text-sky-500" />
                   <span>Official Event Documentation</span>
                 </h3>
-                <p className="text-xs sm:text-sm text-[#536159] dark:text-slate-400 mt-1">
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-sans">
                   Download guidelines, participation terms, and judging rubrics for your team preparations.
                 </p>
               </div>
@@ -215,7 +215,7 @@ export const HomePage = () => {
               {/* Link to Contact Us */}
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold bg-[#DDF5EB] hover:bg-[#DDF5EB]/80 dark:bg-[#2EB88A]/20 dark:hover:bg-[#2EB88A]/30 text-[#1E9470] dark:text-[#2EB88A] transition-all self-start md:self-auto shadow-2xs"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/40 dark:hover:bg-sky-900/50 text-sky-600 dark:text-sky-400 border border-sky-200/70 dark:border-sky-800/50 transition-all self-start md:self-auto shadow-2xs font-display"
               >
                 <span>Format Queries? Contact Us</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -223,7 +223,7 @@ export const HomePage = () => {
             </div>
 
             {downloadNotification && (
-              <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs flex items-center gap-2.5 animate-in fade-in duration-200">
+              <div className="p-3.5 rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-700 dark:text-sky-300 text-xs flex items-center gap-2.5 animate-in fade-in duration-200 font-sans">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
                 <span>{downloadNotification}</span>
               </div>
@@ -235,38 +235,38 @@ export const HomePage = () => {
                   key={idx}
                   className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl transition-all ${
                     doc.highlight
-                      ? 'bg-gradient-to-r from-[#DDF5EB]/50 via-white to-white dark:from-[#2EB88A]/10 dark:via-[#071510] dark:to-[#071510] border-2 border-[#2EB88A]/40 shadow-sm'
-                      : 'bg-[#EBF8F2]/40 dark:bg-slate-900/60 border border-slate-200/60 dark:border-white/5 hover:border-[#2EB88A]/40 hover:bg-white dark:hover:bg-[#081b14]'
+                      ? 'bg-gradient-to-r from-sky-50/60 via-white to-white dark:from-sky-950/30 dark:via-slate-900 dark:to-slate-900 border-2 border-sky-500/30 shadow-xs'
+                      : 'bg-slate-50/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 hover:border-sky-500/40 hover:bg-white dark:hover:bg-slate-800/80'
                   }`}
                 >
                   <div className="flex items-start sm:items-center gap-3.5 min-w-0">
-                    <div className="p-3 rounded-2xl bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#2EB88A] shrink-0 mt-0.5 sm:mt-0 shadow-2xs">
+                    <div className="p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 shrink-0 mt-0.5 sm:mt-0 shadow-2xs">
                       <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                     <div className="min-w-0 space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-sm sm:text-base font-bold text-[#12141A] dark:text-slate-100">
+                        <p className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 font-display">
                           {doc.title}
                         </p>
                         {doc.highlight && (
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#DDF5EB] text-[#1E9470] dark:bg-[#2EB88A]/20 dark:text-[#2EB88A] shrink-0 border border-[#2EB88A]/30">
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400 shrink-0 border border-sky-300/40 font-mono">
                             Required PPT
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-[#536159] dark:text-slate-400">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-sans">
                         {doc.type} • {doc.size}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2.5 flex-wrap shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-white/5">
+                  <div className="flex items-center gap-2.5 flex-wrap shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800/60">
                     {doc.driveUrl && (
                       <a
                         href={doc.driveUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-4 py-2 sm:px-4.5 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-[#DDF5EB] hover:bg-[#cbf1e2] dark:bg-[#2EB88A]/15 dark:hover:bg-[#2EB88A]/25 text-[#1E9470] dark:text-[#2EB88A] border border-[#2EB88A]/30 transition-all shadow-2xs hover:scale-[1.02] cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 sm:px-4.5 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/40 dark:hover:bg-sky-900/50 text-sky-600 dark:text-sky-400 border border-sky-200/80 dark:border-sky-800/60 transition-all shadow-2xs hover:scale-[1.02] cursor-pointer font-display"
                         title="Open Sample PPT in Google Slides / Drive"
                       >
                         <span>Open Drive Link</span>
@@ -281,7 +281,7 @@ export const HomePage = () => {
                         setDownloadNotification(`Downloading ${doc.title}...`);
                         setTimeout(() => setDownloadNotification(''), 4000);
                       }}
-                      className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:brightness-105 shadow-[0_4px_14px_rgba(46,184,138,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shrink-0"
+                      className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:brightness-105 shadow-[0_4px_14px_rgba(14,165,233,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer shrink-0 font-display"
                       title={`Download ${doc.title} (.pptx)`}
                     >
                       <Download className="w-4 h-4" />
@@ -295,15 +295,15 @@ export const HomePage = () => {
         </section>
 
         {/* Interactive FAQ Accordion Section (5 Questions) */}
-        <section className="space-y-8 pt-6 border-t border-[#D2F0E3] dark:border-white/10">
+        <section className="space-y-8 pt-6 border-t border-slate-200/80 dark:border-slate-800/80">
           <div className="text-center space-y-2 max-w-xl mx-auto">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#1E9470] dark:text-[#2EB88A] px-3.5 py-1 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/15">
+            <span className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 px-3.5 py-1 rounded-full bg-sky-50 dark:bg-sky-950/50 border border-sky-200/70 dark:border-sky-800/50 font-display">
               Got Questions?
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-display">
               Frequently Asked Questions
             </h2>
-            <p className="text-xs sm:text-sm text-[#536159] dark:text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-sans">
               Click any question in the list to reveal its complete answers and guidance.
             </p>
           </div>
@@ -316,8 +316,8 @@ export const HomePage = () => {
                   key={idx}
                   className={`rounded-2xl sm:rounded-3xl border transition-all duration-200 overflow-hidden ${
                     isOpen
-                      ? 'bg-white dark:bg-[#071510]/95 border-[#2EB88A]/50 shadow-md ring-2 ring-[#2EB88A]/20'
-                      : 'bg-white/95 dark:bg-[#071510]/70 border-white/85 dark:border-white/10 hover:border-[#2EB88A]/30 hover:bg-white dark:hover:bg-[#071510] shadow-[0_8px_20px_rgba(18,20,26,0.04)]'
+                      ? 'bg-white/95 dark:bg-slate-900/95 border-sky-500/50 shadow-md ring-2 ring-sky-500/20'
+                      : 'bg-white/85 dark:bg-slate-900/70 backdrop-blur-md border-slate-200/80 dark:border-slate-800/80 hover:border-sky-500/30 hover:bg-white dark:hover:bg-slate-900 shadow-[0_8px_20px_rgba(0,0,0,0.04)]'
                   }`}
                 >
                   <button
@@ -329,17 +329,17 @@ export const HomePage = () => {
                       <div
                         className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 font-mono text-xs font-bold transition-colors ${
                           isOpen
-                            ? 'bg-gradient-to-r from-[#2EB88A] to-[#1E9470] text-white shadow-sm'
-                            : 'bg-[#DDF5EB] text-[#1E9470] dark:bg-[#2EB88A]/20 dark:text-[#2EB88A]'
+                            ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-xs'
+                            : 'bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400'
                         }`}
                       >
                         {String(idx + 1).padStart(2, '0')}
                       </div>
                       <h4
-                        className={`text-sm sm:text-[15px] font-semibold transition-colors ${
+                        className={`text-sm sm:text-[15px] font-semibold transition-colors font-display ${
                           isOpen
-                            ? 'text-[#1E9470] dark:text-[#2EB88A]'
-                            : 'text-[#12141A] dark:text-slate-100'
+                            ? 'text-sky-600 dark:text-sky-400'
+                            : 'text-slate-900 dark:text-slate-100'
                         }`}
                       >
                         {faq.q}
@@ -347,8 +347,8 @@ export const HomePage = () => {
                     </div>
 
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-[#EBF8F2] dark:bg-slate-800 text-[#536159] dark:text-slate-400 transition-all duration-300 ${
-                        isOpen ? 'rotate-180 bg-[#DDF5EB] text-[#1E9470]' : ''
+                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all duration-300 ${
+                        isOpen ? 'rotate-180 bg-sky-100 text-sky-600 dark:bg-sky-950/80 dark:text-sky-400' : ''
                       }`}
                     >
                       <ChevronDown className="w-4 h-4" />
@@ -356,12 +356,12 @@ export const HomePage = () => {
                   </button>
 
                   {isOpen && (
-                    <div className="px-5 pb-5 sm:px-6 pt-1 text-xs sm:text-sm text-[#536159] dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pl-16 sm:pl-19 animate-fade-in">
+                    <div className="px-5 pb-5 sm:px-6 pt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pl-16 sm:pl-19 font-sans">
                       <p>{faq.a}</p>
                       {faq.link && (
                         <Link
                           to={faq.link.to}
-                          className="inline-flex items-center gap-1.5 mt-3 px-4 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-[#2EB88A] to-[#1E9470] text-white transition-all shadow-sm hover:scale-[1.02]"
+                          className="inline-flex items-center gap-1.5 mt-3 px-4 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-sky-500 to-indigo-600 text-white transition-all shadow-xs hover:scale-[1.02] font-display"
                         >
                           <span>{faq.link.label}</span>
                           <ArrowRight className="w-3.5 h-3.5" />

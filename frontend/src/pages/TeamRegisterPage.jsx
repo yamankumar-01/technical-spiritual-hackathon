@@ -280,13 +280,14 @@ export const TeamRegisterPage = () => {
       {/* Wizard Progress Stepper */}
       <div className="space-y-4">
         <div className="text-center space-y-1">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#DDF5EB] dark:bg-[#2EB88A]/15 border border-[#2EB88A]/30 text-[#1E9470] dark:text-[#2EB88A] text-xs font-bold uppercase tracking-wider shadow-[0_4px_12px_rgba(46,184,138,0.15)]">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 dark:bg-sky-950/60 border border-sky-300 dark:border-sky-800/60 text-sky-600 dark:text-sky-400 text-xs font-bold uppercase tracking-wider shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-sky-500" />
             <span>Registration Wizard</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-display">
             Team Registration
           </h1>
-          <p className="text-xs text-[#536159] dark:text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Fixed team structure: 1 Team Leader + 3 Members (Total 4 Members)
           </p>
         </div>
@@ -296,10 +297,10 @@ export const TeamRegisterPage = () => {
           <div
             className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full text-xs font-bold transition-all ${
               step === 1
-                ? 'bg-gradient-to-r from-[#2EB88A] to-[#1E9470] text-white shadow-[0_4px_12px_rgba(46,184,138,0.3)]'
+                ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-[0_4px_14px_rgba(14,165,233,0.35)]'
                 : step > 1
-                ? 'bg-[#DDF5EB] text-[#1E9470] dark:bg-[#2EB88A]/20 dark:text-[#2EB88A] border border-[#2EB88A]/30'
-                : 'bg-slate-100 dark:bg-slate-800 text-[#536159] dark:text-slate-400'
+                ? 'bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400 border border-sky-300 dark:border-sky-800/60'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
             }`}
           >
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[11px]">1</span>
@@ -311,10 +312,10 @@ export const TeamRegisterPage = () => {
           <div
             className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full text-xs font-bold transition-all ${
               step === 2
-                ? 'bg-gradient-to-r from-[#2EB88A] to-[#1E9470] text-white shadow-[0_4px_12px_rgba(46,184,138,0.3)]'
+                ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-[0_4px_14px_rgba(14,165,233,0.35)]'
                 : step > 2
-                ? 'bg-[#DDF5EB] text-[#1E9470] dark:bg-[#2EB88A]/20 dark:text-[#2EB88A] border border-[#2EB88A]/30'
-                : 'bg-slate-100 dark:bg-slate-800 text-[#536159] dark:text-slate-400'
+                ? 'bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400 border border-sky-300 dark:border-sky-800/60'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
             }`}
           >
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[11px]">2</span>
@@ -326,8 +327,8 @@ export const TeamRegisterPage = () => {
           <div
             className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full text-xs font-bold transition-all ${
               step === 3
-                ? 'bg-gradient-to-r from-[#2EB88A] to-[#1E9470] text-white shadow-[0_4px_12px_rgba(46,184,138,0.3)]'
-                : 'bg-slate-100 dark:bg-slate-800 text-[#536159] dark:text-slate-400'
+                ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-[0_4px_14px_rgba(14,165,233,0.35)]'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
             }`}
           >
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[11px]">3</span>
@@ -417,7 +418,7 @@ export const TeamRegisterPage = () => {
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="px-4 py-2 rounded-full text-xs font-bold bg-[#DDF5EB] text-[#1E9470] dark:bg-[#2EB88A]/20 dark:text-[#2EB88A] cursor-pointer"
+                className="px-4 py-2 rounded-full text-xs font-bold bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400 border border-sky-300 dark:border-sky-800 cursor-pointer"
               >
                 Clear Search Filter
               </button>
@@ -440,16 +441,16 @@ export const TeamRegisterPage = () => {
 
           {/* Simple Floating Action Bar */}
           {selectedPS && (
-            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-2xl px-5 py-3.5 rounded-2xl bg-white dark:bg-[#071510] border-2 border-[#2EB88A] shadow-[0_10px_30px_rgba(18,20,26,0.15)] flex items-center justify-between gap-4">
+            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-2xl px-5 py-3.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-2 border-sky-500 shadow-[0_10px_35px_rgba(14,165,233,0.25)] flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-8 h-8 rounded-xl bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A] flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800/60 flex items-center justify-center shrink-0">
                   <Sparkles className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-bold text-[#1E9470] dark:text-[#2EB88A] uppercase tracking-wide">
+                  <p className="text-[11px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wide">
                     Selected Track ({selectedPS.code})
                   </p>
-                  <p className="text-xs sm:text-sm font-semibold text-[#12141A] dark:text-white truncate max-w-xs sm:max-w-md">
+                  <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white truncate max-w-xs sm:max-w-md">
                     {selectedPS.title}
                   </p>
                 </div>
@@ -458,7 +459,7 @@ export const TeamRegisterPage = () => {
               <button
                 type="button"
                 onClick={handleProceedToMembers}
-                className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#2EB88A] to-[#1E9470] hover:brightness-105 active:scale-95 shadow-sm transition-all flex items-center gap-2 cursor-pointer shrink-0"
+                className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-[0_4px_16px_rgba(14,165,233,0.3)] active:scale-95 transition-all flex items-center gap-2 cursor-pointer shrink-0"
               >
                 <span>Proceed to Step 2</span>
                 <ArrowRight className="w-4 h-4" />
@@ -472,21 +473,21 @@ export const TeamRegisterPage = () => {
       {step === 2 && (
         <form onSubmit={handleSaveTeamDetails} className="space-y-6">
           {/* Selected Track Real-Time Slot Availability Banner */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-[#DDF5EB]/60 dark:bg-[#2EB88A]/10 border-2 border-[#2EB88A]/40 shadow-md flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="p-4 sm:p-5 rounded-3xl bg-sky-50/80 dark:bg-sky-950/30 border-2 border-sky-300 dark:border-sky-700/60 shadow-md backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-3 text-center sm:text-left">
-              <div className="w-10 h-10 rounded-2xl bg-[#DDF5EB] dark:bg-[#2EB88A]/20 text-[#1E9470] dark:text-[#2EB88A] flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-sky-100 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-xs sm:text-sm font-extrabold text-[#12141A] dark:text-white">
+                <div className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white font-display">
                   Selected Track:{' '}
-                  <span className="font-mono text-sm sm:text-base text-[#1E9470] dark:text-[#2EB88A] font-bold">
+                  <span className="font-mono text-sm sm:text-base text-sky-600 dark:text-sky-400 font-bold">
                     {selectedPS?.code} - {selectedPS?.title}
                   </span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-[#536159] dark:text-slate-300 mt-0.5">
+                <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 mt-0.5">
                   Current Availability:{' '}
-                  <span className="font-bold text-[#1E9470] dark:text-[#2EB88A]">
+                  <span className="font-bold text-sky-600 dark:text-sky-400">
                     {selectedPS?.available !== undefined ? selectedPS.available : selectedPS?.seatsAvailable ?? 5} / {selectedPS?.capacity || selectedPS?.totalSeats || 5} slots available
                   </span>
                   {' '}• Slots are verified and reserved in real-time upon clicking Submit.
@@ -495,7 +496,7 @@ export const TeamRegisterPage = () => {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              <span className="font-mono text-xs font-bold text-[#1E9470] dark:text-[#2EB88A] bg-[#DDF5EB] dark:bg-[#2EB88A]/20 px-3.5 py-1.5 rounded-full border border-[#2EB88A]/40">
+              <span className="font-mono text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-100/80 dark:bg-sky-900/40 px-3.5 py-1.5 rounded-full border border-sky-300 dark:border-sky-700">
                 {selectedPS?.available !== undefined ? selectedPS.available : selectedPS?.seatsAvailable ?? 5} Slots Left
               </span>
             </div>

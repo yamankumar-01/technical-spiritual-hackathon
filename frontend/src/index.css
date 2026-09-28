@@ -5,13 +5,15 @@
 
 @theme {
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-display: 'Outfit', sans-serif;
+  --font-display: 'Outfit', 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'Space Grotesk', ui-monospace, monospace;
 
   --color-zen-amber: #f59e0b;
   --color-zen-gold: #fbbf24;
   --color-zen-orange: #ea580c;
   --color-techno-indigo: #6366f1;
   --color-techno-cyan: #06b6d4;
+  --color-techno-blue: #0284c7;
   --color-techno-purple: #8b5cf6;
 }
 
@@ -19,12 +21,12 @@
   body {
     font-family: var(--font-sans);
     overflow-x: hidden;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   html.dark body {
     background-color: #080c14;
-    color: #e2e8f0;
+    color: #f1f5f9;
   }
 
   html.light body,
@@ -35,7 +37,53 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
+    letter-spacing: -0.015em;
   }
+}
+
+/* Techno-Circuit Dynamic Background Styles */
+.tech-bg-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.tech-bg-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('/tech-circuit-bg.png');
+  background-size: cover;
+  background-position: center right;
+  background-repeat: no-repeat;
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+
+html.light .tech-bg-image,
+html:not(.dark) .tech-bg-image {
+  opacity: 0.95;
+  filter: none;
+}
+
+html.dark .tech-bg-image {
+  opacity: 0.55;
+  filter: invert(0.92) hue-rotate(190deg) brightness(0.9) contrast(1.25);
+}
+
+.tech-bg-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+html.light .tech-bg-overlay,
+html:not(.dark) .tech-bg-overlay {
+  background: radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.2) 0%, rgba(248, 250, 252, 0.65) 100%);
+}
+
+html.dark .tech-bg-overlay {
+  background: radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.08) 0%, rgba(8, 12, 20, 0.75) 60%, rgba(8, 12, 20, 0.92) 100%);
 }
 
 /* Light mode global surface, border & contrast adjustments */
