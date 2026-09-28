@@ -43,3 +43,6 @@ Thumbs.db
 
 # Local sandbox / experimental copy
 copy/
+
+# Temporary scratch scripts
+scratch/
