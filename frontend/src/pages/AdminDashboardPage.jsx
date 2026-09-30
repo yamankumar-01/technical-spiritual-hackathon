@@ -166,6 +166,35 @@ export const AdminDashboardPage = () => {
     }
   };
 
+  const [quickUpdatingPSId, setQuickUpdatingPSId] = useState(null);
+
+  const handleQuickAdjustCapacity = async (item, delta) => {
+    const currentCap = item.capacity || 5;
+    const registered = item.occupied !== undefined ? item.occupied : Math.max(0, currentCap - (item.available || 0));
+    const newCap = currentCap + delta;
+
+    if (newCap < registered) {
+      setErrorMsg(`Cannot decrease capacity to ${newCap}. Minimum allowed is ${registered} (already registered teams).`);
+      return;
+    }
+
+    try {
+      setQuickUpdatingPSId(item.problemId);
+      const res = await adminService.updatePSSeats(item.problemId, {
+        totalSeats: newCap,
+      });
+      if (res.data?.success) {
+        setActionSuccessMsg(`Capacity updated to ${newCap} for ${item.code} (${res.data?.data?.seatsAvailable ?? (newCap - registered)} slots left).`);
+        fetchCapacityBreakdown();
+        fetchPSSeats();
+      }
+    } catch (err) {
+      setErrorMsg(err.response?.data?.message || err.message || 'Failed to update capacity.');
+    } finally {
+      setQuickUpdatingPSId(null);
+    }
+  };
+
   useEffect(() => {
     fetchRegistrations();
     fetchPSSeats();
@@ -1173,8 +1202,32 @@ export const AdminDashboardPage = () => {
                               {item.category}
                             </div>
                           </td>
-                          <td className="px-5 py-4 text-center font-bold text-sm text-slate-900 dark:text-slate-200">
-                            {item.capacity || 5}
+                          <td className="px-3 py-4 text-center">
+                            <div className="inline-flex items-center gap-1.5 p-1 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                              {/* Decrease Button (-) */}
+                              <button
+                                type="button"
+                                disabled={(item.capacity || 5) <= (item.occupied || 0) || quickUpdatingPSId === item.problemId}
+                                onClick={() => handleQuickAdjustCapacity(item, -1)}
+                                className="w-6 h-6 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/60 dark:hover:text-rose-400 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center font-black text-sm transition-all cursor-pointer shadow-xs"
+                                title={(item.capacity || 5) <= (item.occupied || 0) ? `Cannot decrease below registered teams (${item.occupied || 0})` : 'Decrease capacity by 1'}
+                              >
+                                -
+                              </button>
+                              <span className="w-6 text-center font-mono font-bold text-sm text-slate-900 dark:text-white">
+                                {item.capacity || 5}
+                              </span>
+                              {/* Increase Button (+) */}
+                              <button
+                                type="button"
+                                disabled={quickUpdatingPSId === item.problemId}
+                                onClick={() => handleQuickAdjustCapacity(item, 1)}
+                                className="w-6 h-6 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-950/60 dark:hover:text-emerald-400 disabled:opacity-20 flex items-center justify-center font-black text-sm transition-all cursor-pointer shadow-xs"
+                                title="Increase capacity by 1"
+                              >
+                                +
+                              </button>
+                            </div>
                           </td>
                           <td className="px-5 py-4 text-center">
                             {item.activeHolds > 0 ? (
