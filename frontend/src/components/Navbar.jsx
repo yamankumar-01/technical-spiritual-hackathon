@@ -97,7 +97,7 @@ export const Navbar = () => {
             </Link>
           ))}
 
-          {user && (
+          {user && user.role !== 'admin' && (
             <Link
               to="/dashboard"
               className={`h-9 px-3 lg:px-3.5 rounded-full text-xs lg:text-[13px] xl:text-sm font-medium transition-all inline-flex items-center justify-center whitespace-nowrap leading-none shrink-0 ${
@@ -174,16 +174,18 @@ export const Navbar = () => {
                     )}
                   </div>
 
-                  <Link
-                    to="/dashboard"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2.5 text-xs text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40 font-semibold transition-colors"
-                  >
-                    <Users className="w-4 h-4 text-sky-500" />
-                    My Registrations & Slots
-                  </Link>
+                  {user.role !== 'admin' && (
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-xs text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40 font-semibold transition-colors"
+                    >
+                      <Users className="w-4 h-4 text-sky-500" />
+                      My Registrations & Slots
+                    </Link>
+                  )}
 
-                  {!myTeam && (
+                  {!myTeam && user.role !== 'admin' && (
                     <Link
                       to="/register-team"
                       onClick={() => setUserDropdownOpen(false)}
@@ -239,7 +241,7 @@ export const Navbar = () => {
 
         {/* Mobile Action Controls */}
         <div className="flex md:hidden items-center gap-1.5">
-          {user && (
+          {user && user.role !== 'admin' && (
             <Link
               to="/dashboard"
               title="My Dashboard"
@@ -289,7 +291,7 @@ export const Navbar = () => {
             </Link>
           ))}
 
-          {user && (
+          {user && user.role !== 'admin' && (
             <Link
               to="/dashboard"
               onClick={() => setMobileMenuOpen(false)}
@@ -338,14 +340,16 @@ export const Navbar = () => {
                 </div>
 
                 {/* Direct Dashboard Link Button */}
-                <Link
-                  to="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 border border-sky-300 dark:border-sky-800 font-bold text-sm hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-all shadow-xs"
-                >
-                  <LayoutDashboard className="w-4 h-4 text-sky-500" />
-                  <span>My Dashboard</span>
-                </Link>
+                {user.role !== 'admin' && (
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 border border-sky-300 dark:border-sky-800 font-bold text-sm hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-all shadow-xs"
+                  >
+                    <LayoutDashboard className="w-4 h-4 text-sky-500" />
+                    <span>My Dashboard</span>
+                  </Link>
+                )}
 
                 {user.role === 'admin' && (
                   <Link
@@ -358,7 +362,7 @@ export const Navbar = () => {
                   </Link>
                 )}
 
-                {!myTeam && (
+                {!myTeam && user.role !== 'admin' && (
                   <Link
                     to="/register-team"
                     onClick={() => setMobileMenuOpen(false)}

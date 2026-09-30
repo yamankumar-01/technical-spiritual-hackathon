@@ -44,8 +44,12 @@ export const UserDashboardPage = () => {
   };
 
   useEffect(() => {
+    if (user?.role === 'admin') {
+      navigate('/admin', { replace: true });
+      return;
+    }
     fetchUserData();
-  }, []);
+  }, [user]);
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
