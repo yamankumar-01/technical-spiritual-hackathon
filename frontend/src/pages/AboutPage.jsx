@@ -70,7 +70,7 @@ export const AboutPage = () => {
   ];
 
   return (
-    <div className="w-full min-h-screen py-8 sm:py-12 font-sans relative">
+    <div className="w-full min-h-screen bg-white py-8 sm:py-12 font-sans relative">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-10 sm:space-y-12">
         
         {/* Hero Header */}
