@@ -137,6 +137,71 @@ html.light .text-purple-400 {
   color: #7c3aed;
 }
 
+/* Ensure white text remains white inside colored/gradient buttons and dark banners in light mode */
+html.light button.text-white,
+html.light button .text-white,
+html.light a.text-white,
+html.light a .text-white,
+html.light [class*="bg-gradient-"] .text-white,
+html.light [class*="bg-slate-900"] .text-white,
+html.light [class*="bg-sky-600"] .text-white,
+html.light [class*="bg-emerald-600"] .text-white {
+  color: #ffffff !important;
+}
+
+/* ========================================================
+   LIGHT MODE: SHADOWS FOR BUTTONS, TAGS & CARDS ON WHITE BG
+   Ensures buttons, badges, tags, and cards have clear drop shadows
+   so they stand out crisply against the pure white surface.
+   ======================================================== */
+html.light button:not([class*="bg-transparent"]):not([class*="shadow-none"]),
+html:not(.dark) button:not([class*="bg-transparent"]):not([class*="shadow-none"]),
+html.light a[role="button"]:not([class*="bg-transparent"]):not([class*="shadow-none"]),
+html:not(.dark) a[role="button"]:not([class*="bg-transparent"]):not([class*="shadow-none"]) {
+  box-shadow: 0 2px 6px -1px rgba(15, 23, 42, 0.08), 0 1px 3px -1px rgba(15, 23, 42, 0.05);
+}
+
+html.light button:hover:not(:disabled):not([class*="bg-transparent"]):not([class*="shadow-none"]),
+html:not(.dark) button:hover:not(:disabled):not([class*="bg-transparent"]):not([class*="shadow-none"]),
+html.light a[role="button"]:hover:not([class*="bg-transparent"]):not([class*="shadow-none"]),
+html:not(.dark) a[role="button"]:hover:not([class*="bg-transparent"]):not([class*="shadow-none"]) {
+  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.12), 0 2px 5px -1px rgba(15, 23, 42, 0.06);
+}
+
+/* Light mode tags, chips, badges, and pills */
+html.light span[class*="rounded-full"][class*="border"],
+html:not(.dark) span[class*="rounded-full"][class*="border"],
+html.light div[class*="rounded-full"][class*="border"],
+html:not(.dark) div[class*="rounded-full"][class*="border"],
+html.light span[class*="rounded-md"][class*="border"],
+html:not(.dark) span[class*="rounded-md"][class*="border"],
+html.light span[class*="rounded-lg"][class*="border"],
+html:not(.dark) span[class*="rounded-lg"][class*="border"] {
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+}
+
+/* Light mode cards and panels */
+html.light [class*="rounded-xl"][class*="border"]:not(input):not(textarea):not(select):not(span),
+html:not(.dark) [class*="rounded-xl"][class*="border"]:not(input):not(textarea):not(select):not(span),
+html.light [class*="rounded-2xl"][class*="border"]:not(input):not(textarea):not(select):not(span),
+html:not(.dark) [class*="rounded-2xl"][class*="border"]:not(input):not(textarea):not(select):not(span),
+html.light [class*="rounded-3xl"][class*="border"]:not(input):not(textarea):not(select):not(span),
+html:not(.dark) [class*="rounded-3xl"][class*="border"]:not(input):not(textarea):not(select):not(span) {
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+}
+
+html.light input,
+html:not(.dark) input,
+html.light textarea,
+html:not(.dark) textarea,
+html.light select,
+html:not(.dark) select,
+html.light .shadow-none,
+html:not(.dark) .shadow-none {
+  box-shadow: none;
+}
+
+
 /* Glassmorphism & Cyber-Zen Utilities */
 .glass-card {
   backdrop-filter: blur(16px);

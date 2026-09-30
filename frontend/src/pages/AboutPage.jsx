@@ -90,16 +90,16 @@ export const AboutPage = () => {
           </p>
 
           {/* Simple Value Badges */}
-          <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+          <div className="flex flex-wrap items-center gap-2.5 pt-1">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700 shadow-xs hover:shadow-sm transition-shadow">
               <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
               Real-World Impact
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700 shadow-xs hover:shadow-sm transition-shadow">
               <Sparkles className="w-3.5 h-3.5 text-sky-500" />
               Mindful Engineering
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700 shadow-xs hover:shadow-sm transition-shadow">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
               Human Values First
             </span>
@@ -118,7 +118,7 @@ export const AboutPage = () => {
             To harmoniously blend inner human wisdom with cutting-edge engineering—inspiring student developers to build purposeful, ethical, and consciousness-driven technology that uplifts society and fosters universal wellbeing.
           </p>
 
-          <div className="p-3 sm:p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-3 border-indigo-500 border border-indigo-100 dark:border-indigo-900/50 max-w-3xl">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-l-indigo-500 border border-indigo-100 dark:border-indigo-900/50 shadow-xs max-w-3xl">
             <p className="text-xs sm:text-sm italic text-indigo-950 dark:text-indigo-200 font-medium">
               "Blending inner consciousness with digital intelligence for a better tomorrow."
             </p>
@@ -146,7 +146,7 @@ export const AboutPage = () => {
                 <Link
                   key={theme.id}
                   to="/ps"
-                  className="group p-3.5 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-sky-500/60 dark:hover:border-sky-500/60 hover:shadow-sm transition-all flex items-center justify-between"
+                  className="group p-4 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-md hover:border-sky-500/60 dark:hover:border-sky-500/60 transition-all flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div
@@ -186,10 +186,10 @@ export const AboutPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
             {/* DAY 1 CARD */}
-            <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900/85 border border-sky-200 dark:border-sky-900/60 shadow-2xs space-y-4">
+            <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900/85 border border-sky-200/90 dark:border-sky-900/60 shadow-sm hover:shadow-md transition-shadow space-y-4">
               <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div className="space-y-0.5">
-                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-50 dark:bg-sky-950/80 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-50 dark:bg-sky-950/80 text-sky-700 dark:text-sky-300 border border-sky-200/90 dark:border-sky-800 shadow-xs">
                     <Presentation className="w-3 h-3" />
                     <span>DAY 01</span>
                   </div>
@@ -201,14 +201,14 @@ export const AboutPage = () => {
                     <span>Approx. 8:00 AM – 8:00 PM</span>
                   </div>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800 shrink-0">
+                <span className="px-2.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 border border-sky-200/90 dark:border-sky-800 shadow-xs shrink-0">
                   Presentation
                 </span>
               </div>
 
               <div className="space-y-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
-                <div className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
-                  <span className="w-5 h-5 rounded-full bg-sky-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 shadow-xs">
+                  <span className="w-5 h-5 rounded-full bg-sky-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                     1
                   </span>
                   <p className="leading-relaxed">
@@ -216,8 +216,8 @@ export const AboutPage = () => {
                   </p>
                 </div>
 
-                <div className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
-                  <span className="w-5 h-5 rounded-full bg-sky-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 shadow-xs">
+                  <span className="w-5 h-5 rounded-full bg-sky-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                     2
                   </span>
                   <p className="leading-relaxed">
@@ -225,8 +225,8 @@ export const AboutPage = () => {
                   </p>
                 </div>
 
-                <div className="flex items-start gap-2.5 p-2 rounded-lg bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200/70 dark:border-sky-800/60">
-                  <span className="w-5 h-5 rounded-full bg-sky-600 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200/80 dark:border-sky-800/60 shadow-xs">
+                  <span className="w-5 h-5 rounded-full bg-sky-600 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                     3
                   </span>
                   <p className="leading-relaxed font-semibold text-sky-950 dark:text-sky-200">
@@ -237,10 +237,10 @@ export const AboutPage = () => {
             </div>
 
             {/* DAY 2 CARD */}
-            <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900/85 border border-emerald-200 dark:border-emerald-900/60 shadow-2xs space-y-4">
+            <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-slate-900/85 border border-emerald-200/90 dark:border-emerald-900/60 shadow-sm hover:shadow-md transition-shadow space-y-4">
               <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div className="space-y-0.5">
-                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200/90 dark:border-emerald-800 shadow-xs">
                     <Award className="w-3 h-3" />
                     <span>DAY 02</span>
                   </div>
@@ -252,14 +252,14 @@ export const AboutPage = () => {
                     <span>Approx. 8:00 AM – 8:00 PM</span>
                   </div>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shrink-0">
+                <span className="px-2.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200/90 dark:border-emerald-800 shadow-xs shrink-0">
                   Demo & Prizes
                 </span>
               </div>
 
               <div className="space-y-2 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
-                <div className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
-                  <span className="w-5 h-5 rounded-full bg-emerald-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 shadow-xs">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                     1
                   </span>
                   <p className="leading-relaxed">
@@ -267,8 +267,8 @@ export const AboutPage = () => {
                   </p>
                 </div>
 
-                <div className="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
-                  <span className="w-5 h-5 rounded-full bg-emerald-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 shadow-xs">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                     2
                   </span>
                   <p className="leading-relaxed">
@@ -276,8 +276,8 @@ export const AboutPage = () => {
                   </p>
                 </div>
 
-                <div className="flex items-start gap-2.5 p-2 rounded-lg bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800/60">
-                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 shadow-xs">
+                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                     3
                   </span>
                   <p className="leading-relaxed font-semibold text-emerald-950 dark:text-emerald-200">
@@ -290,7 +290,7 @@ export const AboutPage = () => {
         </section>
 
         {/* SECTION 5: SIMPLE CALL TO ACTION */}
-        <div className="p-5 sm:p-6 rounded-xl bg-slate-900 text-white border border-slate-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-5 sm:p-6 rounded-xl bg-slate-900 text-white border border-slate-800 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="space-y-1 text-center sm:text-left">
             <h3 className="text-base sm:text-lg font-bold font-display">
               Ready to Build Conscious Technology?
@@ -301,7 +301,7 @@ export const AboutPage = () => {
           </div>
           <Link
             to="/ps"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-slate-900 bg-white hover:bg-slate-100 shadow-xs transition-all shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-slate-900 bg-white hover:bg-slate-100 shadow-sm hover:shadow-md transition-all shrink-0 cursor-pointer"
           >
             <span>Explore Problem Statements</span>
             <ArrowRight className="w-3.5 h-3.5" />
