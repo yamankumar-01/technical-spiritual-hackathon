@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, Lock, Check, Clock, AlertTriangle, RefreshCw, ArrowRight } from 'lucide-react';
+import { ChevronRight, Lock, Check, Clock, AlertTriangle, RefreshCw, ArrowRight, Wrench } from 'lucide-react';
 
 export const ProblemStatementListItem = ({
   ps,
@@ -10,6 +10,7 @@ export const ProblemStatementListItem = ({
   showSelectButton = false,
   userTeam = null,
   onRegister = null,
+  onFixSeat = null,
 }) => {
   const totalSeats = ps.capacity || ps.totalSeats || 5;
   const available = ps.available !== undefined ? ps.available : ps.seatsAvailable ?? 5;
@@ -94,6 +95,22 @@ export const ProblemStatementListItem = ({
               : `${available}/${totalSeats} Slots Left`}
           </span>
         </div>
+
+        {/* Admin Fix Seat Button */}
+        {onFixSeat && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onFixSeat(ps);
+            }}
+            className="action-btn-prevent px-3.5 py-1.5 rounded-full text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-300/80 dark:border-amber-700/80 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer font-display"
+            title={`Fix seats for ${ps.code} (${ps.title})`}
+          >
+            <Wrench className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <span>Fix Seat</span>
+          </button>
+        )}
 
         {/* Action Button */}
         {showSelectButton && onSelect ? (

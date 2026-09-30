@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { psService, teamService } from '../services/api';
 import ProblemStatementListItem from '../components/ProblemStatementListItem';
 import ProblemStatementModal from '../components/ProblemStatementModal';
+import FixSeatModal from '../components/FixSeatModal';
 import {
   Sparkles,
   RefreshCw,
@@ -41,6 +42,7 @@ export const PSPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [seatFilter, setSeatFilter] = useState('all'); // 'all', 'available', 'full'
   const [refreshing, setRefreshing] = useState(false);
+  const [fixSeatPS, setFixSeatPS] = useState(null);
 
   // User state maps
   const [userTeamsMap, setUserTeamsMap] = useState({});
@@ -286,6 +288,7 @@ export const PSPage = () => {
               onViewDetails={(p) => setSelectedPS(p)}
               userTeam={userTeamsMap[ps._id]}
               onRegister={handleRegister}
+              onFixSeat={user?.role === 'admin' ? (p) => setFixSeatPS(p) : null}
             />
           ))}
         </div>
@@ -298,6 +301,15 @@ export const PSPage = () => {
           onClose={() => setSelectedPS(null)}
           userTeam={userTeamsMap[selectedPS._id]}
           onRegister={handleRegister}
+        />
+      )}
+
+      {/* Admin Fix Seat Modal */}
+      {fixSeatPS && (
+        <FixSeatModal
+          ps={fixSeatPS}
+          onClose={() => setFixSeatPS(null)}
+          onSuccess={() => fetchPS(true)}
         />
       )}
     </div>

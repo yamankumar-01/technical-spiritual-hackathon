@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import api, { adminService, psService } from '../services/api';
 import StatusBadge from '../components/StatusBadge';
+import FixSeatModal from '../components/FixSeatModal';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -67,11 +68,8 @@ export const AdminDashboardPage = () => {
   const [teamToDelete, setTeamToDelete] = useState(null);
   const [deletingTeam, setDeletingTeam] = useState(false);
 
-  // Fix Seats in Every PS Modal States
-  const [fixSeatsModalOpen, setFixSeatsModalOpen] = useState(false);
-  const [seatsPerPSInput, setSeatsPerPSInput] = useState(5);
-  const [syncWithTeamsOption, setSyncWithTeamsOption] = useState(true);
-  const [fixingSeats, setFixingSeats] = useState(false);
+  // Fix Seat for individual Problem Statement modal state
+  const [fixSeatPS, setFixSeatPS] = useState(null);
 
   // Venue Allocation Modal States
   const [venueModalTeam, setVenueModalTeam] = useState(null);
@@ -233,31 +231,6 @@ export const AdminDashboardPage = () => {
       }
     } catch (err) {
       setErrorMsg('Failed to reset problem statements.');
-    }
-  };
-
-  // Fix seats in every PS from admin side (with seat count and team preservation options)
-  const handleFixAllSeats = async (e) => {
-    if (e) e.preventDefault();
-    try {
-      setFixingSeats(true);
-      setErrorMsg('');
-      const count = Math.max(1, parseInt(seatsPerPSInput, 10) || 5);
-      const res = await adminService.fixSeats({
-        seatsPerPS: count,
-        syncWithTeams: syncWithTeamsOption,
-      });
-      if (res.data?.success) {
-        setActionSuccessMsg(res.data.message || `Successfully fixed seats for all problem statements to ${count} seats each.`);
-        setFixSeatsModalOpen(false);
-        fetchPSSeats();
-        fetchCapacityBreakdown();
-        fetchRegistrations();
-      }
-    } catch (err) {
-      setErrorMsg(err.response?.data?.message || err.message || 'Failed to fix problem statement seats.');
-    } finally {
-      setFixingSeats(false);
     }
   };
 
@@ -744,15 +717,6 @@ export const AdminDashboardPage = () => {
           >
             <Download className="w-4 h-4" />
             <span>Download Offline Table (Excel)</span>
-          </button>
-
-          <button
-            onClick={() => setFixSeatsModalOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-[0_4px_14px_rgba(16,185,129,0.3)] cursor-pointer"
-            title="Fix seats in every problem statement from admin side"
-          >
-            <Wrench className="w-4 h-4" />
-            <span>Fix Seats in Every PS</span>
           </button>
 
           <button
@@ -1377,20 +1341,40 @@ export const AdminDashboardPage = () => {
                             )}
                           </td>
                           <td className="px-5 py-4 text-right">
-                            <button
-                              onClick={() => {
-                                const psObj = problemStatements.find((p) => p._id === item.problemId) || {
-                                  _id: item.problemId,
-                                  code: item.code,
-                                  title: item.title,
-                                  seatsAvailable: item.available,
-                                };
-                                handleOpenPSTeams(psObj);
-                              }}
-                              className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-sky-50 hover:text-sky-600 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs"
-                            >
-                              View Teams
-                            </button>
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const psObj = problemStatements.find((p) => p._id === item.problemId) || {
+                                    _id: item.problemId,
+                                    code: item.code,
+                                    title: item.title,
+                                    seatsAvailable: item.available,
+                                    totalSeats: item.capacity || 5,
+                                  };
+                                  setFixSeatPS(psObj);
+                                }}
+                                className="px-3 py-1.5 rounded-full text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-300/80 dark:border-amber-700/80 transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                                title={`Fix seats for ${item.code}`}
+                              >
+                                <Wrench className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                <span>Fix Seat</span>
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const psObj = problemStatements.find((p) => p._id === item.problemId) || {
+                                    _id: item.problemId,
+                                    code: item.code,
+                                    title: item.title,
+                                    seatsAvailable: item.available,
+                                  };
+                                  handleOpenPSTeams(psObj);
+                                }}
+                                className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-sky-50 hover:text-sky-600 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs"
+                              >
+                                View Teams
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -1409,17 +1393,9 @@ export const AdminDashboardPage = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-300 dark:border-sky-800/60 text-xs sm:text-sm text-sky-700 dark:text-sky-300">
             <div className="flex items-center gap-2 font-medium">
               <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Inspect teams, delete registrations, or fix/reset uniform seat capacity across all problem statements.</span>
+              <span>Inspect teams, delete registrations, or fix seats on individual problem statements.</span>
             </div>
             <div className="flex items-center gap-2 flex-wrap shrink-0">
-              <button
-                type="button"
-                onClick={() => setFixSeatsModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
-              >
-                <Wrench className="w-3.5 h-3.5" />
-                <span>Fix Seat in Every PS</span>
-              </button>
               <button
                 type="button"
                 onClick={handleResetSeats}
@@ -1450,15 +1426,29 @@ export const AdminDashboardPage = () => {
                       <span className="font-mono text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-3 py-1 rounded-full border border-sky-200 dark:border-sky-800/60">
                         {ps.code}
                       </span>
-                      <span
-                        className={`text-xs font-bold px-3 py-1 rounded-full border ${
-                          ps.seatsAvailable <= 0
-                            ? 'text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40'
-                            : 'text-sky-600 dark:text-sky-400 border-sky-300 dark:border-sky-800/60 bg-sky-50 dark:bg-sky-950/60'
-                        }`}
-                      >
-                        {ps.seatsAvailable <= 0 ? '0/5 Seats (FULL)' : `${ps.seatsAvailable}/5 Seats Available`}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setFixSeatPS(ps);
+                          }}
+                          className="px-2.5 py-1 rounded-full text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-300/80 dark:border-amber-700/80 transition-all flex items-center gap-1 cursor-pointer"
+                          title="Fix / adjust seats for this problem statement"
+                        >
+                          <Wrench className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                          <span>Fix Seat</span>
+                        </button>
+                        <span
+                          className={`text-xs font-bold px-3 py-1 rounded-full border ${
+                            ps.seatsAvailable <= 0
+                              ? 'text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40'
+                              : 'text-sky-600 dark:text-sky-400 border-sky-300 dark:border-sky-800/60 bg-sky-50 dark:bg-sky-950/60'
+                          }`}
+                        >
+                          {ps.seatsAvailable <= 0 ? '0/5 Seats (FULL)' : `${ps.seatsAvailable}/5 Seats Available`}
+                        </span>
+                      </div>
                     </div>
 
                     <h3 className="text-base font-bold text-slate-900 dark:text-white font-display line-clamp-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
@@ -2135,119 +2125,15 @@ export const AdminDashboardPage = () => {
         </div>
       )}
 
-      {/* Fix Seats in Every PS Modal */}
-      {fixSeatsModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 space-y-6 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-800">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
-                  <Wrench className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white font-display">
-                    Fix Seats in Every Problem Statement
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Set seat capacity across all 50 problem statements from admin side.
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setFixSeatsModalOpen(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleFixAllSeats} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                  Seats Per Problem Statement (Capacity)
-                </label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={seatsPerPSInput}
-                    onChange={(e) => setSeatsPerPSInput(e.target.value)}
-                    className="w-28 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-mono font-bold text-center text-lg focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                    required
-                  />
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {[3, 5, 8, 10].map((preset) => (
-                      <button
-                        key={preset}
-                        type="button"
-                        onClick={() => setSeatsPerPSInput(preset)}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                          Number(seatsPerPSInput) === preset
-                            ? 'bg-emerald-500 text-white shadow-xs'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                        }`}
-                      >
-                        {preset} Seats
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-1">
-                  Default hackathon rule is 5 seats per problem statement.
-                </span>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 space-y-2">
-                <label className="flex items-start gap-2.5 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={syncWithTeamsOption}
-                    onChange={(e) => setSyncWithTeamsOption(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
-                  />
-                  <div>
-                    <span className="text-xs font-bold text-slate-900 dark:text-slate-200 block">
-                      Preserve & Deduct Confirmed / Pending Teams (Recommended)
-                    </span>
-                    <span className="text-[11px] text-slate-500 dark:text-slate-400 block leading-relaxed mt-0.5">
-                      Available seats will be fixed as: <code>Available = Total Seats - Confirmed/Active Teams</code>. Existing approved teams will keep their registered seats, and any stuck holds will be fixed.
-                    </span>
-                  </div>
-                </label>
-              </div>
-
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-200/80 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setFixSeatsModalOpen(false)}
-                  disabled={fixingSeats}
-                  className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-all cursor-pointer disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={fixingSeats}
-                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-sm transition-all cursor-pointer disabled:opacity-50"
-                >
-                  {fixingSeats ? (
-                    <>
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      <span>Fixing Seats in All PS...</span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Confirm & Fix Seats in Every PS</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Individual Problem Statement Fix Seat Modal */}
+      <FixSeatModal
+        ps={fixSeatPS}
+        onClose={() => setFixSeatPS(null)}
+        onSuccess={() => {
+          fetchPSSeats();
+          fetchCapacityBreakdown();
+        }}
+      />
     </div>
   );
 };
