@@ -1291,27 +1291,6 @@ export const AdminDashboardPage = () => {
       {/* TAB 3: PROBLEM STATEMENT SEATS MANAGER */}
       {activeTab === 'ps_seats' && (
         <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-300 dark:border-sky-800/60 text-xs sm:text-sm text-sky-700 dark:text-sky-300">
-            <div className="flex items-center gap-2 font-medium">
-              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Inspect teams, delete registrations, or fix seats on individual problem statements.</span>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap shrink-0">
-              <button
-                type="button"
-                onClick={handleResetSeats}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-amber-400 text-slate-700 dark:text-slate-200 font-bold text-xs shadow-xs transition-all cursor-pointer"
-                title="Quick Reset all to 5 seats"
-              >
-                <RotateCcw className="w-3.5 h-3.5 text-amber-500" />
-                <span>Reset to 5</span>
-              </button>
-              <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-white dark:bg-slate-900 border border-sky-300 dark:border-sky-800/60">
-                {problemStatements.length} Active
-              </span>
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {problemStatements.map((ps) => {
               const allocatedCount = Math.max(0, 5 - (ps.seatsAvailable || 0));
