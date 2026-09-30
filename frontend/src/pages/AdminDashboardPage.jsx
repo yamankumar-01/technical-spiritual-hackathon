@@ -870,9 +870,7 @@ export const AdminDashboardPage = () => {
               <thead>
                 <tr className="border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 text-[#536159] dark:text-slate-300 text-[10.5px] font-bold uppercase tracking-wider">
                   <th className="px-2.5 py-2.5 w-10 text-center whitespace-nowrap">#</th>
-                  <th className="px-3 py-2.5 min-w-[125px]">Team</th>
-                  <th className="px-3 py-2.5 min-w-[170px] max-w-[240px]">Track / PS</th>
-                  <th className="px-3 py-2.5 min-w-[130px]">Leader</th>
+                  <th className="px-3 py-2.5 min-w-[140px]">Team</th>
                   <th className="px-3 py-2.5 min-w-[140px] whitespace-nowrap">Payment & Status</th>
                   <th className="px-3 py-2.5 min-w-[140px] whitespace-nowrap">Venue</th>
                   <th className="px-3 py-2.5 text-left min-w-[140px] whitespace-nowrap">Actions</th>
@@ -881,13 +879,13 @@ export const AdminDashboardPage = () => {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
+                    <td colSpan={5} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
                       Loading registrations...
                     </td>
                   </tr>
                 ) : registrations.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
+                    <td colSpan={5} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
                       No registrations found matching the filters.
                     </td>
                   </tr>
@@ -902,7 +900,7 @@ export const AdminDashboardPage = () => {
                       <td className="px-2.5 py-2 text-center font-mono font-bold text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
                         {idx + 1}
                       </td>
-                      <td className="px-3 py-2 min-w-[125px]">
+                      <td className="px-3 py-2 min-w-[140px]">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span className="font-mono font-bold text-xs text-sky-600 dark:text-sky-400 whitespace-nowrap">
                             {t.teamCode}
@@ -916,25 +914,6 @@ export const AdminDashboardPage = () => {
                         </div>
                         <div className="font-bold text-slate-900 dark:text-white text-xs leading-tight line-clamp-1 mt-0.5" title={t.teamName}>
                           {t.teamName}
-                        </div>
-                      </td>
-                      <td className="px-3 py-2 min-w-[170px] max-w-[240px]">
-                        <div className="font-semibold text-xs text-slate-900 dark:text-slate-200 leading-snug line-clamp-2" title={t.problemStatement?.title}>
-                          {t.problemStatement?.title || 'Unknown PS'}
-                        </div>
-                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5 font-medium">
-                          {t.problemStatement?.code}
-                        </div>
-                      </td>
-                      <td className="px-3 py-2 min-w-[130px]">
-                        <div className="font-semibold text-xs text-slate-900 dark:text-white leading-tight truncate max-w-[140px]" title={t.leader?.name}>
-                          {t.leader?.name}
-                        </div>
-                        <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[140px] leading-tight mt-0.5" title={t.leader?.email}>
-                          {t.leader?.email}
-                        </div>
-                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                          {t.leader?.phone}
                         </div>
                       </td>
                       <td className="px-3 py-2 min-w-[140px] whitespace-nowrap">
