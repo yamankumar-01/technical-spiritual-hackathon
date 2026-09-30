@@ -149,6 +149,39 @@ html.light [class*="bg-emerald-600"] .text-white {
   color: #ffffff !important;
 }
 
+/* Ensure dark containers keep white/bright text in light mode */
+html.light [class*="bg-slate-900"],
+html.light [class*="bg-slate-950"],
+html.light [class*="bg-indigo-950"],
+html.light [class*="bg-gray-900"],
+html.light [class*="bg-black"],
+html.light .bg-slate-900,
+html.light .bg-slate-950 {
+  color: #ffffff !important;
+}
+
+html.light [class*="bg-slate-900"] h1,
+html.light [class*="bg-slate-900"] h2,
+html.light [class*="bg-slate-900"] h3,
+html.light [class*="bg-slate-900"] h4,
+html.light [class*="bg-slate-900"] h5,
+html.light [class*="bg-slate-900"] h6,
+html.light [class*="bg-slate-950"] h1,
+html.light [class*="bg-slate-950"] h2,
+html.light [class*="bg-slate-950"] h3,
+html.light [class*="bg-indigo-950"] h1,
+html.light [class*="bg-indigo-950"] h2,
+html.light [class*="bg-indigo-950"] h3 {
+  color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+html.light [class*="bg-slate-900"] p,
+html.light [class*="bg-slate-950"] p,
+html.light [class*="bg-indigo-950"] p {
+  color: #cbd5e1 !important;
+}
+
 /* ========================================================
    LIGHT MODE: SHADOWS FOR BUTTONS, TAGS & CARDS ON WHITE BG
    Ensures buttons, badges, tags, and cards have clear drop shadows

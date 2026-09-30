@@ -280,21 +280,24 @@ export const AboutPage = () => {
         </section>
 
         {/* SECTION 5: SIMPLE CALL TO ACTION */}
-        <div className="p-5 sm:p-6 rounded-xl bg-slate-900 text-white border border-slate-800 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="space-y-1 text-center sm:text-left">
-            <h3 className="text-base sm:text-lg font-bold font-display">
+        <div className="p-6 sm:p-7 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white border border-slate-800 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-5 relative overflow-hidden">
+          <div className="space-y-1.5 text-center sm:text-left relative z-10 max-w-xl">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-sky-400 block">
+              Limited Seats Available
+            </span>
+            <h3 className="text-xl sm:text-2xl font-bold font-display" style={{ color: '#ffffff' }}>
               Ready to Build Conscious Technology?
             </h3>
-            <p className="text-xs text-slate-300 max-w-lg">
+            <p className="text-xs sm:text-sm leading-relaxed" style={{ color: '#cbd5e1' }}>
               Browse available Problem Statements across the 6 tracks and reserve your team's slot before capacity fills up.
             </p>
           </div>
           <Link
             to="/ps"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-slate-900 bg-white hover:bg-slate-100 shadow-sm hover:shadow-md transition-all shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs sm:text-sm font-bold text-slate-900 bg-white hover:bg-slate-100 shadow-md hover:shadow-lg transition-all shrink-0 cursor-pointer relative z-10"
           >
             <span>Explore Problem Statements</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
