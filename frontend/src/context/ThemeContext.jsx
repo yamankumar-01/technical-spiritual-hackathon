@@ -3,37 +3,22 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(() => {
-    try {
-      const saved = localStorage.getItem('tsh-theme');
-      if (saved === 'light' || saved === 'dark') {
-        return saved;
-      }
-    } catch (e) {
-      // ignore storage access errors
-    }
-    return 'light'; // Default to light mode
-  });
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    } else {
-      root.classList.remove('dark');
-      root.classList.add('light');
-    }
-    root.setAttribute('data-theme', theme);
+    root.classList.remove('dark');
+    root.classList.add('light');
+    root.setAttribute('data-theme', 'light');
     try {
-      localStorage.setItem('tsh-theme', theme);
+      localStorage.setItem('tsh-theme', 'light');
     } catch (e) {
       // ignore storage access errors
     }
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    setTheme('light');
   };
 
   return (

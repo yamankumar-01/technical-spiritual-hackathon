@@ -36,10 +36,10 @@ function AppContent() {
   const hideFooter = isAdminRoute || user?.role === 'admin';
 
   return (
-    <div className="min-h-screen flex flex-col relative text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 selection:bg-[#bae6fd] selection:text-[#0369a1] dark:selection:bg-[#38bdf8]/40 dark:selection:text-white bg-white dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col relative text-slate-900 font-sans transition-colors duration-300 selection:bg-[#bae6fd] selection:text-[#0369a1] bg-white">
       <div className="relative z-10 flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-grow w-full bg-white dark:bg-slate-950">
+        <main className="flex-grow w-full bg-white">
         <Routes>
           {/* Public Marketing & Educational Routes */}
           <Route path="/" element={<HomePage />} />

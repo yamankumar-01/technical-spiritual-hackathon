@@ -24,13 +24,11 @@
     transition: background-color 0.25s ease, color 0.25s ease;
   }
 
-  html.dark body {
-    background-color: #080c14;
-    color: #f1f5f9;
-  }
-
+  html body,
+  html.dark body,
   html.light body,
-  html:not(.dark) body {
+  html:not(.dark) body,
+  body {
     background-color: #ffffff;
     color: #0f172a;
   }
