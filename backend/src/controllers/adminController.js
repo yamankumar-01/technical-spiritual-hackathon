@@ -131,11 +131,12 @@ export const updateProblemStatementSeats = async (req, res) => {
     }
     res.status(200).json({
       success: true,
-      message: `Seats updated for ${ps.code}: ${ps.seatsAvailable}/${ps.totalSeats} seats.`,
+      message: `Capacity set to ${ps.totalSeats} for ${ps.code}. Remaining slots available: ${ps.seatsAvailable} (${ps.alreadyRegistered || 0} registered).`,
       data: ps,
     });
   } catch (error) {
-    res.status(500).json({
+    const status = error.statusCode || (error.code === 'CAPACITY_BELOW_REGISTERED' ? 400 : 500);
+    res.status(status).json({
       success: false,
       message: error.message || 'Failed to update seats for problem statement.',
     });

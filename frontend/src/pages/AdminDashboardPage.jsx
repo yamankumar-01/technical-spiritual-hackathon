@@ -1225,14 +1225,25 @@ export const AdminDashboardPage = () => {
                               <button
                                 type="button"
                                 onClick={() => {
+                                  const total = item.capacity || 5;
+                                  const avail = item.available !== undefined ? item.available : 5;
+                                  const occ = item.occupied !== undefined ? item.occupied : Math.max(0, total - avail);
                                   const psObj = problemStatements.find((p) => p._id === item.problemId) || {
                                     _id: item.problemId,
                                     code: item.code,
                                     title: item.title,
-                                    seatsAvailable: item.available,
-                                    totalSeats: item.capacity || 5,
+                                    seatsAvailable: avail,
+                                    totalSeats: total,
                                   };
-                                  setFixSeatPS(psObj);
+                                  setFixSeatPS({
+                                    ...psObj,
+                                    _id: item.problemId || psObj._id,
+                                    code: item.code || psObj.code,
+                                    title: item.title || psObj.title,
+                                    totalSeats: total,
+                                    seatsAvailable: avail,
+                                    occupied: occ,
+                                  });
                                 }}
                                 className="px-3 py-1.5 rounded-full text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-300/80 dark:border-amber-700/80 transition-all flex items-center gap-1 cursor-pointer shadow-xs"
                                 title={`Fix seats for ${item.code}`}
@@ -1272,7 +1283,8 @@ export const AdminDashboardPage = () => {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {problemStatements.map((ps) => {
-              const allocatedCount = Math.max(0, 5 - (ps.seatsAvailable || 0));
+              const total = ps.totalSeats || ps.capacity || 5;
+              const allocatedCount = Math.max(0, total - (ps.seatsAvailable || 0));
               return (
                 <div
                   key={ps._id}
@@ -1290,7 +1302,12 @@ export const AdminDashboardPage = () => {
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setFixSeatPS(ps);
+                            setFixSeatPS({
+                              ...ps,
+                              totalSeats: total,
+                              seatsAvailable: ps.seatsAvailable,
+                              occupied: allocatedCount,
+                            });
                           }}
                           className="px-2.5 py-1 rounded-full text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-300/80 dark:border-amber-700/80 transition-all flex items-center gap-1 cursor-pointer"
                           title="Fix / adjust seats for this problem statement"
@@ -1305,7 +1322,7 @@ export const AdminDashboardPage = () => {
                               : 'text-sky-600 dark:text-sky-400 border-sky-300 dark:border-sky-800/60 bg-sky-50 dark:bg-sky-950/60'
                           }`}
                         >
-                          {ps.seatsAvailable <= 0 ? '0/5 Seats (FULL)' : `${ps.seatsAvailable}/5 Seats Available`}
+                          {ps.seatsAvailable <= 0 ? `0/${total} Seats (FULL)` : `${ps.seatsAvailable}/${total} Seats Available`}
                         </span>
                       </div>
                     </div>
@@ -1318,13 +1335,13 @@ export const AdminDashboardPage = () => {
                       <div className="flex justify-between text-xs font-semibold text-[#536159] dark:text-slate-400">
                         <span>Allocated</span>
                         <span className="font-mono font-bold text-[#12141A] dark:text-slate-200">
-                          {allocatedCount} of 5 Teams
+                          {allocatedCount} of {total} Teams
                         </span>
                       </div>
                       <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-[#2EB88A] to-[#1E9470] transition-all duration-500"
-                          style={{ width: `${(allocatedCount / 5) * 100}%` }}
+                          style={{ width: `${Math.min(100, (allocatedCount / (total || 1)) * 100)}%` }}
                         />
                       </div>
                     </div>
@@ -1587,11 +1604,11 @@ export const AdminDashboardPage = () => {
                     }`}
                   >
                     {selectedPSForTeams.seatsAvailable <= 0
-                      ? '0/5 Seats Available (FULL)'
-                      : `${selectedPSForTeams.seatsAvailable}/5 Seats Available`}
+                      ? `0/${selectedPSForTeams.totalSeats || selectedPSForTeams.capacity || 5} Seats Available (FULL)`
+                      : `${selectedPSForTeams.seatsAvailable}/${selectedPSForTeams.totalSeats || selectedPSForTeams.capacity || 5} Seats Available`}
                   </span>
                   <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    ({Math.max(0, 5 - (selectedPSForTeams.seatsAvailable || 0))} of 5 Allocated)
+                    ({Math.max(0, (selectedPSForTeams.totalSeats || selectedPSForTeams.capacity || 5) - (selectedPSForTeams.seatsAvailable || 0))} of {selectedPSForTeams.totalSeats || selectedPSForTeams.capacity || 5} Allocated)
                   </span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
@@ -1632,14 +1649,14 @@ export const AdminDashboardPage = () => {
                 </h4>
                 <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
                   There are currently no teams registered under problem statement{' '}
-                  <strong className="text-slate-900 dark:text-white">{selectedPSForTeams.code}</strong>. All 5 seats are completely open and available.
+                  <strong className="text-slate-900 dark:text-white">{selectedPSForTeams.code}</strong>. All {selectedPSForTeams.totalSeats || selectedPSForTeams.capacity || 5} seats are completely open and available.
                 </p>
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">
                   <span>Registered Teams ({psTeams.length})</span>
-                  <span>Seats: {selectedPSForTeams.seatsAvailable}/5 Available</span>
+                  <span>Seats: {selectedPSForTeams.seatsAvailable}/{selectedPSForTeams.totalSeats || selectedPSForTeams.capacity || 5} Available</span>
                 </div>
 
                 <div className="space-y-4">

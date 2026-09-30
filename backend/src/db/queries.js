@@ -1053,16 +1053,41 @@ export const updateSinglePSSeats = async (id, { totalSeats, seatsAvailable }) =>
   const ps = await getProblemStatementById(id);
   if (!ps) return null;
 
+  // 1. Count already registered active teams for this problem statement
+  const registeredRes = await pgQuery(
+    `SELECT COUNT(*) AS count 
+     FROM teams 
+     WHERE problem_statement_id = $1 
+       AND status IN ('payment_pending', 'confirmed', 'registered', 'finalized', 'approved')`,
+    [ps.id]
+  );
+  const alreadyRegistered = parseInt(registeredRes.rows[0]?.count || 0, 10);
+
   const newTotal = totalSeats !== undefined ? Math.max(1, parseInt(totalSeats, 10)) : ps.totalSeats;
-  const newAvail = seatsAvailable !== undefined ? Math.max(0, parseInt(seatsAvailable, 10)) : ps.seatsAvailable;
+
+  // 2. Strict validation: Cannot reduce capacity below already registered count
+  if (newTotal < alreadyRegistered) {
+    const error = new Error(
+      `Cannot reduce capacity to ${newTotal}. There are already ${alreadyRegistered} registered team(s) for ${ps.code}. Minimum capacity is ${alreadyRegistered}.`
+    );
+    error.statusCode = 400;
+    error.code = 'CAPACITY_BELOW_REGISTERED';
+    throw error;
+  }
+
+  // 3. Automatically calculate remaining slots based on already registered teams
+  const remainingSlots = Math.max(0, newTotal - alreadyRegistered);
 
   const res = await pgQuery(
     `UPDATE problem_statements 
-     SET total_seats = $2, seats_available = $3
+     SET total_seats = $2, seats_available = $3, updated_at = CURRENT_TIMESTAMP
      WHERE id = $1
      RETURNING *`,
-    [ps.id, newTotal, newAvail]
+    [ps.id, newTotal, remainingSlots]
   );
-  return formatPS(res.rows[0]);
+  return {
+    ...formatPS(res.rows[0]),
+    alreadyRegistered,
+  };
 };
 
