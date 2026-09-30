@@ -1024,3 +1024,44 @@ export const resetAllProblemStatements = async () => {
   await pgQuery(`UPDATE problem_statements SET seats_available = total_seats`);
   return await getAllProblemStatements();
 };
+
+export const fixAllProblemStatementsSeats = async ({ seatsPerPS = 5, syncWithTeams = true } = {}) => {
+  const seats = Math.max(1, parseInt(seatsPerPS, 10) || 5);
+  if (syncWithTeams) {
+    await pgQuery(
+      `UPDATE problem_statements ps
+       SET total_seats = $1,
+           seats_available = GREATEST(0, $1 - COALESCE(
+             (SELECT COUNT(*) FROM teams t 
+              WHERE t.problem_statement_id = ps.id 
+                AND t.status IN ('confirmed', 'payment_pending', 'finalized')), 0
+           ))`,
+      [seats]
+    );
+  } else {
+    await pgQuery(
+      `UPDATE problem_statements 
+       SET total_seats = $1, seats_available = $1`,
+      [seats]
+    );
+  }
+  return await getAllProblemStatements();
+};
+
+export const updateSinglePSSeats = async (id, { totalSeats, seatsAvailable }) => {
+  const ps = await getProblemStatementById(id);
+  if (!ps) return null;
+
+  const newTotal = totalSeats !== undefined ? Math.max(1, parseInt(totalSeats, 10)) : ps.totalSeats;
+  const newAvail = seatsAvailable !== undefined ? Math.max(0, parseInt(seatsAvailable, 10)) : ps.seatsAvailable;
+
+  const res = await pgQuery(
+    `UPDATE problem_statements 
+     SET total_seats = $2, seats_available = $3
+     WHERE id = $1
+     RETURNING *`,
+    [ps.id, newTotal, newAvail]
+  );
+  return formatPS(res.rows[0]);
+};
+

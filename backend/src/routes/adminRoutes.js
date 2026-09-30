@@ -4,6 +4,8 @@ import {
   approveRegistration,
   rejectRegistration,
   resetProblemStatements,
+  fixProblemStatementsSeats,
+  updateProblemStatementSeats,
   getContactQueries,
   getPSTeams,
   deleteTeamRegistration,
@@ -35,6 +37,8 @@ router.post('/registrations/:id/reject', rejectRegistration);
 router.patch('/teams/:id/venue', updateTeamVenue);
 router.patch('/registrations/:id/venue', updateTeamVenue);
 router.post('/ps/reset', resetProblemStatements);
+router.post('/ps/fix-seats', fixProblemStatementsSeats);
+router.patch('/ps/:id/seats', updateProblemStatementSeats);
 router.get('/queries', getContactQueries);
 router.get('/ps/:id/teams', getPSTeams);
 router.delete('/teams/:id', deleteTeamRegistration);

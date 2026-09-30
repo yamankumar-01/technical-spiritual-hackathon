@@ -8,6 +8,8 @@ import {
   resetAllProblemStatements,
   getAllProblemStatements,
   updateTeamVenueAdmin,
+  fixAllProblemStatementsSeats,
+  updateSinglePSSeats,
 } from '../db/queries.js';
 import { pgQuery } from '../config/postgres.js';
 import * as XLSX from 'xlsx';
@@ -95,6 +97,47 @@ export const resetProblemStatements = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to reset problem statements.',
+    });
+  }
+};
+
+// 4b. Fix Seats in Every Problem Statement (with custom seat count and optional sync)
+export const fixProblemStatementsSeats = async (req, res) => {
+  try {
+    const { seatsPerPS = 5, syncWithTeams = true } = req.body || {};
+    const problemStatements = await fixAllProblemStatementsSeats({ seatsPerPS, syncWithTeams });
+    res.status(200).json({
+      success: true,
+      count: problemStatements.length,
+      message: `Fixed seats across all ${problemStatements.length} problem statements to ${seatsPerPS} seats each (active teams preserved).`,
+      data: problemStatements,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to fix seats for problem statements.',
+    });
+  }
+};
+
+// 4c. Update / Fix Seats for a Specific Problem Statement
+export const updateProblemStatementSeats = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { totalSeats, seatsAvailable } = req.body;
+    const ps = await updateSinglePSSeats(id, { totalSeats, seatsAvailable });
+    if (!ps) {
+      return res.status(404).json({ success: false, message: 'Problem statement not found.' });
+    }
+    res.status(200).json({
+      success: true,
+      message: `Seats updated for ${ps.code}: ${ps.seatsAvailable}/${ps.totalSeats} seats.`,
+      data: ps,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to update seats for problem statement.',
     });
   }
 };
