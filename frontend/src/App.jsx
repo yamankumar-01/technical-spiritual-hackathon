@@ -36,16 +36,10 @@ function AppContent() {
   const hideFooter = isAdminRoute || user?.role === 'admin';
 
   return (
-    <div className="min-h-screen flex flex-col relative text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 selection:bg-[#bae6fd] selection:text-[#0369a1] dark:selection:bg-[#38bdf8]/40 dark:selection:text-white">
-      {/* Techno-Circuit Dynamic Background Canvas */}
-      <div className="tech-bg-container" aria-hidden="true">
-        <div className="tech-bg-image" />
-        <div className="tech-bg-overlay" />
-      </div>
-
+    <div className="min-h-screen flex flex-col relative text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 selection:bg-[#bae6fd] selection:text-[#0369a1] dark:selection:bg-[#38bdf8]/40 dark:selection:text-white bg-white dark:bg-slate-950">
       <div className="relative z-10 flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-grow w-full">
+        <main className="flex-grow w-full bg-white dark:bg-slate-950">
         <Routes>
           {/* Public Marketing & Educational Routes */}
           <Route path="/" element={<HomePage />} />
