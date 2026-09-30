@@ -41,9 +41,9 @@ export const Navbar = () => {
     navigate('/');
   };
 
-  const isAdminView = location.pathname.startsWith('/admin');
+  const isAdmin = user?.role === 'admin' || location.pathname.startsWith('/admin');
 
-  const navLinks = isAdminView
+  const navLinks = isAdmin
     ? [
         { name: 'Problem Statements', path: '/ps' },
         { name: 'About / TSH', path: '/about' },
@@ -67,7 +67,7 @@ export const Navbar = () => {
         }`}
       >
         {/* Brand Logo with Official TSH Emblem - Balanced and Centered */}
-        <Link to="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0 mr-2 lg:mr-4">
+        <Link to={user?.role === 'admin' ? "/admin" : "/"} className="flex items-center gap-2 sm:gap-2.5 group shrink-0 mr-2 lg:mr-4">
           <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border border-slate-200/90 dark:border-slate-700/80 flex items-center justify-center p-1 shadow-xs group-hover:border-sky-500/60 group-hover:shadow-md group-hover:scale-105 transition-all overflow-hidden shrink-0">
             <img src="/tsh-logo.png" alt="TSH Logo" className="w-full h-full object-contain" />
           </div>
