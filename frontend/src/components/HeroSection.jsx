@@ -47,14 +47,7 @@ export const HeroSection = () => {
         <div className="absolute top-0 right-1/4 w-[400px] h-[300px] bg-sky-500/10 dark:bg-sky-400/10 blur-[100px] pointer-events-none rounded-full" />
         <div className="absolute bottom-0 left-1/4 w-[350px] h-[250px] bg-indigo-500/10 dark:bg-indigo-400/10 blur-[100px] pointer-events-none rounded-full" />
 
-        {/* TSH Emblem Watermark in Background */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
-          <img
-            src="/tsh-logo-transparent.png"
-            alt="TSH Watermark"
-            className="w-[340px] sm:w-[500px] lg:w-[620px] max-w-full aspect-square object-contain opacity-[0.12] dark:opacity-[0.14] transition-opacity"
-          />
-        </div>
+
 
         {/* Hero Content - Centered with Generous Breathing Room */}
         <div className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center">
