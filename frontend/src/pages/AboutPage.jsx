@@ -295,9 +295,10 @@ export const AboutPage = () => {
           <Link
             to="/ps"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs sm:text-sm font-bold text-slate-900 bg-white hover:bg-slate-100 shadow-md hover:shadow-lg transition-all shrink-0 cursor-pointer relative z-10"
+            style={{ color: '#0f172a', backgroundColor: '#ffffff' }}
           >
-            <span>Explore Problem Statements</span>
-            <ArrowRight className="w-4 h-4" />
+            <span style={{ color: '#0f172a' }}>Explore Problem Statements</span>
+            <ArrowRight className="w-4 h-4 text-slate-900" style={{ color: '#0f172a', stroke: '#0f172a' }} />
           </Link>
         </div>
 

@@ -141,14 +141,29 @@ html.light .text-purple-400 {
 html.light button.text-white,
 html.light button .text-white,
 html.light a.text-white,
-html.light a .text-white,
-html.light .dark-banner,
-html.light .dark-banner * {
+html.light .dark-banner {
+  color: #ffffff !important;
+}
+
+html.light .dark-banner h1,
+html.light .dark-banner h2,
+html.light .dark-banner h3,
+html.light .dark-banner h4 {
   color: #ffffff !important;
 }
 
 html.light .dark-banner p {
   color: #cbd5e1 !important;
+}
+
+/* White buttons inside dark banners must strictly keep deep dark text & icon */
+html.light .dark-banner a.bg-white,
+html.light .dark-banner a.bg-white *,
+html.light .dark-banner button.bg-white,
+html.light .dark-banner button.bg-white *,
+html.light .dark-banner .text-slate-900,
+html.light .dark-banner .text-slate-900 * {
+  color: #0f172a !important;
 }
 
 /* ========================================================
