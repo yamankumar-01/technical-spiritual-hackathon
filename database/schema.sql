@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS teams (
     status VARCHAR(50) NOT NULL DEFAULT 'payment_pending' CHECK (status IN ('draft', 'pending', 'payment_pending', 'confirmed', 'rejected', 'shortlisted', 'registered', 'finalized')),
     payment_status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (payment_status IN ('pending', 'verified', 'confirmed', 'rejected', 'failed', 'refunded')),
     payment_method VARCHAR(50) NOT NULL DEFAULT 'src_desk' CHECK (payment_method IN ('src_desk', 'upi', 'bank_transfer', 'manual', 'cash')),
-    payment_amount NUMERIC NOT NULL DEFAULT 400,
+    payment_amount NUMERIC NOT NULL DEFAULT 1200,
     transaction_id VARCHAR(120),
     payment_screenshot_url TEXT,
     admin_notes TEXT,

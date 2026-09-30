@@ -69,7 +69,7 @@ export const HomePage = () => {
       step: '04',
       title: 'Online Payment & Verification',
       tag: 'Seat Confirmation',
-      desc: 'Scan the official UPI QR code to complete the ₹400 registration fee, then submit your transaction details via the official Google Form to lock your team seat.',
+      desc: 'Scan the official UPI QR code to complete the ₹1200 registration fee, then submit your transaction details via the official Google Form to lock your team seat.',
       icon: CreditCard,
       actionText: 'Lock Your Seat',
       actionLink: '/register-team',
@@ -96,7 +96,7 @@ export const HomePage = () => {
     },
     {
       q: 'What is the payment and seat confirmation process?',
-      a: 'Payment is completed online via UPI QR code. After submitting your team roster online, scan the official QR code to pay the ₹400 team registration fee, then click "Fill Your Payment Details" to submit your payment verification in the official Google Form. Once verified, your slot is officially confirmed.',
+      a: 'Payment is completed online via UPI QR code. After submitting your team roster online, scan the official QR code to pay the ₹1200 team registration fee, then click "Fill Your Payment Details" to submit your payment verification in the official Google Form. Once verified, your slot is officially confirmed.',
     },
     {
       q: 'Who is eligible to participate?',

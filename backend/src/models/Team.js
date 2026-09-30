@@ -91,7 +91,7 @@ const teamSchema = new mongoose.Schema(
       },
       amount: {
         type: Number,
-        default: 400, // INR 400 per team
+        default: 1200, // INR 1200 per team
       },
       manualTxnId: { type: String, default: null },
       manualProofUrl: { type: String, default: null },

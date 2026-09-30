@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 
-const REGISTRATION_FEE = 400;
+const REGISTRATION_FEE = 1200;
 const PAYMENT_GOOGLE_FORM_URL = 'https://forms.gle/xTE5A2jN2rao1u978';
 
 export const TeamRegisterPage = () => {

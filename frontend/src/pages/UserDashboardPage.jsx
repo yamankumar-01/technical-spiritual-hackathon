@@ -292,7 +292,7 @@ export const UserDashboardPage = () => {
                                 <span>Complete Online Payment to Confirm Your Seat</span>
                               </div>
                               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                Fee: <strong className="text-emerald-600 dark:text-emerald-400">₹400</strong> per team • Scan QR code and submit details
+                                Fee: <strong className="text-emerald-600 dark:text-emerald-400">₹1200</strong> per team • Scan QR code and submit details
                               </p>
                             </div>
                             <a
@@ -316,7 +316,7 @@ export const UserDashboardPage = () => {
                             </div>
                             <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
                               <p>
-                                <strong>1. Scan QR Code:</strong> Use Google Pay, PhonePe, Paytm, or BHIM to pay the ₹400 registration fee.
+                                <strong>1. Scan QR Code:</strong> Use Google Pay, PhonePe, Paytm, or BHIM to pay the ₹1200 registration fee.
                               </p>
                               <p>
                                 <strong>2. Fill Google Form:</strong> Click the button above to submit your transaction screenshot & UTR number.
