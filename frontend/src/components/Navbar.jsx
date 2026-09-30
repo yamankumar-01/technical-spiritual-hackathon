@@ -62,8 +62,8 @@ export const Navbar = () => {
       <nav
         className={`rounded-full px-3.5 sm:px-5 py-2 border flex items-center justify-between transition-all duration-300 min-h-[58px] sm:min-h-[62px] ${
           scrolled
-            ? 'bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl shadow-lg border-white/50 dark:border-slate-700/60'
-            : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-[0_10px_30px_rgba(18,20,26,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] border-white/85 dark:border-slate-800'
+            ? 'bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl shadow-[0_14px_40px_rgba(15,23,42,0.15)] dark:shadow-xl border-slate-200/90 dark:border-slate-700/60'
+            : 'bg-white/95 dark:bg-slate-900/90 backdrop-blur-md shadow-[0_12px_36px_rgba(15,23,42,0.13),0_4px_14px_rgba(15,23,42,0.07)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] border-slate-200/90 dark:border-slate-800'
         }`}
       >
         {/* Brand Logo with Official TSH Emblem */}

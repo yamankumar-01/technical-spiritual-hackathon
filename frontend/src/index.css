@@ -154,6 +154,34 @@ html.light [class*="bg-emerald-600"] .text-white {
    Ensures buttons, badges, tags, and cards have clear drop shadows
    so they stand out crisply against the pure white surface.
    ======================================================== */
+/* Increased shadow for floating navbar in light mode */
+html.light header nav,
+html:not(.dark) header nav {
+  box-shadow: 0 14px 40px -4px rgba(15, 23, 42, 0.16), 0 4px 16px -2px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Increased shadow for headings in light mode */
+html.light h1:not(.text-transparent),
+html:not(.dark) h1:not(.text-transparent) {
+  text-shadow: 0 2px 8px rgba(15, 23, 42, 0.14), 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+html.light h2:not(.text-transparent),
+html:not(.dark) h2:not(.text-transparent) {
+  text-shadow: 0 1px 4px rgba(15, 23, 42, 0.10);
+}
+
+html.light h3:not(.text-transparent),
+html:not(.dark) h3:not(.text-transparent) {
+  text-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+/* For gradient headings with bg-clip-text */
+html.light .bg-clip-text,
+html:not(.dark) .bg-clip-text {
+  filter: drop-shadow(0 2px 4px rgba(14, 165, 233, 0.22));
+}
+
 html.light button:not([class*="bg-transparent"]):not([class*="shadow-none"]),
 html:not(.dark) button:not([class*="bg-transparent"]):not([class*="shadow-none"]),
 html.light a[role="button"]:not([class*="bg-transparent"]):not([class*="shadow-none"]),

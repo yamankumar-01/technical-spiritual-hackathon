@@ -14,7 +14,6 @@ import {
   Presentation,
   Lightbulb,
   ShieldCheck,
-  ArrowUpRight,
 } from 'lucide-react';
 
 export const AboutPage = () => {
@@ -143,28 +142,19 @@ export const AboutPage = () => {
             {themes.map((theme) => {
               const IconComp = theme.icon;
               return (
-                <Link
+                <div
                   key={theme.id}
-                  to="/ps"
-                  className="group p-4 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-md hover:border-sky-500/60 dark:hover:border-sky-500/60 transition-all flex items-center justify-between"
+                  className="p-4 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center gap-3.5"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border bg-gradient-to-br ${theme.accent} group-hover:scale-105 transition-transform`}
-                    >
-                      <IconComp className="w-4.5 h-4.5" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-[10px] font-mono text-slate-400 block uppercase">
-                        Track {theme.id}
-                      </span>
-                      <h3 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white font-display leading-snug">
-                        {theme.title}
-                      </h3>
-                    </div>
+                  <div
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border bg-gradient-to-br ${theme.accent} shadow-2xs`}
+                  >
+                    <IconComp className="w-5 h-5" />
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-sky-500 transition-colors shrink-0 ml-2" />
-                </Link>
+                  <h3 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white font-display leading-snug">
+                    {theme.title}
+                  </h3>
+                </div>
               );
             })}
           </div>
