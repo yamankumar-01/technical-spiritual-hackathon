@@ -218,6 +218,10 @@ export const initializePostgres = async () => {
       );
     `);
 
+    // Standardize all existing registration payment amounts to 1200
+    await pgQuery(`UPDATE teams SET payment_amount = 1200 WHERE payment_amount IS NULL OR payment_amount = 400 OR payment_amount != 1200;`);
+    await pgQuery(`UPDATE offline_registrations_backup SET payment_amount = 1200 WHERE payment_amount IS NULL OR payment_amount = 400 OR payment_amount != 1200;`);
+
     // Ensure global settings row exists
     await pgQuery(`
       CREATE TABLE IF NOT EXISTS global_settings (

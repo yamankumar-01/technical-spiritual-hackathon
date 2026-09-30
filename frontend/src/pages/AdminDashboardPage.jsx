@@ -457,7 +457,7 @@ export const AdminDashboardPage = () => {
         ps.category || 'N/A',
         (t.status || 'pending').toUpperCase(),
         paymentDesc,
-        t.payment?.amount || 400,
+        (!t.payment?.amount || Number(t.payment.amount) === 400) ? 1200 : t.payment.amount,
         leader.name || 'N/A',
         leader.email || 'N/A',
         leader.phone || 'N/A',
@@ -687,7 +687,7 @@ export const AdminDashboardPage = () => {
         ps.category || 'N/A',
         (t.status || 'pending').toUpperCase(),
         paymentDesc,
-        t.payment?.amount || 400,
+        (!t.payment?.amount || Number(t.payment.amount) === 400) ? 1200 : t.payment.amount,
         leader.name || 'N/A',
         leader.email || 'N/A',
         leader.phone || 'N/A',
@@ -966,7 +966,7 @@ export const AdminDashboardPage = () => {
                           <StatusBadge status={t.status} />
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 font-mono">
-                              Fee: ₹{t.payment?.amount || 1200}
+                              Fee: ₹{(!t.payment?.amount || Number(t.payment.amount) === 400) ? 1200 : t.payment.amount}
                             </span>
                             {t.payment?.manualProofUrl && (
                               <button
@@ -1529,7 +1529,7 @@ export const AdminDashboardPage = () => {
                   Collection Mode: <strong>Student Resource Center (SRC) In-Person Desk</strong>
                 </p>
                 <p>
-                  Fee Amount: <strong>₹{inspectTeam.payment?.amount || 1200} (Team of 4)</strong>
+                  Fee Amount: <strong>₹{(!inspectTeam.payment?.amount || Number(inspectTeam.payment.amount) === 400) ? 1200 : inspectTeam.payment.amount} (Team of 4)</strong>
                 </p>
                 <p>
                   Payment Status:{' '}

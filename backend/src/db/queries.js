@@ -72,7 +72,7 @@ export const formatTeam = (t, members = []) => ({
     : null,
   payment: {
     method: t.payment_method || 'online_upi',
-    amount: Number(t.payment_amount || 1200),
+    amount: (!t.payment_amount || Number(t.payment_amount) === 400) ? 1200 : Number(t.payment_amount),
     manualTxnId: t.transaction_id,
     manualProofUrl: t.payment_screenshot_url,
     paidAt: t.approved_at || t.created_at,
@@ -604,7 +604,7 @@ export const registerNewTeam = async ({ teamName, psId, userId, leader, members 
           JSON.stringify(insertedMembers),
           team.payment_status || 'pending',
           team.payment_method || 'online_upi',
-          team.payment_amount || 1200,
+          (!team.payment_amount || Number(team.payment_amount) === 400) ? 1200 : Number(team.payment_amount),
           JSON.stringify({ team, members: insertedMembers, ps: { id: ps.id, code: ps.code, title: ps.title } }),
         ]
       );
