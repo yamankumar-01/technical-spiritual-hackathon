@@ -14,8 +14,8 @@ export const Footer = () => {
           {/* Column 1: Brand & Philosophy (5 Cols) */}
           <div className="md:col-span-5 space-y-4">
             <div className="flex items-center gap-3.5">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center p-1.5 shadow-xs shrink-0 overflow-hidden">
-                <img src="/tsh-logo.png" alt="TSH Logo" className="w-full h-full object-contain" />
+              <div className="h-12 sm:h-14 w-auto flex items-center justify-center shrink-0">
+                <img src="/tsh-logo.png" alt="TSH Logo" className="h-full w-auto object-contain drop-shadow-xs" />
               </div>
               <div>
                 <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-slate-100 font-display leading-tight">

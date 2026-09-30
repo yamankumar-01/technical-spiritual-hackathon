@@ -49,8 +49,8 @@ export const LoginPage = () => {
 
         <div className="p-8 sm:p-10 rounded-3xl bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 shadow-[0_15px_45px_rgba(0,0,0,0.06)] dark:shadow-[0_15px_45px_rgba(0,0,0,0.4)] space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-full bg-white border border-slate-200/80 dark:border-slate-700/80 p-2 flex items-center justify-center shadow-[0_8px_24px_rgba(14,165,233,0.15)] overflow-hidden">
-              <img src="/tsh-logo.png" alt="TSH Logo" className="w-full h-full object-contain" />
+            <div className="h-18 sm:h-20 w-auto mx-auto flex items-center justify-center">
+              <img src="/tsh-logo.png" alt="TSH Logo" className="h-full w-auto object-contain drop-shadow-sm" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white font-display">
               Welcome Back

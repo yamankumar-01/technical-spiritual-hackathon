@@ -66,10 +66,10 @@ export const Navbar = () => {
             : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-[0_10px_30px_rgba(18,20,26,0.06)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] border-white/85 dark:border-slate-800'
         }`}
       >
-        {/* Brand Logo with Official TSH Emblem - Balanced and Centered */}
-        <Link to={user?.role === 'admin' ? "/admin" : "/"} className="flex items-center gap-2 sm:gap-2.5 group shrink-0 mr-2 lg:mr-4">
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border border-slate-200/90 dark:border-slate-700/80 flex items-center justify-center p-1 shadow-xs group-hover:border-sky-500/60 group-hover:shadow-md group-hover:scale-105 transition-all overflow-hidden shrink-0">
-            <img src="/tsh-logo.png" alt="TSH Logo" className="w-full h-full object-contain" />
+        {/* Brand Logo with Official TSH Emblem */}
+        <Link to={user?.role === 'admin' ? "/admin" : "/"} className="flex items-center gap-2.5 group shrink-0 mr-2 lg:mr-4">
+          <div className="h-9 sm:h-10 w-auto flex items-center justify-center shrink-0 group-hover:scale-105 transition-all">
+            <img src="/tsh-logo.png" alt="TSH Logo" className="h-full w-auto object-contain drop-shadow-xs" />
           </div>
           <div className="flex flex-col justify-center">
             <span className="font-extrabold text-sm sm:text-base tracking-tight text-[#12141A] dark:text-white font-display group-hover:text-sky-500 transition-colors leading-none">
