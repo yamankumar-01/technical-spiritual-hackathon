@@ -15,9 +15,11 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { adminService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 export const FixSeatModal = ({ ps, onClose, onSuccess }) => {
-  if (!ps) return null;
+  const { user } = useAuth();
+  if (!ps || !user || user.role !== 'admin') return null;
 
   const currentTotal = ps.totalSeats || ps.capacity || 5;
   const currentAvailable = ps.available !== undefined ? ps.available : ps.seatsAvailable ?? 5;

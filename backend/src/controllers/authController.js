@@ -3,6 +3,45 @@ import bcrypt from 'bcryptjs';
 import { findUserByEmail, findUserById, createUser } from '../db/queries.js';
 import { pgQuery } from '../config/postgres.js';
 
+// In-memory rate limiting to prevent brute-force attacks on login
+const loginAttempts = new Map();
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_PERIOD_MS = 15 * 60 * 1000; // 15 minutes
+
+const checkRateLimit = (key) => {
+  const record = loginAttempts.get(key);
+  if (!record) return { allowed: true };
+
+  if (Date.now() < record.lockoutUntil) {
+    const minutesLeft = Math.ceil((record.lockoutUntil - Date.now()) / 60000);
+    return {
+      allowed: false,
+      message: `Too many failed login attempts. Temporarily locked for security. Please try again in ${minutesLeft} minute(s).`,
+    };
+  }
+
+  // Lockout expired, reset
+  if (record.lockoutUntil && Date.now() >= record.lockoutUntil) {
+    loginAttempts.delete(key);
+    return { allowed: true };
+  }
+
+  return { allowed: true };
+};
+
+const recordFailedAttempt = (key) => {
+  const record = loginAttempts.get(key) || { attempts: 0, lockoutUntil: 0 };
+  record.attempts += 1;
+  if (record.attempts >= MAX_ATTEMPTS) {
+    record.lockoutUntil = Date.now() + LOCKOUT_PERIOD_MS;
+  }
+  loginAttempts.set(key, record);
+};
+
+const resetAttempts = (key) => {
+  loginAttempts.delete(key);
+};
+
 const generateToken = (id) => {
   const secret = process.env.JWT_SECRET || 'tsh_super_secret_jwt_key_2026_zen_cyber';
   return jwt.sign({ id }, secret, { expiresIn: '7d' });
@@ -48,7 +87,17 @@ export const register = async (req, res) => {
       });
     }
 
-    const existingUser = await findUserByEmail(email);
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Prevent registering with admin email
+    if (cleanEmail === 'tsh@admin' || cleanEmail.startsWith('admin@')) {
+      return res.status(403).json({
+        success: false,
+        message: 'Registration with administrator email addresses is strictly restricted.',
+      });
+    }
+
+    const existingUser = await findUserByEmail(cleanEmail);
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -59,12 +108,13 @@ export const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
+    // Explicitly enforce role 'user' — users can never elevate to admin via registration
     const user = await createUser({
-      name,
-      email: email.toLowerCase(),
+      name: name.trim(),
+      email: cleanEmail,
       passwordHash,
-      phone,
-      college,
+      phone: phone ? phone.trim() : '',
+      college: college ? college.trim() : 'JECRC Foundation',
       role: 'user',
     });
 
@@ -91,35 +141,36 @@ export const login = async (req, res) => {
     const cleanInput = (email || '').trim().toLowerCase();
     const cleanPassword = typeof password === 'string' ? password.trim() : '';
 
-    // Recognize admin by email or admin username aliases
-    const isAdminUser = ['tsh@admin', 'admin', 'tshadmin', 'admin@tsh.edu'].includes(cleanInput);
-    const cleanEmail = isAdminUser ? 'tsh@admin' : cleanInput;
+    // Rate-limiting check by client IP and account
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'ip';
+    const rateLimitKey = `${clientIp}_${cleanInput}`;
+    const rateLimitStatus = checkRateLimit(rateLimitKey);
+    if (!rateLimitStatus.allowed) {
+      return res.status(429).json({
+        success: false,
+        message: rateLimitStatus.message,
+      });
+    }
 
-    let user = await findUserByEmail(cleanEmail);
+    // Only official administrator email tsh@admin has admin privileges
+    const isAdminLogin = cleanInput === 'tsh@admin';
+    const searchEmail = cleanInput;
 
-    // List of accepted default passwords for administrator
-    const acceptedAdminPasswords = [
-      'srcjecrc@123',
-      'Admin@12345',
-      'admin123',
-      'admin',
-      'Admin@123',
-      'tsh@admin',
-      'tshadmin',
-      'tsh@123',
-    ];
-
-    const isMatchAdminPass = isAdminUser && (
-      acceptedAdminPasswords.includes(password) ||
-      acceptedAdminPasswords.includes(cleanPassword) ||
-      acceptedAdminPasswords.map((p) => p.toLowerCase()).includes(password.toLowerCase()) ||
-      acceptedAdminPasswords.map((p) => p.toLowerCase()).includes(cleanPassword.toLowerCase())
-    );
+    let user = await findUserByEmail(searchEmail);
 
     if (!user) {
-      if (isAdminUser) {
-        const passToHash = isMatchAdminPass ? password : 'srcjecrc@123';
-        const adminHash = await bcrypt.hash(passToHash, 10);
+      // If administrator record does not exist yet in database, seed it securely
+      if (isAdminLogin) {
+        const designatedAdminPass = process.env.ADMIN_PASSWORD || 'srcjecrc@123';
+        if (password !== designatedAdminPass && cleanPassword !== designatedAdminPass) {
+          recordFailedAttempt(rateLimitKey);
+          return res.status(401).json({
+            success: false,
+            message: 'Invalid email or password.',
+          });
+        }
+
+        const adminHash = await bcrypt.hash(designatedAdminPass, 10);
         const resInsert = await pgQuery(`
           INSERT INTO users (name, email, password_hash, role, phone, college)
           VALUES ('TSH Administrator', 'tsh@admin', $1, 'admin', '+91 9876543210', 'TSH Organizing University')
@@ -128,6 +179,7 @@ export const login = async (req, res) => {
         `, [adminHash]);
         user = { ...resInsert.rows[0], _id: resInsert.rows[0].id };
       } else {
+        recordFailedAttempt(rateLimitKey);
         return res.status(401).json({
           success: false,
           message: 'Invalid email or password.',
@@ -135,6 +187,7 @@ export const login = async (req, res) => {
       }
     }
 
+    // Cryptographically secure password verification using bcrypt
     let isMatch = false;
     if (user.password_hash) {
       isMatch =
@@ -142,24 +195,31 @@ export const login = async (req, res) => {
         (cleanPassword !== password ? await bcrypt.compare(cleanPassword, user.password_hash) : false);
     }
 
-    // Auto-heal admin credentials if matched any accepted admin password
-    if (!isMatch && isAdminUser && isMatchAdminPass) {
-      const newHash = await bcrypt.hash(password || 'srcjecrc@123', 10);
-      await pgQuery('UPDATE users SET password_hash = $1, role = $2 WHERE LOWER(email) = $3', [newHash, 'admin', 'tsh@admin']);
-      user.password_hash = newHash;
-      user.role = 'admin';
-      isMatch = true;
+    // Fallback sync for admin account with environment password
+    if (!isMatch && isAdminLogin) {
+      const designatedAdminPass = process.env.ADMIN_PASSWORD || 'srcjecrc@123';
+      if (password === designatedAdminPass || cleanPassword === designatedAdminPass) {
+        const newHash = await bcrypt.hash(designatedAdminPass, 10);
+        await pgQuery('UPDATE users SET password_hash = $1, role = $2 WHERE LOWER(email) = $3', [newHash, 'admin', 'tsh@admin']);
+        user.password_hash = newHash;
+        user.role = 'admin';
+        isMatch = true;
+      }
     }
 
     if (!isMatch) {
+      recordFailedAttempt(rateLimitKey);
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password.',
       });
     }
 
-    // Ensure role is admin if isAdminUser
-    if (isAdminUser && user.role !== 'admin') {
+    // Reset rate-limiting attempts on successful login
+    resetAttempts(rateLimitKey);
+
+    // Ensure role is admin if official administrator account
+    if (isAdminLogin && user.role !== 'admin') {
       await pgQuery('UPDATE users SET role = $1 WHERE id = $2', ['admin', user.id || user._id]);
       user.role = 'admin';
     }
@@ -189,7 +249,7 @@ export const getMe = async (req, res) => {
   try {
     const user = await findUserById(req.user.id);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found.' });
+      return res.status(401).json({ success: false, message: 'User session has expired. Please login again.' });
     }
     res.status(200).json({
       success: true,

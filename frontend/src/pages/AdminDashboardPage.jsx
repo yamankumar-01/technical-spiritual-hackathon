@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import api, { adminService, psService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import StatusBadge from '../components/StatusBadge';
 import FixSeatModal from '../components/FixSeatModal';
 import {
@@ -28,6 +30,20 @@ import {
 } from 'lucide-react';
 
 export const AdminDashboardPage = () => {
+  const { user, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user || user.role !== 'admin') {
+    return <Navigate to="/login" replace />;
+  }
+
   const [registrations, setRegistrations] = useState([]);
   const [stats, setStats] = useState({
     totalProblems: 0,
