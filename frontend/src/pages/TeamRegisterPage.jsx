@@ -19,10 +19,13 @@ import {
   X,
   AlertTriangle,
   MessageCircle,
+  QrCode,
+  ExternalLink,
 } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 
 const REGISTRATION_FEE = 400;
+const PAYMENT_GOOGLE_FORM_URL = 'https://forms.gle/xTE5A2jN2rao1u978';
 
 export const TeamRegisterPage = () => {
   const { user, myTeam, refreshTeamStatus, setMyTeam } = useAuth();
@@ -754,70 +757,91 @@ export const TeamRegisterPage = () => {
               </div>
             </div>
 
-            {/* Offline SRC Payment Notice Card */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-amber-50/80 dark:bg-amber-950/20 border-2 border-amber-300 dark:border-amber-700/60 space-y-6">
+            {/* Online Payment Card with QR Code and Google Form */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-sky-500/10 via-indigo-500/5 to-emerald-500/10 dark:from-sky-950/30 dark:via-indigo-950/20 dark:to-emerald-950/20 border-2 border-sky-400/70 dark:border-sky-600/70 space-y-6 shadow-sm">
               <div className="flex items-start gap-4">
-                <div className="p-3 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 shrink-0">
-                  <Building className="w-6 h-6" />
+                <div className="p-3 rounded-2xl bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 shrink-0">
+                  <QrCode className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-base sm:text-lg font-bold text-amber-900 dark:text-amber-200 font-['Outfit']">
-                    Offline Payment Collection & Seat Approval at SRC Club
+                  <h3 className="text-base sm:text-xl font-bold text-slate-900 dark:text-white font-['Outfit']">
+                    Online Payment & Seat Verification
                   </h3>
-                  <p className="text-xs sm:text-sm text-amber-800/90 dark:text-amber-300/80 font-medium">
-                    Payment Mode: <strong>Offline</strong> • Payment Location: <strong>SRC Club</strong>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
+                    Payment Mode: <strong className="text-sky-600 dark:text-sky-400">Online UPI</strong> • Fee: <strong className="text-emerald-600 dark:text-emerald-400">₹{REGISTRATION_FEE}</strong> per team (covers all 4 members)
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-amber-200/80 dark:border-amber-800/40">
-                {/* English Section */}
-                <div className="space-y-3 text-xs sm:text-sm text-amber-950 dark:text-amber-100">
-                  <h4 className="font-bold text-xs uppercase tracking-wider text-amber-800 dark:text-amber-400">
-                    Important Instructions (English)
-                  </h4>
-                  <ul className="space-y-2.5 list-disc list-inside leading-relaxed text-xs">
-                    <li>
-                      <strong>Registration Slot Reserved:</strong> Your team's slot under track{' '}
-                      <strong>{registeredTeam?.problemStatement?.code || selectedPS?.code}</strong> is safely reserved.
-                    </li>
-                    <li>
-                      <strong>Fee Amount:</strong> ₹{REGISTRATION_FEE} per team (covers all 4 members).
-                    </li>
-                    <li>
-                      <strong>Payment Mode:</strong> Offline cash/verification at the <strong>Student Resource Center (SRC Club)</strong> desk.
-                    </li>
-                    <li>
-                      <strong>WhatsApp Updates:</strong> Payment instructions and payment timings will be shared in the official WhatsApp group.
-                    </li>
-                    <li className="text-rose-700 dark:text-rose-400 font-semibold">
-                      <strong>Admin Verification:</strong> Admins will manually verify payment at the desk to confirm your seat. If fees are not submitted, the registration will be rejected and the slot released.
-                    </li>
-                  </ul>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-4 border-t border-slate-200/80 dark:border-slate-800">
+                {/* Left Side: Step-by-Step Instructions & Fill Payment Details Button */}
+                <div className="lg:col-span-7 space-y-5">
+                  <div className="space-y-3">
+                    <h4 className="font-bold text-xs uppercase tracking-wider text-sky-700 dark:text-sky-300">
+                      Step-by-Step Payment Process
+                    </h4>
+                    <ol className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300 list-decimal list-inside leading-relaxed">
+                      <li>
+                        <strong>Scan UPI QR Code:</strong> Use any UPI app (Google Pay, PhonePe, Paytm, BHIM) to scan the official QR code on the right and pay <strong>₹{REGISTRATION_FEE}</strong>.
+                      </li>
+                      <li>
+                        <strong>Save Transaction ID:</strong> Take a clear screenshot of the successful payment showing the <strong>UTR / UPI Transaction ID</strong>.
+                      </li>
+                      <li>
+                        <strong>Fill Payment Form:</strong> Click the button below to submit your payment proof & transaction details in the official Google Form.
+                      </li>
+                    </ol>
+                  </div>
+
+                  {/* Prominent Google Form CTA Button */}
+                  <div className="pt-2">
+                    <a
+                      href={PAYMENT_GOOGLE_FORM_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 hover:brightness-105 shadow-[0_8px_20px_rgba(14,165,233,0.3)] transition-all cursor-pointer w-full sm:w-auto text-center font-display"
+                    >
+                      <span>Fill Your Payment Details</span>
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 font-medium">
+                      * Opens the official Google Form in a new tab to upload your payment screenshot & UTR number.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <p>
+                      <strong>Seat Confirmation:</strong> Your slot remains reserved in <strong>Payment Pending</strong> until our team verifies your Google Form submission. Once verified, your status will update to <strong>Confirmed</strong>.
+                    </p>
+                  </div>
                 </div>
 
-                {/* Hindi Section */}
-                <div className="space-y-3 text-xs sm:text-sm text-amber-950 dark:text-amber-100">
-                  <h4 className="font-bold text-xs uppercase tracking-wider text-amber-800 dark:text-amber-400">
-                    महत्वपूर्ण दिशा-निर्देश (हिंदी)
-                  </h4>
-                  <ul className="space-y-2.5 list-disc list-inside leading-relaxed text-xs">
-                    <li>
-                      <strong>सीट आरक्षित:</strong> आपकी टीम के लिए स्लॉट सुरक्षित रूप से <strong>Payment Pending</strong> में रखा गया है।
-                    </li>
-                    <li>
-                      <strong>भुगतान का माध्यम:</strong> केवल <strong>SRC Club</strong> डेस्क पर ऑफलाइन लिया जाएगा।
-                    </li>
-                    <li>
-                      <strong>व्हाट्सएप ग्रुप सूचना:</strong> भुगतान के समय और निर्देशों की घोषणा आधिकारिक व्हाट्सएप ग्रुप में की जाएगी।
-                    </li>
-                    <li>
-                      <strong>ऑफलाइन अप्रूवल:</strong> काउंटर पर फीस जमा होने के बाद एडमिन टीम द्वारा सीट को <strong>CONFIRMED</strong> किया जाएगा।
-                    </li>
-                    <li className="text-rose-700 dark:text-rose-400 font-semibold">
-                      <strong>निरस्तीकरण नियम:</strong> तय समय सीमा में फीस जमा न करने पर रजिस्ट्रेशन निरस्त (Reject) कर दिया जाएगा और सीट पुनः जारी कर दी जाएगी।
-                    </li>
-                  </ul>
+                {/* Right Side: QR Code Card */}
+                <div className="lg:col-span-5 flex flex-col items-center justify-center">
+                  <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border-2 border-sky-500/40 shadow-lg text-center space-y-3 w-full max-w-[280px]">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800">
+                      <Sparkles className="w-3 h-3 text-amber-500" />
+                      <span>Official UPI QR</span>
+                    </div>
+
+                    <div className="p-2 bg-white rounded-2xl border border-slate-100 shadow-xs flex items-center justify-center overflow-hidden">
+                      <img
+                        src="/payment-qr.png"
+                        alt="TSH 2026 Payment QR Code"
+                        className="w-48 h-48 sm:w-52 sm:h-52 object-contain"
+                      />
+                    </div>
+
+                    <div className="space-y-0.5">
+                      <div className="text-base font-extrabold text-slate-900 dark:text-white font-mono">
+                        ₹{REGISTRATION_FEE}
+                      </div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                        Scan with GPay / PhonePe / Paytm / BHIM
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

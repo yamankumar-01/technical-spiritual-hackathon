@@ -16,7 +16,11 @@ import {
   FileText,
   AlertCircle,
   MapPin,
+  QrCode,
+  ExternalLink,
 } from 'lucide-react';
+
+const PAYMENT_GOOGLE_FORM_URL = 'https://forms.gle/xTE5A2jN2rao1u978';
 
 export const UserDashboardPage = () => {
   const { user } = useAuth();
@@ -64,7 +68,7 @@ export const UserDashboardPage = () => {
             My Registrations & Slots
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Track your reserved registration windows, offline SRC payment status, and confirmed slots.
+            Track your reserved registration windows, online payment verification status, and confirmed slots.
           </p>
         </div>
 
@@ -280,17 +284,47 @@ export const UserDashboardPage = () => {
 
                       {/* State Specific Callout */}
                       {isPending && (
-                        <div className="p-4 rounded-2xl bg-amber-100/60 dark:bg-amber-900/30 border border-amber-300/60 dark:border-amber-700/50 space-y-2 text-xs text-amber-900 dark:text-amber-200">
-                          <div className="flex items-center gap-2 font-bold text-amber-950 dark:text-amber-100">
-                            <Building className="w-4 h-4 text-amber-600" />
-                            <span>Payment Mode: Offline at SRC Club</span>
+                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-sky-500/10 via-indigo-500/5 to-amber-500/10 dark:from-sky-950/30 dark:via-indigo-950/20 dark:to-amber-950/20 border border-sky-400/60 dark:border-sky-600/50 space-y-4 text-xs text-slate-700 dark:text-slate-200">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/80 dark:border-slate-800">
+                            <div>
+                              <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white font-display">
+                                <QrCode className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                                <span>Complete Online Payment to Confirm Your Seat</span>
+                              </div>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                Fee: <strong className="text-emerald-600 dark:text-emerald-400">₹400</strong> per team • Scan QR code and submit details
+                              </p>
+                            </div>
+                            <a
+                              href={PAYMENT_GOOGLE_FORM_URL}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:brightness-105 shadow-sm transition-all shrink-0 cursor-pointer"
+                            >
+                              <span>Fill Your Payment Details</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
                           </div>
-                          <p>
-                            Your registration slot has been reserved. Registration fees (₹400 per team) will be collected in person at the Student Resource Center (SRC) registration desk.
-                          </p>
-                          <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-medium">
-                            <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>Payment timings and desk updates will be shared in the official WhatsApp group.</span>
+
+                          <div className="flex flex-col sm:flex-row items-center gap-4">
+                            <div className="p-2 bg-white rounded-2xl border border-slate-200 dark:border-slate-700 shrink-0 shadow-xs">
+                              <img
+                                src="/payment-qr.png"
+                                alt="Payment QR Code"
+                                className="w-28 h-28 object-contain"
+                              />
+                            </div>
+                            <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+                              <p>
+                                <strong>1. Scan QR Code:</strong> Use Google Pay, PhonePe, Paytm, or BHIM to pay the ₹400 registration fee.
+                              </p>
+                              <p>
+                                <strong>2. Fill Google Form:</strong> Click the button above to submit your transaction screenshot & UTR number.
+                              </p>
+                              <p className="text-emerald-700 dark:text-emerald-300 font-medium">
+                                Once verified by the admin team, your slot status will be updated to <strong>Confirmed</strong>.
+                              </p>
+                            </div>
                           </div>
                         </div>
                       )}
