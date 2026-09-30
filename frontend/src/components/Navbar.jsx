@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
 import {
   Sparkles,
   Menu,
@@ -11,15 +10,12 @@ import {
   LogOut,
   ShieldAlert,
   ChevronDown,
-  Sun,
-  Moon,
   LayoutDashboard,
 } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 
 export const Navbar = () => {
   const { user, myTeam, logout } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -125,22 +121,8 @@ export const Navbar = () => {
           )}
         </div>
 
-        {/* Right Action / Theme Toggle / Auth Buttons */}
+        {/* Right Action / Auth Buttons */}
         <div className="hidden md:flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Bright / Dark Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-slate-100/90 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-slate-700 text-sky-600 dark:text-sky-400 border border-slate-200/80 dark:border-slate-700/80 transition-all shadow-xs group cursor-pointer shrink-0"
-          >
-            {isDark ? (
-              <Sun className="w-4 h-4 text-amber-400 transition-transform duration-300 group-hover:rotate-45" />
-            ) : (
-              <Moon className="w-4 h-4 text-sky-600 transition-transform duration-300 group-hover:-rotate-12" />
-            )}
-          </button>
-
           {user ? (
             <div className="relative shrink-0">
               <button
@@ -257,16 +239,8 @@ export const Navbar = () => {
           )}
 
           <button
-            onClick={toggleTheme}
-            aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-sky-600 dark:text-sky-400 border border-slate-200/80 dark:border-slate-700/80"
-          >
-            {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-sky-600" />}
-          </button>
-
-          <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+            className="p-2 rounded-xl bg-slate-100 text-slate-700"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
