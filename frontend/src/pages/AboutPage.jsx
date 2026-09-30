@@ -70,24 +70,24 @@ export const AboutPage = () => {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-white py-8 sm:py-12 font-sans relative">
+    <div className="w-full min-h-screen bg-white dark:bg-transparent py-8 sm:py-12 font-sans relative">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-10 sm:space-y-12">
         
         {/* Hero Header */}
         <header className="text-center space-y-3 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase text-sky-700 bg-sky-50 border border-sky-200/80 shadow-2xs font-display">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 border border-sky-200/80 dark:border-sky-800/60 shadow-2xs font-display">
             <Sparkles className="w-3 h-3 text-amber-500" />
             <span>National Innovation Initiative • TSH 2026</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 font-display tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white font-display tracking-tight leading-tight">
             Techno Spiritual Hackathon{' '}
-            <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-amber-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-amber-500 dark:from-sky-400 dark:via-cyan-300 dark:to-amber-400 bg-clip-text text-transparent">
               (TSH)
             </span>
           </h1>
 
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
             Where modern engineering, artificial intelligence, and digital innovation unite with human values, mental wellness, and spiritual wellbeing.
           </p>
         </header>
@@ -95,32 +95,32 @@ export const AboutPage = () => {
         {/* SECTION 1: ABOUT TSH (Complete Full Width - Not in a card) */}
         <section className="w-full space-y-4 pt-2">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-md border border-sky-200">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 rounded-md border border-sky-200 dark:border-sky-800">
               01 // OVERVIEW
             </span>
-            <span className="text-xs font-semibold text-slate-400">About The Hackathon</span>
+            <span className="text-xs font-semibold text-slate-400 dark:text-slate-400">About The Hackathon</span>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-display tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-display tracking-tight">
               About TSH
             </h2>
-            <p className="text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed font-normal max-w-4xl">
+            <p className="text-xs sm:text-sm md:text-base text-slate-700 dark:text-slate-200 leading-relaxed font-normal max-w-4xl">
               The Techno Spiritual Hackathon (TSH) is an event where students use modern technology (like apps, AI, and websites) to solve real-world problems related to mental wellness, human values, and spiritual wellbeing.
             </p>
           </div>
 
           {/* Value Badges taking full width */}
           <div className="flex flex-wrap items-center gap-2.5 pt-1">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/80 text-slate-700 border border-slate-200/90 shadow-2xs hover:bg-slate-50 transition-colors">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
               <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
               Real-World Impact
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/80 text-slate-700 border border-slate-200/90 shadow-2xs hover:bg-slate-50 transition-colors">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
               <Sparkles className="w-3.5 h-3.5 text-sky-500" />
               Mindful Engineering
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/80 text-slate-700 border border-slate-200/90 shadow-2xs hover:bg-slate-50 transition-colors">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
               Human Values First
             </span>
@@ -128,52 +128,52 @@ export const AboutPage = () => {
         </section>
 
         {/* Clean subtle divider */}
-        <div className="w-full border-t border-slate-200/70" />
+        <div className="w-full border-t border-slate-200/70 dark:border-slate-800" />
 
         {/* SECTION 2: VISION OF TSH (Complete Full Width - Not in a card) */}
         <section className="w-full space-y-4">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-800">
               02 // FUTURE VISION
             </span>
-            <span className="text-xs font-semibold text-slate-400">Our Guiding North Star</span>
+            <span className="text-xs font-semibold text-slate-400 dark:text-slate-400">Our Guiding North Star</span>
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-display tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-display tracking-tight">
               Vision of TSH
             </h2>
-            <p className="text-xs sm:text-sm md:text-base text-slate-700 leading-relaxed font-normal max-w-4xl">
+            <p className="text-xs sm:text-sm md:text-base text-slate-700 dark:text-slate-200 leading-relaxed font-normal max-w-4xl">
               To harmoniously blend inner human wisdom with cutting-edge engineering—inspiring student developers to build purposeful, ethical, and consciousness-driven technology that uplifts society and fosters universal wellbeing.
             </p>
           </div>
 
           {/* Guiding Quote */}
-          <div className="p-3 sm:p-3.5 rounded-xl bg-indigo-50/60 border-l-3 border-indigo-500 border border-indigo-100/80 max-w-3xl">
-            <p className="text-xs sm:text-sm italic text-indigo-950 font-medium">
+          <div className="p-3 sm:p-3.5 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/40 border-l-3 border-indigo-500 border border-indigo-100/80 dark:border-indigo-900/50 max-w-3xl">
+            <p className="text-xs sm:text-sm italic text-indigo-950 dark:text-indigo-200 font-medium">
               "Blending inner consciousness with digital intelligence for a better tomorrow."
             </p>
           </div>
         </section>
 
         {/* Clean subtle divider */}
-        <div className="w-full border-t border-slate-200/70" />
+        <div className="w-full border-t border-slate-200/70 dark:border-slate-800" />
 
         {/* SECTION 3: THEME OF TSH (Interactive Bento Grid without explanation) */}
         <section className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-1.5 px-0.5">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-2.5 py-0.5 rounded-md border border-purple-200 dark:border-purple-800">
                   03 // CATEGORIES
                 </span>
-                <span className="text-xs font-semibold text-slate-400">Core Hackathon Tracks</span>
+                <span className="text-xs font-semibold text-slate-400 dark:text-slate-400">Core Hackathon Tracks</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-display tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-display tracking-tight">
                 Theme of TSH
               </h2>
             </div>
-            <span className="text-xs font-medium text-slate-500">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
               6 Diverse Domains • Zero Boundaries
             </span>
           </div>
@@ -184,7 +184,7 @@ export const AboutPage = () => {
               return (
                 <div
                   key={theme.id}
-                  className="group p-3.5 sm:p-4 rounded-xl bg-white/85 backdrop-blur-xs border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between"
+                  className="group p-3.5 sm:p-4 rounded-xl bg-white/85 dark:bg-slate-900/80 backdrop-blur-xs border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div
@@ -196,12 +196,12 @@ export const AboutPage = () => {
                       <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400 block">
                         Track {theme.id}
                       </span>
-                      <h3 className="text-xs sm:text-sm font-bold text-slate-900 font-display truncate">
+                      <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white font-display truncate">
                         {theme.title}
                       </h3>
                     </div>
                   </div>
-                  <div className="p-1.5 rounded-lg text-slate-300 group-hover:text-slate-800 group-hover:bg-slate-100 transition-colors shrink-0">
+                  <div className="p-1.5 rounded-lg text-slate-300 dark:text-slate-600 group-hover:text-slate-800 dark:group-hover:text-white group-hover:bg-slate-100 dark:group-hover:bg-slate-800 transition-colors shrink-0">
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </div>
                 </div>
@@ -215,16 +215,16 @@ export const AboutPage = () => {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-1.5 px-0.5">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-md border border-amber-200 dark:border-amber-800">
                   04 // TIMELINE
                 </span>
-                <span className="text-xs font-semibold text-slate-400">Step-by-Step Schedule</span>
+                <span className="text-xs font-semibold text-slate-400 dark:text-slate-400">Step-by-Step Schedule</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-display tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-display tracking-tight">
                 Hackathon Timeline & Rounds
               </h2>
             </div>
-            <span className="text-xs font-medium text-slate-500">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
               Two Milestone Stages
             </span>
           </div>
@@ -233,31 +233,31 @@ export const AboutPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
             
             {/* DAY 1 CARD */}
-            <div className="p-5 sm:p-6 rounded-2xl bg-white/90 backdrop-blur-xs border border-sky-200 shadow-sm flex flex-col justify-between space-y-5">
+            <div className="p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/85 backdrop-blur-xs border border-sky-200 dark:border-sky-800/60 shadow-sm flex flex-col justify-between space-y-5">
               <div className="space-y-4">
                 {/* Stage Header */}
-                <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
+                <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
                   <div className="space-y-1">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black bg-sky-50 text-sky-700 border border-sky-300">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black bg-sky-50 dark:bg-sky-950/80 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-700">
                       <Presentation className="w-3 h-3" />
                       <span>DAY 01</span>
                     </div>
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 font-display">
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-display">
                       Day 1 — PPT Round
                     </h3>
-                    <div className="inline-flex items-center gap-1.5 text-xs text-slate-500">
+                    <div className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
                       <Clock className="w-3.5 h-3.5 text-sky-500" />
                       <span>Approx. 8:00 AM – 8:00 PM</span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-sky-100 text-sky-800 border border-sky-200 shrink-0">
+                  <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800 shrink-0">
                     Presentation
                   </span>
                 </div>
 
                 {/* Steps List */}
-                <div className="space-y-2.5 text-xs sm:text-sm text-slate-700">
-                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/70">
+                <div className="space-y-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
+                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50/90 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60">
                     <div className="w-5.5 h-5.5 rounded-lg bg-sky-500 text-white font-mono text-[11px] font-bold flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
                       1
                     </div>
@@ -266,7 +266,7 @@ export const AboutPage = () => {
                     </p>
                   </div>
 
-                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/70">
+                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50/90 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60">
                     <div className="w-5.5 h-5.5 rounded-lg bg-sky-500 text-white font-mono text-[11px] font-bold flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
                       2
                     </div>
@@ -275,11 +275,11 @@ export const AboutPage = () => {
                     </p>
                   </div>
 
-                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-sky-50/80 border border-sky-200/80">
+                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-sky-50/80 dark:bg-sky-950/40 border border-sky-200/80 dark:border-sky-800/60">
                     <div className="w-5.5 h-5.5 rounded-lg bg-sky-600 text-white font-mono text-[11px] font-bold flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
                       3
                     </div>
-                    <p className="leading-relaxed font-semibold text-sky-950">
+                    <p className="leading-relaxed font-semibold text-sky-950 dark:text-sky-200">
                       By the end of the day (around 8:00 PM), announce which teams qualify for the final round.
                     </p>
                   </div>
@@ -287,7 +287,7 @@ export const AboutPage = () => {
               </div>
 
               {/* Day 1 Footer */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-sky-600">
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-sky-600 dark:text-sky-400">
                 <span>Stage 1 Evaluation</span>
                 <span className="flex items-center gap-1">
                   Qualifiers advance to Day 2 <ArrowRight className="w-3.5 h-3.5" />
@@ -296,31 +296,31 @@ export const AboutPage = () => {
             </div>
 
             {/* DAY 2 CARD */}
-            <div className="p-5 sm:p-6 rounded-2xl bg-white/90 backdrop-blur-xs border border-emerald-200 shadow-sm flex flex-col justify-between space-y-5">
+            <div className="p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-slate-900/85 backdrop-blur-xs border border-emerald-200 dark:border-emerald-800/60 shadow-sm flex flex-col justify-between space-y-5">
               <div className="space-y-4">
                 {/* Stage Header */}
-                <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
+                <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
                   <div className="space-y-1">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black bg-emerald-50 text-emerald-700 border border-emerald-300">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
                       <Award className="w-3 h-3" />
                       <span>DAY 02</span>
                     </div>
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 font-display">
+                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-display">
                       Day 2 — Prototype Round & Winners
                     </h3>
-                    <div className="inline-flex items-center gap-1.5 text-xs text-slate-500">
+                    <div className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
                       <Clock className="w-3.5 h-3.5 text-emerald-500" />
                       <span>Approx. 8:00 AM – 8:00 PM</span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
+                  <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shrink-0">
                     Demo & Prizes
                   </span>
                 </div>
 
                 {/* Steps List */}
-                <div className="space-y-2.5 text-xs sm:text-sm text-slate-700">
-                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/70">
+                <div className="space-y-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-200">
+                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50/90 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60">
                     <div className="w-5.5 h-5.5 rounded-lg bg-emerald-500 text-white font-mono text-[11px] font-bold flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
                       1
                     </div>
@@ -329,7 +329,7 @@ export const AboutPage = () => {
                     </p>
                   </div>
 
-                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/70">
+                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50/90 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/60">
                     <div className="w-5.5 h-5.5 rounded-lg bg-emerald-500 text-white font-mono text-[11px] font-bold flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
                       2
                     </div>
@@ -338,11 +338,11 @@ export const AboutPage = () => {
                     </p>
                   </div>
 
-                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80">
+                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60">
                     <div className="w-5.5 h-5.5 rounded-lg bg-emerald-600 text-white font-mono text-[11px] font-bold flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
                       3
                     </div>
-                    <p className="leading-relaxed font-semibold text-emerald-950">
+                    <p className="leading-relaxed font-semibold text-emerald-950 dark:text-emerald-200">
                       Declare the final results (around 5:00 PM) and give out prizes, trophies, and certificates.
                     </p>
                   </div>
@@ -350,7 +350,7 @@ export const AboutPage = () => {
               </div>
 
               {/* Day 2 Footer */}
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
                 <span>Grand Finale</span>
                 <span className="flex items-center gap-1">
                   Prizes & Certificates <Award className="w-3.5 h-3.5" />

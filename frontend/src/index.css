@@ -24,13 +24,25 @@
     transition: background-color 0.25s ease, color 0.25s ease;
   }
 
-  html body,
-  html.dark body,
   html.light body,
-  html:not(.dark) body,
-  body {
+  html:not(.dark) body {
     background-color: #ffffff;
     color: #0f172a;
+    min-height: 100vh;
+  }
+
+  html.dark body {
+    background-color: #060c1d;
+    background-image: 
+      radial-gradient(ellipse 90% 60% at 50% -10%, #1e3a8a 0%, rgba(30, 58, 138, 0.4) 40%, transparent 80%),
+      radial-gradient(circle 600px at 100% 20%, rgba(14, 116, 144, 0.25) 0%, transparent 60%),
+      radial-gradient(circle 500px at 0% 70%, rgba(37, 99, 235, 0.18) 0%, transparent 60%),
+      linear-gradient(180deg, #070e24 0%, #030712 100%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #f1f5f9;
+    min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
