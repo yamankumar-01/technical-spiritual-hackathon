@@ -41,12 +41,19 @@ export const Navbar = () => {
     navigate('/');
   };
 
-  const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'About / TSH', path: '/about' },
-    { name: 'Problem Statements', path: '/ps' },
-    { name: 'Contact Us', path: '/contact' },
-  ];
+  const isAdminView = location.pathname.startsWith('/admin');
+
+  const navLinks = isAdminView
+    ? [
+        { name: 'Problem Statements', path: '/ps' },
+        { name: 'About / TSH', path: '/about' },
+      ]
+    : [
+        { name: 'Home', path: '/' },
+        { name: 'About / TSH', path: '/about' },
+        { name: 'Problem Statements', path: '/ps' },
+        { name: 'Contact Us', path: '/contact' },
+      ];
 
   const isActive = (path) => location.pathname === path;
 

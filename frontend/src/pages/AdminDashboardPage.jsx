@@ -47,12 +47,11 @@ export const AdminDashboardPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Active tab
-  const [activeTab, setActiveTab] = useState('registrations'); // 'registrations', 'capacity_breakdown', 'ps_seats', 'queries'
+  const [activeTab, setActiveTab] = useState('registrations'); // 'registrations', 'capacity_breakdown', 'ps_seats'
   const [problemStatements, setProblemStatements] = useState([]);
   const [capacityBreakdown, setCapacityBreakdown] = useState([]);
   const [loadingCapacity, setLoadingCapacity] = useState(false);
   const [capacitySearch, setCapacitySearch] = useState('');
-  const [queries, setQueries] = useState([]);
 
   // Selected registration for details modal
   const [inspectTeam, setInspectTeam] = useState(null);
@@ -162,22 +161,10 @@ export const AdminDashboardPage = () => {
     }
   };
 
-  const fetchQueries = async () => {
-    try {
-      const res = await adminService.getQueries();
-      if (res.data?.success) {
-        setQueries(res.data.data);
-      }
-    } catch (err) {
-      console.warn('Failed to fetch queries:', err);
-    }
-  };
-
   useEffect(() => {
     fetchRegistrations();
     fetchPSSeats();
     fetchCapacityBreakdown();
-    fetchQueries();
   }, [statusFilter]);
 
   // Approve registration (atomically generates SRC-HACK-2026-XXXX and confirms)
@@ -739,7 +726,7 @@ export const AdminDashboardPage = () => {
             onClick={() => {
               fetchRegistrations();
               fetchPSSeats();
-              fetchQueries();
+              fetchCapacityBreakdown();
             }}
             className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-white/90 dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 hover:border-sky-400 transition-all shadow-xs cursor-pointer"
           >
@@ -774,111 +761,113 @@ export const AdminDashboardPage = () => {
         </div>
       )}
 
-      {/* 7 Metric Counters Bar */}
-      <div className="w-full grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+      {/* Metric Counters Bar - Lightweight & Clean */}
+      <div className="w-full grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3">
         {/* Total Problems */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white/95 dark:bg-[#071510]/95 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs space-y-1">
-          <span className="text-[11px] text-[#536159] dark:text-slate-400 uppercase font-bold tracking-wider block">
-            Total Problems
+        <div className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-0.5">
+          <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold tracking-wider block">
+            Problems
           </span>
-          <p className="text-2xl sm:text-3xl font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
+          <p className="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-white">
             {stats.totalProblems || problemStatements?.length || 50}
           </p>
-          <span className="text-[11px] text-[#536159] dark:text-slate-400 block truncate">
-            Tracks available
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate">
+            Tracks active
           </span>
         </div>
 
         {/* Total Capacity */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white/95 dark:bg-[#071510]/95 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-xs space-y-1">
-          <span className="text-[11px] text-[#536159] dark:text-slate-400 uppercase font-bold tracking-wider block">
-            Total Capacity
+        <div className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-0.5">
+          <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-semibold tracking-wider block">
+            Capacity
           </span>
-          <p className="text-2xl sm:text-3xl font-extrabold text-[#12141A] dark:text-white font-['Outfit']">
+          <p className="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-white">
             {stats.totalCapacity || 250}
           </p>
-          <span className="text-[11px] text-[#536159] dark:text-slate-400 block truncate">
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate">
             Max team slots
           </span>
         </div>
 
         {/* Active Holds */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/20 backdrop-blur-md border border-indigo-200 dark:border-indigo-800/40 shadow-xs space-y-1">
-          <span className="text-[11px] text-indigo-700 dark:text-indigo-400 uppercase font-bold tracking-wider block">
-            Active Holds
-          </span>
-          <p className="text-2xl sm:text-3xl font-extrabold text-indigo-600 dark:text-indigo-300 font-['Outfit'] flex items-center gap-1.5">
-            {stats.activeHolds || 0}
-            {(stats.activeHolds > 0) && (
-              <span className="inline-block w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
+        <div className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200/70 dark:border-indigo-900/50 shadow-2xs space-y-0.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-indigo-600 dark:text-indigo-400 uppercase font-semibold tracking-wider block">
+              Active Holds
+            </span>
+            {stats.activeHolds > 0 && (
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
             )}
+          </div>
+          <p className="text-xl sm:text-2xl font-bold font-mono text-indigo-600 dark:text-indigo-400">
+            {stats.activeHolds || 0}
           </p>
-          <span className="text-[11px] text-indigo-700/80 dark:text-indigo-400/80 block truncate">
-            Active reservation
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate">
+            Temporary hold
           </span>
         </div>
 
         {/* Payment Pending */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/90 dark:bg-amber-950/20 backdrop-blur-md border border-amber-200 dark:border-amber-800/40 shadow-xs space-y-1">
-          <span className="text-[11px] text-amber-800 dark:text-amber-400 uppercase font-bold tracking-wider block">
-            Payment Pending
+        <div className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-200/70 dark:border-amber-900/50 shadow-2xs space-y-0.5">
+          <span className="text-[10px] text-amber-700 dark:text-amber-400 uppercase font-semibold tracking-wider block">
+            Pending
           </span>
-          <p className="text-2xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-300 font-['Outfit']">
+          <p className="text-xl sm:text-2xl font-bold font-mono text-amber-600 dark:text-amber-400">
             {stats.paymentPending || 0}
           </p>
-          <span className="text-[11px] text-amber-700/80 dark:text-amber-400/80 block truncate">
-            Pending SRC Desk
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate">
+            Awaiting verify
           </span>
         </div>
 
         {/* Confirmed */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-[#EBF8F2] dark:bg-[#2EB88A]/10 backdrop-blur-md border border-[#2EB88A]/30 dark:border-[#2EB88A]/20 shadow-xs space-y-1">
-          <span className="text-[11px] text-[#1E9470] dark:text-[#2EB88A] uppercase font-bold tracking-wider block">
+        <div className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200/70 dark:border-emerald-900/50 shadow-2xs space-y-0.5">
+          <span className="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase font-semibold tracking-wider block">
             Confirmed
           </span>
-          <p className="text-2xl sm:text-3xl font-extrabold text-[#1E9470] dark:text-[#2EB88A] font-['Outfit']">
+          <p className="text-xl sm:text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
             {stats.confirmed || 0}
           </p>
-          <span className="text-[11px] text-[#1E9470]/80 dark:text-[#2EB88A]/80 block truncate">
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate">
             Approved & locked
           </span>
         </div>
 
         {/* Available Slots */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/20 backdrop-blur-md border border-emerald-200 dark:border-emerald-800/40 shadow-xs space-y-1">
-          <span className="text-[11px] text-emerald-800 dark:text-emerald-400 uppercase font-bold tracking-wider block">
-            Available Slots
+        <div className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-sky-200/70 dark:border-sky-900/50 shadow-2xs space-y-0.5">
+          <span className="text-[10px] text-sky-700 dark:text-sky-400 uppercase font-semibold tracking-wider block">
+            Available
           </span>
-          <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-300 font-['Outfit']">
+          <p className="text-xl sm:text-2xl font-bold font-mono text-sky-600 dark:text-sky-400">
             {stats.availableSlots !== undefined ? stats.availableSlots : 250}
           </p>
-          <span className="text-[11px] text-emerald-700/80 dark:text-emerald-400/80 block truncate">
-            Open for holds
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate">
+            Open for teams
           </span>
         </div>
 
         {/* Rejected */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-rose-50/90 dark:bg-rose-950/20 backdrop-blur-md border border-rose-200 dark:border-rose-800/40 shadow-xs space-y-1 col-span-2 sm:col-span-1">
-          <span className="text-[11px] text-rose-800 dark:text-rose-400 uppercase font-bold tracking-wider block">
+        <div className="p-3 sm:p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-rose-200/70 dark:border-rose-900/50 shadow-2xs space-y-0.5 col-span-2 sm:col-span-1">
+          <span className="text-[10px] text-rose-700 dark:text-rose-400 uppercase font-semibold tracking-wider block">
             Rejected
           </span>
-          <p className="text-2xl sm:text-3xl font-extrabold text-rose-600 dark:text-rose-300 font-['Outfit']">
+          <p className="text-xl sm:text-2xl font-bold font-mono text-rose-600 dark:text-rose-400">
             {stats.rejected || 0}
           </p>
-          <span className="text-[11px] text-rose-700/80 dark:text-rose-400/80 block truncate">
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate">
             Slots released
           </span>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-100/90 dark:bg-slate-900/90 rounded-2xl w-fit max-w-full overflow-x-auto no-scrollbar border border-slate-200/80 dark:border-slate-800">
+      <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl w-fit max-w-full overflow-x-auto no-scrollbar border border-slate-200/80 dark:border-slate-700/60">
         <button
           onClick={() => setActiveTab('registrations')}
-          className={`px-4 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'registrations'
-              ? 'bg-white dark:bg-[#1E9470] text-[#1E9470] dark:text-white shadow-xs'
-              : 'text-[#536159] dark:text-slate-400 hover:text-[#12141A] dark:hover:text-white'
+              ? 'bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 shadow-xs border border-slate-200/60 dark:border-slate-700'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           Team Registrations ({registrations.length})
@@ -888,33 +877,23 @@ export const AdminDashboardPage = () => {
             setActiveTab('capacity_breakdown');
             fetchCapacityBreakdown();
           }}
-          className={`px-4 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'capacity_breakdown'
-              ? 'bg-white dark:bg-[#1E9470] text-[#1E9470] dark:text-white shadow-xs'
-              : 'text-[#536159] dark:text-slate-400 hover:text-[#12141A] dark:hover:text-white'
+              ? 'bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 shadow-xs border border-slate-200/60 dark:border-slate-700'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           Problem Capacity Breakdown ({capacityBreakdown.length || 50})
         </button>
         <button
           onClick={() => setActiveTab('ps_seats')}
-          className={`px-4 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'ps_seats'
-              ? 'bg-white dark:bg-[#1E9470] text-[#1E9470] dark:text-white shadow-xs'
-              : 'text-[#536159] dark:text-slate-400 hover:text-[#12141A] dark:hover:text-white'
+              ? 'bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 shadow-xs border border-slate-200/60 dark:border-slate-700'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           Problem Statement Seats ({problemStatements.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('queries')}
-          className={`px-4 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
-            activeTab === 'queries'
-              ? 'bg-white dark:bg-[#1E9470] text-[#1E9470] dark:text-white shadow-xs'
-              : 'text-[#536159] dark:text-slate-400 hover:text-[#12141A] dark:hover:text-white'
-          }`}
-        >
-          Contact Queries ({queries.length})
         </button>
       </div>
 
@@ -1455,50 +1434,6 @@ export const AdminDashboardPage = () => {
         </div>
       )}
 
-      {/* TAB 3: CONTACT QUERIES */}
-      {activeTab === 'queries' && (
-        <div className="space-y-4">
-          <div className="overflow-x-auto rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-[#071510]/95 shadow-sm">
-            <table className="w-full text-left border-collapse min-w-[640px]">
-              <thead>
-                <tr className="border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 text-[#536159] dark:text-slate-300 text-xs font-bold uppercase tracking-wider">
-                  <th className="px-5 py-4">Sender</th>
-                  <th className="px-5 py-4">Subject</th>
-                  <th className="px-5 py-4">Message</th>
-                  <th className="px-5 py-4">Timestamp</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
-                {queries.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-5 py-10 text-center text-[#536159] dark:text-slate-400">
-                      No contact inquiries submitted yet.
-                    </td>
-                  </tr>
-                ) : (
-                  queries.map((q) => (
-                    <tr key={q._id} className="hover:bg-sky-50/30 dark:hover:bg-slate-800/40 transition-colors">
-                      <td className="px-5 py-4">
-                        <div className="font-bold text-sm text-slate-900 dark:text-white">{q.name}</div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400">{q.email}</div>
-                      </td>
-                      <td className="px-5 py-4 font-bold text-sm text-sky-600 dark:text-sky-400 font-display">
-                        {q.subject}
-                      </td>
-                      <td className="px-5 py-4 max-w-md text-sm text-slate-900 dark:text-slate-200">
-                        {q.message}
-                      </td>
-                      <td className="px-5 py-4 text-xs font-mono text-slate-500 dark:text-slate-400">
-                        {new Date(q.createdAt).toLocaleString()}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
       {/* Team Inspection Modal */}
       {inspectTeam && (

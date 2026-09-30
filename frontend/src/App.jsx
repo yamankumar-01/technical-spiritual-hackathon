@@ -31,6 +31,8 @@ function AppContent() {
     );
   }
 
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   return (
     <div className="min-h-screen flex flex-col relative text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 selection:bg-[#bae6fd] selection:text-[#0369a1] dark:selection:bg-[#38bdf8]/40 dark:selection:text-white">
       {/* Techno-Circuit Dynamic Background Canvas */}
@@ -87,7 +89,7 @@ function AppContent() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
-      <Footer />
+      {!isAdminRoute && <Footer />}
       <ThemeToggleFloating />
     </div>
   </div>
