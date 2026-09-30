@@ -70,7 +70,7 @@ export const AboutPage = () => {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-white py-10 sm:py-16 font-sans relative">
+    <div className="w-full min-h-screen py-10 sm:py-16 font-sans relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-20">
         
         {/* Hero Section */}
