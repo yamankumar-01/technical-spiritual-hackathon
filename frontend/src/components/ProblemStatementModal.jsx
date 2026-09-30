@@ -195,7 +195,7 @@ export const ProblemStatementModal = ({
             ) : (
               <span className="text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-sky-500" />
-                {available} of {totalSeats} slots open. Slots are allocated in real-time.
+                {available} of {totalSeats} slots open • Fee: ₹1200 per team (4 members)
               </span>
             )}
           </div>

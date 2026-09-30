@@ -172,7 +172,7 @@ export const PSPage = () => {
             Problem Statements Repository
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl font-sans">
-            Each track has a strictly capped 5-team capacity across JECRC Foundation. Reserve your team's slot.
+            Each track has a strictly capped 5-team capacity across JECRC Foundation. Registration Fee: <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">₹1200</strong> per team (covers all 4 members).
           </p>
         </div>
 

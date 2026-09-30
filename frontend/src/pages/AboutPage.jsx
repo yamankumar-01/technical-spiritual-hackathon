@@ -282,14 +282,19 @@ export const AboutPage = () => {
         {/* SECTION 5: SIMPLE CALL TO ACTION */}
         <div className="dark-banner p-6 sm:p-7 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white border border-slate-800 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-5 relative overflow-hidden">
           <div className="space-y-1.5 text-center sm:text-left relative z-10 max-w-xl">
-            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-sky-400 block">
-              Limited Seats Available
-            </span>
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-sky-400 block">
+                Limited Seats Available
+              </span>
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-400 block">
+                • Fee: ₹1200 per team (covers 4 members)
+              </span>
+            </div>
             <h3 className="text-xl sm:text-2xl font-bold font-display" style={{ color: '#ffffff' }}>
               Ready to Build Conscious Technology?
             </h3>
             <p className="text-xs sm:text-sm leading-relaxed" style={{ color: '#cbd5e1' }}>
-              Browse available Problem Statements across the 6 tracks and reserve your team's slot before capacity fills up.
+              Browse available Problem Statements across the 6 tracks and reserve your team's slot before capacity fills up (Registration Fee: ₹1200 per team).
             </p>
           </div>
           <Link
