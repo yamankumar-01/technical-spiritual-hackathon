@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -19,6 +19,7 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 import SoftMedicalGlassDemo from './pages/SoftMedicalGlassDemo';
 
 function AppContent() {
+  const { user } = useAuth();
   const location = useLocation();
   const isDesignSystem = location.pathname === '/design-system' || location.pathname === '/soft-glass';
 
@@ -32,6 +33,7 @@ function AppContent() {
   }
 
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const hideFooter = isAdminRoute || user?.role === 'admin';
 
   return (
     <div className="min-h-screen flex flex-col relative text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 selection:bg-[#bae6fd] selection:text-[#0369a1] dark:selection:bg-[#38bdf8]/40 dark:selection:text-white">
@@ -89,7 +91,7 @@ function AppContent() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
-      {!isAdminRoute && <Footer />}
+      {!hideFooter && <Footer />}
       <ThemeToggleFloating />
     </div>
   </div>

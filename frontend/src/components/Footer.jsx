@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, MapPin, Sparkles, ExternalLink } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export const Footer = () => {
+  const { user } = useAuth();
+  if (user?.role === 'admin') return null;
+
   return (
     <footer className="w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800 text-slate-500 dark:text-slate-400 mt-20 transition-colors duration-200 font-sans">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-14">
