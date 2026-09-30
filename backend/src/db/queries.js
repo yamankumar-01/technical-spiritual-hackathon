@@ -139,12 +139,13 @@ export const getAllProblemStatements = async () => {
 };
 
 export const getProblemStatementById = async (idOrCode) => {
+  if (!idOrCode) return null;
   // Support querying by UUID or by code (e.g. TSH-PS-01)
-  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrCode);
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(idOrCode).trim());
   const sql = isUuid
     ? `SELECT * FROM problem_statements WHERE id = $1`
-    : `SELECT * FROM problem_statements WHERE code = $1`;
-  const res = await pgQuery(sql, [idOrCode]);
+    : `SELECT * FROM problem_statements WHERE LOWER(code) = LOWER($1)`;
+  const res = await pgQuery(sql, [String(idOrCode).trim()]);
   return res.rows[0] ? formatPS(res.rows[0]) : null;
 };
 

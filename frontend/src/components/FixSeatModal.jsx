@@ -17,8 +17,10 @@ export const FixSeatModal = ({ ps, onClose, onSuccess }) => {
     if (e) e.preventDefault();
     try {
       setSaving(true);
-      setError('');
-      const psId = ps._id || ps.id;
+      const psId = ps._id || ps.id || ps.problemId || ps.code;
+      if (!psId) {
+        throw new Error('Problem Statement identifier is missing.');
+      }
       const res = await adminService.updatePSSeats(psId, {
         totalSeats: Number(totalSeats),
         seatsAvailable: Number(seatsAvailable),

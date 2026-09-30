@@ -39,6 +39,8 @@ router.patch('/registrations/:id/venue', updateTeamVenue);
 router.post('/ps/reset', resetProblemStatements);
 router.post('/ps/fix-seats', fixProblemStatementsSeats);
 router.patch('/ps/:id/seats', updateProblemStatementSeats);
+router.put('/ps/:id/seats', updateProblemStatementSeats);
+router.post('/ps/:id/seats', updateProblemStatementSeats);
 router.get('/queries', getContactQueries);
 router.get('/ps/:id/teams', getPSTeams);
 router.delete('/teams/:id', deleteTeamRegistration);
