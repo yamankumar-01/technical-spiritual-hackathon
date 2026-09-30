@@ -58,12 +58,15 @@ export const HeroSection = () => {
           </div>
 
           {/* Heading */}
-          <h1 className="text-3xl sm:text-5xl lg:text-[58px] font-extrabold text-slate-900 dark:text-white font-display tracking-tight leading-[1.14] mb-4 sm:mb-5">
-            Techno Spiritual <span className="bg-gradient-to-r from-sky-500 via-indigo-500 to-amber-500 dark:from-sky-400 dark:via-cyan-300 dark:to-amber-400 bg-clip-text text-transparent">Hackathon 2026</span>
+          <h1 className="text-3xl sm:text-5xl lg:text-[58px] font-extrabold font-display tracking-tight leading-[1.14] mb-4 sm:mb-5">
+            <span className="text-slate-900 dark:text-white">Techno Spiritual</span>{' '}
+            <span className="bg-gradient-to-r from-sky-500 via-indigo-500 to-amber-500 dark:from-sky-400 dark:via-cyan-300 dark:to-amber-400 bg-clip-text text-transparent">
+              Hackathon 2026
+            </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-slate-300 font-normal leading-relaxed max-w-2xl mx-auto mb-6 sm:mb-7 font-sans">
+          <p className="text-sm sm:text-base lg:text-lg text-slate-700 dark:text-slate-300 font-normal leading-relaxed max-w-2xl mx-auto mb-6 sm:mb-7 font-sans">
             Synthesizing ancient mindfulness and futuristic technology. 24 hours of conscious engineering,
             ethical AI, and transformative social impact hosted at JECRC Foundation, Jaipur.
           </p>

@@ -280,7 +280,7 @@ export const AboutPage = () => {
         </section>
 
         {/* SECTION 5: SIMPLE CALL TO ACTION */}
-        <div className="p-6 sm:p-7 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white border border-slate-800 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-5 relative overflow-hidden">
+        <div className="dark-banner p-6 sm:p-7 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white border border-slate-800 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-5 relative overflow-hidden">
           <div className="space-y-1.5 text-center sm:text-left relative z-10 max-w-xl">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-sky-400 block">
               Limited Seats Available
