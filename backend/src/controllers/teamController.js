@@ -1,3 +1,4 @@
+import fs from 'fs';
 import {
   registerNewTeam,
   getTeamByCreator,
@@ -6,17 +7,33 @@ import {
   getUserActiveHolds as getUserActiveHoldsQuery,
 } from '../db/queries.js';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // 1. Register team (Leader + 3 Members + PS selection + Hold Token)
 export const registerTeam = async (req, res) => {
   try {
-    const { teamName, leader, members, holdToken } = req.body;
-    const psId = req.body.psId || req.body.problemStatementId;
+    const { teamName, leader, members, holdToken } = req.body || {};
+    const psId = req.body?.psId || req.body?.problemStatementId;
     const userId = req.user.id || req.user._id;
 
-    if (!teamName || !psId || !leader || !members) {
+    if (!teamName || typeof teamName !== 'string' || !teamName.trim()) {
       return res.status(400).json({
         success: false,
-        message: 'Team name, problem statement, leader, and 3 member details are required.',
+        message: 'A valid team name is required.',
+      });
+    }
+
+    if (!psId || typeof psId !== 'string') {
+      return res.status(400).json({
+        success: false,
+        message: 'Problem statement selection is required.',
+      });
+    }
+
+    if (!leader || typeof leader !== 'object') {
+      return res.status(400).json({
+        success: false,
+        message: 'Team leader details are required.',
       });
     }
 
@@ -27,18 +44,38 @@ export const registerTeam = async (req, res) => {
       });
     }
 
-    // Sanitize and extract all 4 emails
-    const leaderEmail = leader.email?.trim().toLowerCase();
-    const memberEmails = members.map((m) => m.email?.trim().toLowerCase());
-    const allSubmittedEmails = [leaderEmail, ...memberEmails];
-
-    // Check if all emails are provided and valid
-    if (allSubmittedEmails.some((email) => !email)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Valid email addresses are required for the Team Leader and all 3 members.',
-      });
+    // Validate leader fields
+    if (!leader.name || typeof leader.name !== 'string' || !leader.name.trim()) {
+      return res.status(400).json({ success: false, message: 'Leader name is required.' });
     }
+    if (!leader.email || typeof leader.email !== 'string' || !EMAIL_REGEX.test(leader.email.trim())) {
+      return res.status(400).json({ success: false, message: 'Valid leader email is required.' });
+    }
+    if (!leader.phone || typeof leader.phone !== 'string' || !leader.phone.trim()) {
+      return res.status(400).json({ success: false, message: 'Leader contact phone number is required.' });
+    }
+
+    // Validate member fields
+    for (let i = 0; i < members.length; i++) {
+      const m = members[i];
+      if (!m || typeof m !== 'object') {
+        return res.status(400).json({ success: false, message: `Details for Member ${i + 1} are required.` });
+      }
+      if (!m.name || typeof m.name !== 'string' || !m.name.trim()) {
+        return res.status(400).json({ success: false, message: `Name for Member ${i + 1} is required.` });
+      }
+      if (!m.email || typeof m.email !== 'string' || !EMAIL_REGEX.test(m.email.trim())) {
+        return res.status(400).json({ success: false, message: `Valid email for Member ${i + 1} is required.` });
+      }
+      if (!m.phone || typeof m.phone !== 'string' || !m.phone.trim()) {
+        return res.status(400).json({ success: false, message: `Phone number for Member ${i + 1} is required.` });
+      }
+    }
+
+    // Sanitize and extract all 4 emails
+    const leaderEmail = leader.email.trim().toLowerCase();
+    const memberEmails = members.map((m) => m.email.trim().toLowerCase());
+    const allSubmittedEmails = [leaderEmail, ...memberEmails];
 
     // Check for internal duplicate emails within the submitted roster
     const uniqueEmailSet = new Set(allSubmittedEmails);
@@ -50,11 +87,27 @@ export const registerTeam = async (req, res) => {
     }
 
     const result = await registerNewTeam({
-      teamName,
+      teamName: teamName.trim().slice(0, 100),
       psId,
       userId,
-      leader,
-      members,
+      leader: {
+        ...leader,
+        name: leader.name.trim().slice(0, 100),
+        email: leaderEmail.slice(0, 150),
+        phone: leader.phone.trim().slice(0, 25),
+        college: (leader.college || 'JECRC Foundation').slice(0, 150),
+        branch: (leader.branch || '').slice(0, 100),
+        year: (leader.year || '').slice(0, 50),
+      },
+      members: members.map((m) => ({
+        ...m,
+        name: m.name.trim().slice(0, 100),
+        email: m.email.trim().toLowerCase().slice(0, 150),
+        phone: m.phone.trim().slice(0, 25),
+        college: (m.college || leader.college || 'JECRC Foundation').slice(0, 150),
+        branch: (m.branch || '').slice(0, 100),
+        year: (m.year || '').slice(0, 50),
+      })),
       holdToken,
     });
 
@@ -73,7 +126,7 @@ export const registerTeam = async (req, res) => {
       success: true,
       status: 'PAYMENT PENDING',
       message:
-        'Registration submitted successfully. Your registration slot has been reserved. Payment instructions and payment timings will be shared in the official WhatsApp group. Payment Mode: Offline. Payment Location: SRC Club.',
+        'Registration submitted successfully. Your registration slot has been reserved under PAYMENT PENDING.',
       team: result.team,
       data: result.team,
     });
@@ -109,10 +162,23 @@ export const registerTeam = async (req, res) => {
 // 2. Submit Manual Payment Proof (UPI / Bank transfer with UTR ID)
 export const submitManualPayment = async (req, res) => {
   try {
-    const { teamId, txnId } = req.body;
+    const { teamId, txnId } = req.body || {};
     const userId = req.user.id || req.user._id;
 
-    if (!txnId || !txnId.trim()) {
+    if (!teamId || typeof teamId !== 'string' || !teamId.trim()) {
+      if (req.file && req.file.path) {
+        fs.unlink(req.file.path, () => {});
+      }
+      return res.status(400).json({
+        success: false,
+        message: 'Valid Team ID is required.',
+      });
+    }
+
+    if (!txnId || typeof txnId !== 'string' || !txnId.trim()) {
+      if (req.file && req.file.path) {
+        fs.unlink(req.file.path, () => {});
+      }
       return res.status(400).json({
         success: false,
         message: 'Transaction Reference ID (UTR / Txn ID) is required.',
@@ -124,13 +190,17 @@ export const submitManualPayment = async (req, res) => {
       proofUrl = `/uploads/${req.file.filename}`;
     }
 
-    const team = await updateTeamPaymentProof(teamId, userId, {
-      txnId: txnId.trim(),
+    const team = await updateTeamPaymentProof(teamId.trim(), userId, {
+      txnId: txnId.trim().slice(0, 100),
       proofUrl,
     });
 
     if (!team) {
-      return res.status(404).json({ success: false, message: 'Team registration not found.' });
+      // Clean up orphaned upload file if object-level authorization failed or team was not found
+      if (req.file && req.file.path) {
+        fs.unlink(req.file.path, () => {});
+      }
+      return res.status(404).json({ success: false, message: 'Team registration not found or not owned by your account.' });
     }
 
     res.status(200).json({
@@ -139,6 +209,9 @@ export const submitManualPayment = async (req, res) => {
       team,
     });
   } catch (error) {
+    if (req.file && req.file.path) {
+      fs.unlink(req.file.path, () => {});
+    }
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to submit payment proof.',

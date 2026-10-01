@@ -7,6 +7,7 @@ import {
   getAllPSCapacity,
 } from '../controllers/holdController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import { holdLimiter } from '../middleware/rateLimitMiddleware.js';
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get('/', getAllPS);
 router.get('/capacity/all', getAllPSCapacity);
 router.get('/user/holds', protect, getUserActiveHolds);
 router.get('/:id', getPSById);
-router.post('/:id/hold', protect, acquireHold);
+router.post('/:id/hold', protect, holdLimiter, acquireHold);
 router.get('/:id/hold', protect, getActiveHold);
 
 export default router;

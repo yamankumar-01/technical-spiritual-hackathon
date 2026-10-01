@@ -3,8 +3,12 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import fs from 'fs';
 import { initializePostgres, pgPool, pgQuery, closeDatabase, getActiveEngine } from './src/config/postgres.js';
 import { protect } from './src/middleware/authMiddleware.js';
+import { corsOptions } from './src/config/corsConfig.js';
+import { securityHeadersMiddleware } from './src/middleware/securityHeadersMiddleware.js';
+import { generalLimiter, authLimiter, contactLimiter } from './src/middleware/rateLimitMiddleware.js';
 
 import authRoutes from './src/routes/authRoutes.js';
 import psRoutes from './src/routes/psRoutes.js';
@@ -17,53 +21,45 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS configuration allowing cookies from frontend
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'http://localhost:5174',
-  'http://127.0.0.1:5174',
-  'http://localhost:5175',
-  'http://127.0.0.1:5175',
-  'http://localhost:3000',
-].filter(Boolean);
+// Security: Disable Express signature banner
+app.disable('x-powered-by');
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, postman, or server-to-server)
-      if (!origin) return callback(null, true);
-      // Allow specified origins, localhost, or any vercel.app deployment
-      if (
-        allowedOrigins.includes(origin) ||
-        /\.vercel\.app$/.test(origin) ||
-        (process.env.CLIENT_URL && origin === process.env.CLIENT_URL)
-      ) {
-        return callback(null, true);
-      }
-      return callback(null, true); // Permissive fallback
-    },
-    credentials: true,
-    exposedHeaders: ['Content-Disposition'],
-  })
-);
+// Security: Browser headers (CSP, nosniff, frame-ancestors, referrer, permissions)
+app.use(securityHeadersMiddleware);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Security: Exact allowlist CORS (rejects arbitrary origins, credentials restricted to allowlist)
+app.use(cors(corsOptions));
+
+// Security: General request rate limiting
+app.use(generalLimiter);
+
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());
 
 // Protected route for uploaded manual payment screenshots (Admin or Team Member only)
 const uploadsPath = path.resolve('uploads');
 app.get('/uploads/:filename', protect, async (req, res) => {
   try {
-    const { filename } = req.params;
+    const rawFilename = req.params.filename;
+    const safeFilename = path.basename(rawFilename);
+    const filePath = path.resolve(uploadsPath, safeFilename);
+
+    // Prevent path traversal outside uploads directory
+    if (!filePath.startsWith(uploadsPath)) {
+      return res.status(403).json({ success: false, message: 'Access denied: Invalid file path.' });
+    }
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, message: 'File not found.' });
+    }
+
     const teamRes = await pgQuery(
       `SELECT t.*, tm.email AS member_email
        FROM teams t
        LEFT JOIN team_members tm ON tm.team_id = t.id
        WHERE t.payment_screenshot_url = $1 OR t.payment_screenshot_url = $2`,
-      [`/uploads/${filename}`, filename]
+      [`/uploads/${safeFilename}`, safeFilename]
     );
 
     if (teamRes.rows.length === 0) {
@@ -84,19 +80,21 @@ app.get('/uploads/:filename', protect, async (req, res) => {
       return res.status(403).json({ success: false, message: 'Access denied: You are not authorized to view this payment receipt.' });
     }
 
-    res.sendFile(path.join(uploadsPath, filename));
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Security-Policy', "default-src 'none'");
+    res.sendFile(filePath);
   } catch (err) {
     res.status(500).json({ success: false, message: 'Failed to access upload file.' });
   }
 });
 
-// API Routes
-app.use('/api/auth', authRoutes);
+// API Routes with targeted rate limits
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/ps', psRoutes);
 app.use('/api/team', teamRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/contact', contactRoutes);
+app.use('/api/contact', contactLimiter, contactRoutes);
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
@@ -122,6 +120,13 @@ app.get('/api/health', async (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
+  if (err && err.message && err.message.startsWith('CORS policy violation')) {
+    return res.status(403).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
   console.error('API Error:', err.stack);
   res.status(err.status || 500).json({
     success: false,
@@ -160,4 +165,10 @@ const startServer = async () => {
   }
 };
 
-startServer();
+const isTestRunner = process.env.NODE_ENV === 'test' || process.argv.some((arg) => arg.includes('test'));
+
+if (!isTestRunner) {
+  startServer();
+}
+
+export default app;

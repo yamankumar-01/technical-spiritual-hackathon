@@ -77,6 +77,11 @@ export const adminService = {
   getQueries: () => API.get('/admin/queries'),
   getPSTeams: (id) => API.get(`/admin/ps/${id}/teams`),
   deleteTeam: (id) => API.delete(`/admin/teams/${id}`),
+  exportRegistrationsExcel: (filename) =>
+    API.get(`/admin/export/${filename || 'TSH_Teams.xlsx'}`, { responseType: 'blob' }),
+  exportRegistrationsCSV: (filename) =>
+    API.get(`/admin/export/${filename || 'TSH_Teams.csv'}`, { responseType: 'blob' }),
+  createExportTicket: () => API.post('/admin/export-ticket'),
 };
 
 // Contact Services

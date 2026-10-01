@@ -13,6 +13,7 @@ import {
 } from '../db/queries.js';
 import { pgQuery } from '../config/postgres.js';
 import * as XLSX from 'xlsx';
+import { exportTicketManager } from '../utils/exportTicket.js';
 
 // 1. Get all registrations with filtering and comprehensive capacity statistics
 export const getAllRegistrations = async (req, res) => {
@@ -511,5 +512,21 @@ export const getOfflineBackupRegistrations = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Failed to retrieve offline backups.' });
+  }
+};
+
+// 12. Generate short-lived, single-use export ticket
+export const createExportTicket = async (req, res) => {
+  try {
+    const adminId = req.user.id || req.user._id;
+    const ticket = exportTicketManager.createTicket(adminId);
+    res.status(200).json({
+      success: true,
+      ticket,
+      expiresIn: 60,
+      message: 'Single-use export ticket created. Valid for 60 seconds.',
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to generate export ticket.' });
   }
 };

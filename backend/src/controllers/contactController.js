@@ -1,21 +1,42 @@
 import { createContactQuery } from '../db/queries.js';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export const submitContactQuery = async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
+    const { name, email, subject, message } = req.body || {};
 
-    if (!name || !email || !message) {
+    if (!name || typeof name !== 'string' || !name.trim()) {
       return res.status(400).json({
         success: false,
-        message: 'Name, email, and message are required fields.',
+        message: 'Full name is required.',
       });
     }
 
+    if (!email || typeof email !== 'string' || !EMAIL_REGEX.test(email.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: 'A valid email address is required.',
+      });
+    }
+
+    if (!message || typeof message !== 'string' || !message.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Message content is required.',
+      });
+    }
+
+    const cleanName = name.trim().slice(0, 100);
+    const cleanEmail = email.trim().toLowerCase().slice(0, 150);
+    const cleanSubject = typeof subject === 'string' ? subject.trim().slice(0, 200) : 'General Query';
+    const cleanMessage = message.trim().slice(0, 3000);
+
     const query = await createContactQuery({
-      name,
-      email,
-      subject: subject || 'General Query',
-      message,
+      name: cleanName,
+      email: cleanEmail,
+      subject: cleanSubject || 'General Query',
+      message: cleanMessage,
     });
 
     res.status(201).json({

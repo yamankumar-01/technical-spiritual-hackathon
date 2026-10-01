@@ -117,10 +117,27 @@ export const testPgConnection = async () => {
     try {
       const { PGlite } = await import('@electric-sql/pglite');
       const pgliteDataDir = path.resolve(__dirname, '../../.db_data/pglite_db');
-      pgliteInstance = new PGlite(pgliteDataDir);
-      await pgliteInstance.waitReady;
+      const pidPath = path.join(pgliteDataDir, 'postmaster.pid');
+      if (fs.existsSync(pidPath)) {
+        try { fs.unlinkSync(pidPath); } catch (_) {}
+      }
+      try {
+        if (process.env.NODE_ENV === 'test') {
+          pgliteInstance = new PGlite();
+          await pgliteInstance.waitReady;
+          console.log('⚡ In-memory PostgreSQL (PGlite) activated for test environment.');
+        } else {
+          pgliteInstance = new PGlite(pgliteDataDir);
+          await pgliteInstance.waitReady;
+          console.log(`⚡ Embedded PostgreSQL (PGlite) activated with persistent storage at: ${pgliteDataDir}`);
+        }
+      } catch (dirErr) {
+        console.warn(`⚠️ PGlite directory storage initialization failed (${dirErr.message}), falling back to in-memory PGlite...`);
+        pgliteInstance = new PGlite();
+        await pgliteInstance.waitReady;
+        console.log('⚡ In-memory PostgreSQL (PGlite) activated.');
+      }
       activeEngine = 'pglite';
-      console.log(`⚡ Embedded PostgreSQL (PGlite) activated with persistent storage at: ${pgliteDataDir}`);
       return true;
     } catch (pglErr) {
       console.error('❌ Failed to initialize embedded PGlite:', pglErr.message);

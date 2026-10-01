@@ -378,14 +378,24 @@ export const AdminDashboardPage = () => {
   };
 
   // Download / Export all registrations to genuine Microsoft Excel (.xlsx format)
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     try {
-      const token = localStorage.getItem('tsh_token') || '';
       const dateStr = new Date().toISOString().slice(0, 10);
       const fileName = `TSH_2026_Teams_Master_${dateStr}.xlsx`;
-      const apiBase = import.meta.env.VITE_API_URL || '/api';
-      const downloadUrl = `${apiBase}/admin/export/${fileName}?token=${encodeURIComponent(token)}`;
-      window.location.assign(downloadUrl);
+      const response = await adminService.exportRegistrationsExcel(fileName);
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        if (link.parentNode) link.parentNode.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 30000);
       return;
     } catch (serverErr) {
       console.warn('Server export stream failed, falling back to client generation:', serverErr);
@@ -612,14 +622,22 @@ export const AdminDashboardPage = () => {
   };
 
   // Download / Export registrations to CSV (.csv) format
-  const handleExportCSV = () => {
+  const handleExportCSV = async () => {
     try {
-      const token = localStorage.getItem('tsh_token') || '';
       const dateStr = new Date().toISOString().slice(0, 10);
       const fileName = `TSH_2026_Teams_Master_${dateStr}.csv`;
-      const apiBase = import.meta.env.VITE_API_URL || '/api';
-      const downloadUrl = `${apiBase}/admin/export/${fileName}?token=${encodeURIComponent(token)}`;
-      window.location.assign(downloadUrl);
+      const response = await adminService.exportRegistrationsCSV(fileName);
+      const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        if (link.parentNode) link.parentNode.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 30000);
       return;
     } catch (serverErr) {
       console.warn('Server CSV export stream failed, falling back to client generation:', serverErr);

@@ -1,25 +1,26 @@
 import jwt from 'jsonwebtoken';
 import { findUserById } from '../db/queries.js';
 
+const DEFAULT_DEV_SECRET = 'tsh_super_secret_jwt_key_2026_zen_cyber';
+
 export const protect = async (req, res, next) => {
   try {
     let token = null;
 
-    // Check httpOnly cookies first
+    // 1. Check httpOnly cookies first (preferred for web clients)
     if (req.cookies && req.cookies.token) {
       token = req.cookies.token;
     }
-    // Also check Authorization header as fallback
+    // 2. Check Authorization: Bearer <token> header
     else if (
       req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer')
+      req.headers.authorization.startsWith('Bearer ')
     ) {
-      token = req.headers.authorization.split(' ')[1];
+      token = req.headers.authorization.slice(7).trim();
     }
-    // Also check query parameter (for direct file downloads / exports)
-    else if (req.query && req.query.token) {
-      token = req.query.token;
-    }
+
+    // NOTE: Tokens in URL query parameters are strictly forbidden to prevent
+    // credential leakage through browser history, referrers, and server access logs.
 
     if (!token) {
       return res.status(401).json({
@@ -28,7 +29,11 @@ export const protect = async (req, res, next) => {
       });
     }
 
-    const secret = process.env.JWT_SECRET || 'tsh_super_secret_jwt_key_2026_zen_cyber';
+    const secret = process.env.JWT_SECRET || DEFAULT_DEV_SECRET;
+    if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process.env.JWT_SECRET === DEFAULT_DEV_SECRET)) {
+      console.warn('⚠️ SECURITY WARNING: Production server is running with default/fallback JWT secret. Set JWT_SECRET in production environment variables.');
+    }
+
     const decoded = jwt.verify(token, secret);
 
     const user = await findUserById(decoded.id);

@@ -78,16 +78,39 @@ const sendTokenResponse = (user, statusCode, res, message = 'Success') => {
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, phone, college } = req.body;
+    const { name, email, password, phone, college } = req.body || {};
 
-    if (!name || !email || !password) {
+    if (!name || typeof name !== 'string' || !name.trim()) {
       return res.status(400).json({
         success: false,
-        message: 'Name, email, and password are required.',
+        message: 'Full name is required.',
       });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || typeof email !== 'string' || !emailRegex.test(email.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: 'A valid email address is required.',
+      });
+    }
+
+    if (!password || typeof password !== 'string' || password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 8 characters long.',
+      });
+    }
+
+    if (password.length > 128) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must not exceed 128 characters.',
+      });
+    }
+
+    const cleanEmail = email.trim().toLowerCase().slice(0, 150);
+    const cleanName = name.trim().slice(0, 100);
 
     // Prevent registering with admin email
     if (cleanEmail === 'tsh@admin' || cleanEmail.startsWith('admin@')) {
