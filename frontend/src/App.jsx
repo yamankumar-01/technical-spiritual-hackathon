@@ -59,6 +59,7 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
+          <Route path="/pr" element={<Navigate to="/register-team" replace />} />
 
           {/* Authenticated User Dashboard */}
           <Route

@@ -18,6 +18,8 @@ import {
   MapPin,
   QrCode,
   ExternalLink,
+  CreditCard,
+  Sparkles,
 } from 'lucide-react';
 
 const PAYMENT_GOOGLE_FORM_URL = 'https://forms.gle/xTE5A2jN2rao1u978';
@@ -284,45 +286,46 @@ export const UserDashboardPage = () => {
 
                       {/* State Specific Callout */}
                       {isPending && (
-                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-sky-500/10 via-indigo-500/5 to-amber-500/10 dark:from-sky-950/30 dark:via-indigo-950/20 dark:to-amber-950/20 border border-sky-400/60 dark:border-sky-600/50 space-y-4 text-xs text-slate-700 dark:text-slate-200">
+                        <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-sky-500/10 via-indigo-500/5 to-emerald-500/10 dark:from-sky-950/30 dark:via-indigo-950/20 dark:to-emerald-950/20 border-2 border-sky-400/60 dark:border-sky-600/50 space-y-4 text-xs text-slate-700 dark:text-slate-200">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/80 dark:border-slate-800">
                             <div>
                               <div className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white font-display">
-                                <QrCode className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                                <CreditCard className="w-4 h-4 text-sky-600 dark:text-sky-400" />
                                 <span>Complete Online Payment to Confirm Your Seat</span>
                               </div>
                               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                Fee: <strong className="text-emerald-600 dark:text-emerald-400">₹1200</strong> per team • Scan QR code and submit details
+                                Fee: <strong className="text-emerald-600 dark:text-emerald-400">₹1200</strong> per team (covers all 4 members) • Official UPI QR Code is inside the Google Form
                               </p>
                             </div>
                             <a
                               href={PAYMENT_GOOGLE_FORM_URL}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:brightness-105 shadow-sm transition-all shrink-0 cursor-pointer"
+                              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-xs font-bold text-white bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 hover:brightness-110 shadow-md transition-all shrink-0 cursor-pointer"
                             >
-                              <span>Fill Your Payment Details</span>
+                              <FileText className="w-3.5 h-3.5" />
+                              <span>Fill Google Form for Payment (QR Inside)</span>
                               <ExternalLink className="w-3.5 h-3.5" />
                             </a>
                           </div>
 
-                          <div className="flex flex-col sm:flex-row items-center gap-4">
-                            <div className="p-2 bg-white rounded-2xl border border-slate-200 dark:border-slate-700 shrink-0 shadow-xs">
-                              <img
-                                src="/payment-qr.png"
-                                alt="Payment QR Code"
-                                className="w-28 h-28 object-contain"
-                              />
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div className="p-3.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1">
+                              <span className="font-bold text-sky-600 dark:text-sky-400 block text-xs">1. Open Google Form</span>
+                              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Click the button above to access the official form containing the UPI QR code.
+                              </p>
                             </div>
-                            <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
-                              <p>
-                                <strong>1. Scan QR Code:</strong> Use Google Pay, PhonePe, Paytm, or BHIM to pay the ₹1200 registration fee.
+                            <div className="p-3.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1">
+                              <span className="font-bold text-indigo-600 dark:text-indigo-400 block text-xs">2. Scan QR & Pay ₹1200</span>
+                              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Scan the QR code inside the form with Google Pay, PhonePe, Paytm, or BHIM.
                               </p>
-                              <p>
-                                <strong>2. Fill Google Form:</strong> Click the button above to submit your transaction screenshot & UTR number.
-                              </p>
-                              <p className="text-emerald-700 dark:text-emerald-300 font-medium">
-                                Once verified by the admin team, your slot status will be updated to <strong>Confirmed</strong>.
+                            </div>
+                            <div className="p-3.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1">
+                              <span className="font-bold text-emerald-600 dark:text-emerald-400 block text-xs">3. Submit Proof & Confirm</span>
+                              <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                                Submit screenshot & UTR number. Admin team will verify and confirm your seat!
                               </p>
                             </div>
                           </div>

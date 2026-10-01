@@ -21,6 +21,8 @@ import {
   MessageCircle,
   QrCode,
   ExternalLink,
+  CreditCard,
+  FileText,
 } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 
@@ -335,8 +337,8 @@ export const TeamRegisterPage = () => {
             }`}
           >
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[11px]">3</span>
-            <span className="hidden sm:inline">Payment Pending (SRC)</span>
-            <span className="sm:hidden">Pending</span>
+            <span className="hidden sm:inline">Payment & Verification</span>
+            <span className="sm:hidden">Payment</span>
           </div>
         </div>
       </div>
@@ -757,92 +759,103 @@ export const TeamRegisterPage = () => {
               </div>
             </div>
 
-            {/* Online Payment Card with QR Code and Google Form */}
+            {/* Online Payment Card with Google Form (QR code inside form) */}
             <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-sky-500/10 via-indigo-500/5 to-emerald-500/10 dark:from-sky-950/30 dark:via-indigo-950/20 dark:to-emerald-950/20 border-2 border-sky-400/70 dark:border-sky-600/70 space-y-6 shadow-sm">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-2xl bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 shrink-0">
-                  <QrCode className="w-6 h-6" />
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-2xl bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 shrink-0">
+                    <CreditCard className="w-6 h-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-base sm:text-xl font-bold text-slate-900 dark:text-white font-['Outfit']">
+                      Online Payment & Seat Verification
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
+                      Payment Mode: <strong className="text-sky-600 dark:text-sky-400">Online UPI (QR Code inside form)</strong> • Fee: <strong className="text-emerald-600 dark:text-emerald-400">₹{REGISTRATION_FEE}</strong> per team (covers all 4 members)
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-base sm:text-xl font-bold text-slate-900 dark:text-white font-['Outfit']">
-                    Online Payment & Seat Verification
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
-                    Payment Mode: <strong className="text-sky-600 dark:text-sky-400">Online UPI</strong> • Fee: <strong className="text-emerald-600 dark:text-emerald-400">₹{REGISTRATION_FEE}</strong> per team (covers all 4 members)
-                  </p>
+
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 shrink-0 w-fit">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <span>UPI QR Code inside Google Form</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-4 border-t border-slate-200/80 dark:border-slate-800">
-                {/* Left Side: Step-by-Step Instructions & Fill Payment Details Button */}
-                <div className="lg:col-span-7 space-y-5">
-                  <div className="space-y-3">
-                    <h4 className="font-bold text-xs uppercase tracking-wider text-sky-700 dark:text-sky-300">
-                      Step-by-Step Payment Process
-                    </h4>
-                    <ol className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300 list-decimal list-inside leading-relaxed">
-                      <li>
-                        <strong>Scan UPI QR Code:</strong> Use any UPI app (Google Pay, PhonePe, Paytm, BHIM) to scan the official QR code on the right and pay <strong>₹{REGISTRATION_FEE}</strong>.
-                      </li>
-                      <li>
-                        <strong>Save Transaction ID:</strong> Take a clear screenshot of the successful payment showing the <strong>UTR / UPI Transaction ID</strong>.
-                      </li>
-                      <li>
-                        <strong>Fill Payment Form:</strong> Click the button below to submit your payment proof & transaction details in the official Google Form.
-                      </li>
-                    </ol>
-                  </div>
+              {/* Step-by-Step Payment Process Cards */}
+              <div className="space-y-3 pt-2 border-t border-slate-200/80 dark:border-slate-800">
+                <h4 className="font-bold text-xs uppercase tracking-wider text-sky-700 dark:text-sky-300">
+                  Step-by-Step Payment & Verification Process
+                </h4>
 
-                  {/* Prominent Google Form CTA Button */}
-                  <div className="pt-2">
-                    <a
-                      href={PAYMENT_GOOGLE_FORM_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 hover:brightness-105 shadow-[0_8px_20px_rgba(14,165,233,0.3)] transition-all cursor-pointer w-full sm:w-auto text-center font-display"
-                    >
-                      <span>Fill Your Payment Details</span>
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 font-medium">
-                      * Opens the official Google Form in a new tab to upload your payment screenshot & UTR number.
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-600 dark:text-sky-400 font-bold text-xs flex items-center justify-center">
+                        1
+                      </span>
+                      <h5 className="font-bold text-xs text-slate-900 dark:text-white">
+                        Open Google Form
+                      </h5>
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      Click the button below to open the official TSH payment form in a new tab.
                     </p>
                   </div>
 
-                  <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5">
-                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                    <p>
-                      <strong>Seat Confirmation:</strong> Your slot remains reserved in <strong>Payment Pending</strong> until our team verifies your Google Form submission. Once verified, your status will update to <strong>Confirmed</strong>.
+                  <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold text-xs flex items-center justify-center">
+                        2
+                      </span>
+                      <h5 className="font-bold text-xs text-slate-900 dark:text-white">
+                        Scan QR & Pay ₹{REGISTRATION_FEE}
+                      </h5>
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      Scan the official UPI QR code inside the form with Google Pay, PhonePe, Paytm, or BHIM.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center justify-center">
+                        3
+                      </span>
+                      <h5 className="font-bold text-xs text-slate-900 dark:text-white">
+                        Upload Screenshot & UTR
+                      </h5>
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      Enter your UTR / Transaction ID and upload your payment screenshot in the form, then submit.
                     </p>
                   </div>
                 </div>
+              </div>
 
-                {/* Right Side: QR Code Card */}
-                <div className="lg:col-span-5 flex flex-col items-center justify-center">
-                  <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border-2 border-sky-500/40 shadow-lg text-center space-y-3 w-full max-w-[280px]">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800">
-                      <Sparkles className="w-3 h-3 text-amber-500" />
-                      <span>Official UPI QR</span>
-                    </div>
+              {/* Prominent Google Form CTA Button */}
+              <div className="pt-2 text-center flex flex-col items-center">
+                <a
+                  href={PAYMENT_GOOGLE_FORM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-3 px-8 sm:px-12 py-4 rounded-full text-sm sm:text-base font-bold text-white bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 hover:brightness-110 shadow-[0_8px_25px_rgba(14,165,233,0.35)] hover:shadow-[0_12px_32px_rgba(14,165,233,0.45)] transition-all cursor-pointer w-full sm:w-auto text-center font-display"
+                >
+                  <FileText className="w-5 h-5 shrink-0" />
+                  <span>Fill Google Form for Payment (QR Inside)</span>
+                  <ExternalLink className="w-4 h-4 shrink-0" />
+                </a>
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 font-medium max-w-xl">
+                  * Opens the official Google Form in a new tab. The official UPI QR code and payment verification fields are provided directly inside this form.
+                </p>
+              </div>
 
-                    <div className="p-2 bg-white rounded-2xl border border-slate-100 shadow-xs flex items-center justify-center overflow-hidden">
-                      <img
-                        src="/payment-qr.png"
-                        alt="TSH 2026 Payment QR Code"
-                        className="w-48 h-48 sm:w-52 sm:h-52 object-contain"
-                      />
-                    </div>
-
-                    <div className="space-y-0.5">
-                      <div className="text-base font-extrabold text-slate-900 dark:text-white font-mono">
-                        ₹{REGISTRATION_FEE}
-                      </div>
-                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                        Scan with GPay / PhonePe / Paytm / BHIM
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {/* Notice Banner */}
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="leading-relaxed">
+                  <strong>Seat Confirmation:</strong> Your problem statement slot has been reserved under <strong>PAYMENT PENDING</strong>. Once you submit the Google Form with your payment proof, our admin team will verify it and update your status to <strong>CONFIRMED</strong>.
+                </p>
               </div>
             </div>
 
