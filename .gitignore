@@ -29,6 +29,8 @@ build/
 uploads/
 */uploads/*
 !*/uploads/.gitkeep
+backups/
+*/backups/
 
 # Editor & OS files
 .DS_Store

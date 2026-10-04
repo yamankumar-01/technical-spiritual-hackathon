@@ -86,8 +86,8 @@ const teamSchema = new mongoose.Schema(
     payment: {
       method: {
         type: String,
-        enum: ['manual', 'upi', 'src_desk', null],
-        default: 'src_desk',
+        enum: ['manual', 'upi', 'online_upi', 'src_desk', 'bank_transfer', 'cash', null],
+        default: 'upi',
       },
       amount: {
         type: Number,

@@ -356,6 +356,62 @@ describe('5. Input Validation & Sanitization', () => {
     const body = await res.json();
     assert.ok(body.message.includes('unique email addresses'));
   });
+
+  test('Valid team registration succeeds without violating payment_method constraint', async () => {
+    const uniqueId = Date.now();
+    // Register a new dedicated user
+    const regRes = await fetch(`${baseUrl}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Team Registration Tester',
+        email: `regtester-${uniqueId}@example.com`,
+        password: 'Password123!',
+      }),
+    });
+    assert.equal(regRes.status, 201);
+    const regData = await regRes.json();
+    const userToken = regData.token;
+
+    // Get an available problem statement
+    const psListRes = await fetch(`${baseUrl}/api/ps`);
+    const psJson = await psListRes.json();
+    const psList = Array.isArray(psJson) ? psJson : (psJson.data || []);
+    const targetPs = psList.find((p) => (p.seatsAvailable !== undefined ? p.seatsAvailable : p.seats_available) > 0);
+    assert.ok(targetPs, 'Should have an available problem statement');
+
+    const res = await fetch(`${baseUrl}/api/team/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: JSON.stringify({
+        teamName: `Alpha Team ${uniqueId}`,
+        psId: targetPs.id || targetPs._id,
+        leader: {
+          name: 'Leader Test',
+          email: `leader-${uniqueId}@testcollege.edu`,
+          phone: '9876543210',
+          college: 'JECRC Foundation',
+          branch: 'CSE',
+          year: '3rd Year',
+        },
+        members: [
+          { name: 'Member 1', email: `m1-${uniqueId}@testcollege.edu`, phone: '9876543211', college: 'JECRC Foundation', branch: 'CSE', year: '3rd Year' },
+          { name: 'Member 2', email: `m2-${uniqueId}@testcollege.edu`, phone: '9876543212', college: 'JECRC Foundation', branch: 'CSE', year: '3rd Year' },
+          { name: 'Member 3', email: `m3-${uniqueId}@testcollege.edu`, phone: '9876543213', college: 'JECRC Foundation', branch: 'CSE', year: '3rd Year' },
+        ],
+      }),
+    });
+
+    const body = await res.json();
+    assert.equal(res.status, 201, `Expected 201 but got ${res.status}: ${JSON.stringify(body)}`);
+    assert.equal(body.success, true);
+    assert.ok(body.team);
+    assert.equal(body.team.status, 'payment_pending');
+    assert.equal(body.team.payment?.method, 'upi');
+  });
 });
 
 describe('6. Upload Security & Path Traversal Mitigation', () => {

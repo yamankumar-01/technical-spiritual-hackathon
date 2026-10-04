@@ -236,7 +236,7 @@ export const initializePostgres = async () => {
         leader_college VARCHAR(255),
         members_data JSONB,
         payment_status VARCHAR(50) DEFAULT 'pending',
-        payment_method VARCHAR(50) DEFAULT 'online_upi',
+        payment_method VARCHAR(50) DEFAULT 'upi',
         payment_amount INTEGER DEFAULT 1200,
         venue_room_number VARCHAR(100),
         venue_time_slot VARCHAR(150),
@@ -254,6 +254,14 @@ export const initializePostgres = async () => {
     await pgQuery(`ALTER TABLE offline_registrations_backup ADD COLUMN IF NOT EXISTS mentor_phone VARCHAR(50);`);
     await pgQuery(`ALTER TABLE offline_registrations_backup ADD COLUMN IF NOT EXISTS mentor_whatsapp VARCHAR(50);`);
     await pgQuery(`ALTER TABLE offline_registrations_backup ADD COLUMN IF NOT EXISTS mentor_email VARCHAR(255);`);
+
+    // Auto-migrate payment_method check constraint to accept both 'upi' and 'online_upi'
+    try {
+      await pgQuery(`ALTER TABLE teams DROP CONSTRAINT IF EXISTS teams_payment_method_check;`);
+      await pgQuery(`ALTER TABLE teams ADD CONSTRAINT teams_payment_method_check CHECK (payment_method IN ('src_desk', 'upi', 'online_upi', 'bank_transfer', 'manual', 'cash'));`);
+    } catch (migErr) {
+      console.warn('⚠️ Payment method constraint migration note:', migErr.message);
+    }
 
     // Standardize all existing registration payment amounts to 1200
     await pgQuery(`UPDATE teams SET payment_amount = 1200 WHERE payment_amount IS NULL OR payment_amount = 400 OR payment_amount != 1200;`);
