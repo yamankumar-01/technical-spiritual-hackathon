@@ -71,7 +71,7 @@ export const formatTeam = (t, members = []) => ({
       }
     : null,
   payment: {
-    method: t.payment_method || 'upi',
+    method: t.payment_method || 'src_desk',
     amount: (!t.payment_amount || Number(t.payment_amount) === 400) ? 1200 : Number(t.payment_amount),
     manualTxnId: t.transaction_id,
     manualProofUrl: t.payment_screenshot_url,
@@ -553,7 +553,7 @@ export const registerNewTeam = async ({ teamName, psId, userId, leader, members 
        ) VALUES (
         $1, $2, $3, $4, $4,
         $5, $6, $7, $8, $9, $10,
-        'payment_pending', 'pending', 'upi', 1200
+        'payment_pending', 'pending', 'src_desk', 1200
        ) RETURNING *`,
       [
         teamName.trim(),
@@ -612,7 +612,7 @@ export const registerNewTeam = async ({ teamName, psId, userId, leader, members 
           team.leader_college,
           JSON.stringify(insertedMembers),
           team.payment_status || 'pending',
-          team.payment_method || 'upi',
+          team.payment_method || 'src_desk',
           (!team.payment_amount || Number(team.payment_amount) === 400) ? 1200 : Number(team.payment_amount),
           JSON.stringify({ team, members: insertedMembers, ps: { id: ps.id, code: ps.code, title: ps.title } }),
         ]

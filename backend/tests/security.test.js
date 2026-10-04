@@ -410,7 +410,7 @@ describe('5. Input Validation & Sanitization', () => {
     assert.equal(body.success, true);
     assert.ok(body.team);
     assert.equal(body.team.status, 'payment_pending');
-    assert.equal(body.team.payment?.method, 'upi');
+    assert.equal(body.team.payment?.method, 'src_desk');
   });
 });
 
