@@ -8,6 +8,7 @@ import {
   resetAllProblemStatements,
   getAllProblemStatements,
   updateTeamVenueAdmin,
+  updateTeamMentorAdmin,
   fixAllProblemStatementsSeats,
   updateSinglePSSeats,
 } from '../db/queries.js';
@@ -228,6 +229,12 @@ export const exportRegistrationsExcel = async (req, res) => {
       'Registration Status',
       'Payment Status',
       'Registration Fee (INR)',
+      'Assigned Venue',
+      'Fixed Slot',
+      'Mentor Name',
+      'Mentor Mobile',
+      'Mentor WhatsApp',
+      'Mentor Email',
       'Leader Name',
       'Leader Email',
       'Leader Phone',
@@ -255,6 +262,8 @@ export const exportRegistrationsExcel = async (req, res) => {
     const rows = teams.map((t) => {
       const ps = t.problemStatement || {};
       const leader = t.leader || {};
+      const venue = t.venue || {};
+      const mentor = t.mentor || {};
       const m1 = (t.members && t.members[0]) || {};
       const m2 = (t.members && t.members[1]) || {};
       const m3 = (t.members && t.members[2]) || {};
@@ -276,6 +285,12 @@ export const exportRegistrationsExcel = async (req, res) => {
         (t.status || 'pending').toUpperCase(),
         paymentDesc,
         (!t.payment?.amount || Number(t.payment.amount) === 400) ? 1200 : t.payment.amount,
+        venue.roomNumber || 'Not Allocated',
+        venue.timeSlot || 'Not Allocated',
+        mentor.name || 'Not Assigned',
+        mentor.phone || '',
+        mentor.whatsapp || '',
+        mentor.email || '',
         leader.name || 'N/A',
         leader.email || 'N/A',
         leader.phone || 'N/A',
@@ -304,8 +319,9 @@ export const exportRegistrationsExcel = async (req, res) => {
     const wsMaster = XLSX.utils.aoa_to_sheet([headers, ...rows]);
     wsMaster['!cols'] = [
       { wch: 24 }, { wch: 15 }, { wch: 28 }, { wch: 15 }, { wch: 42 },
-      { wch: 30 }, { wch: 20 }, { wch: 32 }, { wch: 15 }, { wch: 22 },
-      { wch: 28 }, { wch: 16 }, { wch: 26 }, { wch: 16 }, { wch: 14 },
+      { wch: 30 }, { wch: 20 }, { wch: 32 }, { wch: 15 },
+      { wch: 20 }, { wch: 25 }, { wch: 22 }, { wch: 16 }, { wch: 16 }, { wch: 26 },
+      { wch: 22 }, { wch: 28 }, { wch: 16 }, { wch: 26 }, { wch: 16 }, { wch: 14 },
       { wch: 20 }, { wch: 26 }, { wch: 16 }, { wch: 16 }, { wch: 14 },
       { wch: 20 }, { wch: 26 }, { wch: 16 }, { wch: 16 }, { wch: 14 },
       { wch: 20 }, { wch: 26 }, { wch: 16 }, { wch: 16 }, { wch: 14 },
@@ -378,6 +394,12 @@ export const exportRegistrationsCSV = async (req, res) => {
       'Registration Status',
       'Payment Status',
       'Registration Fee (INR)',
+      'Assigned Venue',
+      'Fixed Slot',
+      'Mentor Name',
+      'Mentor Mobile',
+      'Mentor WhatsApp',
+      'Mentor Email',
       'Leader Name',
       'Leader Email',
       'Leader Phone',
@@ -405,6 +427,8 @@ export const exportRegistrationsCSV = async (req, res) => {
     const rows = teams.map((t) => {
       const ps = t.problemStatement || {};
       const leader = t.leader || {};
+      const venue = t.venue || {};
+      const mentor = t.mentor || {};
       const m1 = (t.members && t.members[0]) || {};
       const m2 = (t.members && t.members[1]) || {};
       const m3 = (t.members && t.members[2]) || {};
@@ -426,6 +450,12 @@ export const exportRegistrationsCSV = async (req, res) => {
         (t.status || 'pending').toUpperCase(),
         paymentDesc,
         (!t.payment?.amount || Number(t.payment.amount) === 400) ? 1200 : t.payment.amount,
+        venue.roomNumber || 'Not Allocated',
+        venue.timeSlot || 'Not Allocated',
+        mentor.name || 'Not Assigned',
+        mentor.phone || '',
+        mentor.whatsapp || '',
+        mentor.email || '',
         leader.name || 'N/A',
         leader.email || 'N/A',
         leader.phone || 'N/A',
@@ -466,20 +496,33 @@ export const exportRegistrationsCSV = async (req, res) => {
   }
 };
 
-// 10. Allocate or update venue for an approved team
+// 10. Allocate or update venue for an approved team (supports optional mentor assignment)
 export const updateTeamVenue = async (req, res) => {
   try {
     const { id } = req.params;
-    const { roomNumber, timeSlot } = req.body;
+    const { roomNumber, timeSlot, mentorName, mentorPhone, mentorWhatsapp, mentorEmail, mentor } = req.body;
 
-    if (!roomNumber && !timeSlot) {
+    const finalMentorName = mentorName !== undefined ? mentorName : mentor?.name;
+    const finalMentorPhone = mentorPhone !== undefined ? mentorPhone : mentor?.phone;
+    const finalMentorWhatsapp = mentorWhatsapp !== undefined ? mentorWhatsapp : mentor?.whatsapp;
+    const finalMentorEmail = mentorEmail !== undefined ? mentorEmail : mentor?.email;
+
+    if (!roomNumber && !timeSlot && finalMentorName === undefined) {
       return res.status(400).json({
         success: false,
-        message: 'Room number and/or time slot must be provided.',
+        message: 'Room number, time slot, or mentor details must be provided.',
       });
     }
 
-    const result = await updateTeamVenueAdmin(id, { roomNumber, timeSlot });
+    const result = await updateTeamVenueAdmin(id, {
+      roomNumber,
+      timeSlot,
+      mentorName: finalMentorName,
+      mentorPhone: finalMentorPhone,
+      mentorWhatsapp: finalMentorWhatsapp,
+      mentorEmail: finalMentorEmail,
+    });
+
     if (result.status !== 200) {
       return res.status(result.status).json({
         success: false,
@@ -489,7 +532,7 @@ export const updateTeamVenue = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `Venue updated successfully for team "${result.team.teamName}".`,
+      message: `Venue and slot updated successfully for team "${result.team.teamName}".`,
       team: result.team,
       data: result.team,
     });
@@ -497,6 +540,39 @@ export const updateTeamVenue = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to update venue allocation.',
+    });
+  }
+};
+
+// 10b. Add, update, or remove mentor assigned to a registered team
+export const updateTeamMentor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, phone, whatsapp, email } = req.body;
+
+    const result = await updateTeamMentorAdmin(id, { name, phone, whatsapp, email });
+    if (result.status !== 200) {
+      return res.status(result.status).json({
+        success: false,
+        message: result.message,
+      });
+    }
+
+    const isUnassigned = !name && !phone && !whatsapp && !email;
+    const successMsg = isUnassigned
+      ? `Mentor unassigned from team "${result.team.teamName}".`
+      : `Mentor details updated successfully for team "${result.team.teamName}".`;
+
+    res.status(200).json({
+      success: true,
+      message: successMsg,
+      team: result.team,
+      data: result.team,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to update mentor details.',
     });
   }
 };

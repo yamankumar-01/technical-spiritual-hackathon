@@ -20,6 +20,9 @@ import {
   ExternalLink,
   CreditCard,
   Sparkles,
+  UserCheck,
+  Phone,
+  Mail,
 } from 'lucide-react';
 
 const PAYMENT_GOOGLE_FORM_URL = 'https://forms.gle/xTE5A2jN2rao1u978';
@@ -279,6 +282,102 @@ export const UserDashboardPage = () => {
                             </h5>
                             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
                               The organizing committee is finalizing room allocations and evaluation time slots for confirmed teams. Check back shortly!
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Assigned Mentor Card */}
+                      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-3 shadow-xs">
+                        <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800/80">
+                          <div className="flex items-center gap-2">
+                            <span className="p-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+                              <UserCheck className="w-4 h-4" />
+                            </span>
+                            <h4 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-900 dark:text-white font-display">
+                              Your Assigned Mentor
+                            </h4>
+                          </div>
+
+                          {team.mentor && (team.mentor.name || team.mentor.email) ? (
+                            <span className="inline-flex items-center gap-1 font-mono text-[10px] font-bold text-indigo-800 dark:text-indigo-300 bg-indigo-100/80 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full border border-indigo-300 dark:border-indigo-800">
+                              <CheckCircle2 className="w-2.5 h-2.5 text-indigo-600" />
+                              Assigned
+                            </span>
+                          ) : (
+                            <span className="font-mono text-[10px] font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
+                              Awaiting Assignment
+                            </span>
+                          )}
+                        </div>
+
+                        {team.mentor && (team.mentor.name || team.mentor.email) ? (
+                          <div className="space-y-3 pt-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div className="p-3.5 rounded-xl bg-gradient-to-br from-indigo-50/80 to-sky-50/30 dark:from-indigo-950/30 dark:to-sky-950/10 border border-indigo-200/80 dark:border-indigo-800/60 space-y-1">
+                                <span className="text-[10.5px] uppercase font-bold text-indigo-600 dark:text-indigo-400 tracking-wider block">
+                                  Mentor Name
+                                </span>
+                                <p className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 font-display">
+                                  <UserCheck className="w-4 h-4 text-indigo-500 shrink-0" />
+                                  <span>{team.mentor.name || 'TBA'}</span>
+                                </p>
+                                <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
+                                  Official guide for Hackathon presentation
+                                </span>
+                              </div>
+
+                              <div className="p-3.5 rounded-xl bg-gradient-to-br from-indigo-50/80 to-sky-50/30 dark:from-indigo-950/30 dark:to-sky-950/10 border border-indigo-200/80 dark:border-indigo-800/60 space-y-1">
+                                <span className="text-[10.5px] uppercase font-bold text-indigo-600 dark:text-indigo-400 tracking-wider block">
+                                  Email Address
+                                </span>
+                                <a
+                                  href={`mailto:${team.mentor.email}`}
+                                  className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1.5 truncate"
+                                >
+                                  <Mail className="w-4 h-4 text-indigo-500 shrink-0" />
+                                  <span className="truncate">{team.mentor.email || 'TBA'}</span>
+                                </a>
+                                <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
+                                  Feel free to email queries or project drafts
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2 pt-1">
+                              {team.mentor.phone && (
+                                <a
+                                  href={`tel:${team.mentor.phone}`}
+                                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 text-xs font-bold font-mono transition-colors"
+                                >
+                                  <Phone className="w-3.5 h-3.5 text-indigo-500" />
+                                  <span>Call: {team.mentor.phone}</span>
+                                </a>
+                              )}
+                              {team.mentor.whatsapp && (
+                                <a
+                                  href={`https://wa.me/${team.mentor.whatsapp.replace(/[^\d]/g, '')}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-bold transition-colors hover:bg-emerald-100"
+                                >
+                                  <MessageCircle className="w-3.5 h-3.5 text-emerald-500" />
+                                  <span>Chat on WhatsApp</span>
+                                  <ExternalLink className="w-2.5 h-2.5" />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="p-4 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-dashed border-slate-200 dark:border-slate-800 text-center space-y-1.5">
+                            <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60 flex items-center justify-center mx-auto">
+                              <UserCheck className="w-4 h-4" />
+                            </div>
+                            <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white font-display">
+                              Mentor will be assigned soon
+                            </h5>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                              The organizing team is assigning domain expert mentors to every registered team. Check back here for your mentor's details.
                             </p>
                           </div>
                         )}

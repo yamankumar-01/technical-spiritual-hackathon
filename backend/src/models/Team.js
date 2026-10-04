@@ -113,6 +113,33 @@ const teamSchema = new mongoose.Schema(
         default: null,
       },
     },
+    mentor: {
+      name: {
+        type: String,
+        trim: true,
+        default: null,
+      },
+      phone: {
+        type: String,
+        trim: true,
+        default: null,
+      },
+      whatsapp: {
+        type: String,
+        trim: true,
+        default: null,
+      },
+      email: {
+        type: String,
+        lowercase: true,
+        trim: true,
+        default: null,
+      },
+      assignedAt: {
+        type: Date,
+        default: null,
+      },
+    },
     participantEmails: {
       type: [String],
       required: true,

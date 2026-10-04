@@ -71,6 +71,7 @@ export const adminService = {
   approveRegistration: (id, data) => API.post(`/admin/registrations/${id}/approve`, data),
   rejectRegistration: (id, data) => API.post(`/admin/registrations/${id}/reject`, data),
   updateTeamVenue: (id, data) => API.patch(`/admin/teams/${id}/venue`, data),
+  updateTeamMentor: (id, data) => API.patch(`/admin/teams/${id}/mentor`, data),
   resetPS: () => API.post('/admin/ps/reset'),
   fixSeats: (data) => API.post('/admin/ps/fix-seats', data),
   updatePSSeats: (id, data) => API.patch(`/admin/ps/${id}/seats`, data),

@@ -84,6 +84,15 @@ export const formatTeam = (t, members = []) => ({
         allocatedAt: t.venue?.allocatedAt || t.venue_allocated_at || null,
       }
     : null,
+  mentor: (t.mentor_name || t.mentor_phone || t.mentor_whatsapp || t.mentor_email || t.mentor)
+    ? {
+        name: t.mentor?.name || t.mentor_name || '',
+        phone: t.mentor?.phone || t.mentor_phone || '',
+        whatsapp: t.mentor?.whatsapp || t.mentor_whatsapp || '',
+        email: t.mentor?.email || t.mentor_email || '',
+        assignedAt: t.mentor?.assignedAt || t.mentor_assigned_at || null,
+      }
+    : null,
 });
 
 // ============================================================================
@@ -736,7 +745,9 @@ export const getAllRegistrationsAdmin = async ({ status, psId, search }) => {
       t.team_code ILIKE $${paramIdx} OR
       t.registration_number ILIKE $${paramIdx} OR
       t.leader_name ILIKE $${paramIdx} OR
-      t.leader_email ILIKE $${paramIdx}
+      t.leader_email ILIKE $${paramIdx} OR
+      t.mentor_name ILIKE $${paramIdx} OR
+      t.mentor_email ILIKE $${paramIdx}
     )`);
     params.push(`%${search}%`);
     paramIdx++;
@@ -912,7 +923,10 @@ export const deleteTeamAdmin = async (teamId) => {
   });
 };
 
-export const updateTeamVenueAdmin = async (teamId, { roomNumber, timeSlot }) => {
+export const updateTeamVenueAdmin = async (
+  teamId,
+  { roomNumber, timeSlot, mentorName, mentorPhone, mentorWhatsapp, mentorEmail }
+) => {
   return await withTransaction(async (client) => {
     const teamRes = await client.query(`SELECT * FROM teams WHERE id = $1 FOR UPDATE`, [teamId]);
     if (!teamRes.rows[0]) {
@@ -929,15 +943,83 @@ export const updateTeamVenueAdmin = async (teamId, { roomNumber, timeSlot }) => 
       };
     }
 
+    const currentMentorName = mentorName !== undefined ? (mentorName ? mentorName.trim() : null) : team.mentor_name;
+    const currentMentorPhone = mentorPhone !== undefined ? (mentorPhone ? mentorPhone.trim() : null) : team.mentor_phone;
+    const currentMentorWhatsapp = mentorWhatsapp !== undefined ? (mentorWhatsapp ? mentorWhatsapp.trim() : null) : team.mentor_whatsapp;
+    const currentMentorEmail = mentorEmail !== undefined ? (mentorEmail ? mentorEmail.trim().toLowerCase() : null) : team.mentor_email;
+    const hasAnyMentor = Boolean(currentMentorName || currentMentorPhone || currentMentorWhatsapp || currentMentorEmail);
+
     const updateRes = await client.query(
       `UPDATE teams
        SET venue_room_number = $1,
            venue_time_slot = $2,
            venue_allocated_at = CURRENT_TIMESTAMP,
+           mentor_name = $3,
+           mentor_phone = $4,
+           mentor_whatsapp = $5,
+           mentor_email = $6,
+           mentor_assigned_at = CASE WHEN $7::boolean THEN COALESCE(mentor_assigned_at, CURRENT_TIMESTAMP) ELSE NULL END,
            updated_at = CURRENT_TIMESTAMP
-       WHERE id = $3
+       WHERE id = $8
        RETURNING *`,
-      [roomNumber ? roomNumber.trim() : null, timeSlot ? timeSlot.trim() : null, teamId]
+      [
+        roomNumber !== undefined ? (roomNumber ? roomNumber.trim() : null) : team.venue_room_number,
+        timeSlot !== undefined ? (timeSlot ? timeSlot.trim() : null) : team.venue_time_slot,
+        currentMentorName,
+        currentMentorPhone,
+        currentMentorWhatsapp,
+        currentMentorEmail,
+        hasAnyMentor,
+        teamId,
+      ]
+    );
+
+    const updatedTeam = updateRes.rows[0];
+    const psRes = await client.query(`SELECT * FROM problem_statements WHERE id = $1`, [updatedTeam.problem_statement_id]);
+    const memRes = await client.query(`SELECT * FROM team_members WHERE team_id = $1 ORDER BY created_at ASC`, [teamId]);
+
+    const ps = psRes.rows[0];
+    const teamWithPs = {
+      ...updatedTeam,
+      ps_code: ps ? ps.code : '',
+      ps_title: ps ? ps.title : '',
+      ps_category: ps ? ps.category : '',
+      seats_available: ps ? ps.seats_available : 5,
+      total_seats: ps ? ps.total_seats : 5,
+    };
+
+    return {
+      status: 200,
+      team: formatTeam(teamWithPs, memRes.rows),
+    };
+  });
+};
+
+export const updateTeamMentorAdmin = async (teamId, { name, phone, whatsapp, email }) => {
+  return await withTransaction(async (client) => {
+    const teamRes = await client.query(`SELECT * FROM teams WHERE id = $1 FOR UPDATE`, [teamId]);
+    if (!teamRes.rows[0]) {
+      return { status: 404, message: 'Team registration not found.' };
+    }
+    const current = teamRes.rows[0];
+
+    const cleanName = name !== undefined ? (name ? name.trim() : null) : current.mentor_name;
+    const cleanPhone = phone !== undefined ? (phone ? phone.trim() : null) : current.mentor_phone;
+    const cleanWhatsapp = whatsapp !== undefined ? (whatsapp ? whatsapp.trim() : null) : current.mentor_whatsapp;
+    const cleanEmail = email !== undefined ? (email ? email.trim().toLowerCase() : null) : current.mentor_email;
+    const hasAnyMentor = Boolean(cleanName || cleanPhone || cleanWhatsapp || cleanEmail);
+
+    const updateRes = await client.query(
+      `UPDATE teams
+       SET mentor_name = $1,
+           mentor_phone = $2,
+           mentor_whatsapp = $3,
+           mentor_email = $4,
+           mentor_assigned_at = CASE WHEN $5::boolean THEN COALESCE(mentor_assigned_at, CURRENT_TIMESTAMP) ELSE NULL END,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = $6
+       RETURNING *`,
+      [cleanName, cleanPhone, cleanWhatsapp, cleanEmail, hasAnyMentor, teamId]
     );
 
     const updatedTeam = updateRes.rows[0];

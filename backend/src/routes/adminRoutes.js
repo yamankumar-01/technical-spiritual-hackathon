@@ -12,6 +12,7 @@ import {
   exportRegistrationsExcel,
   exportRegistrationsCSV,
   updateTeamVenue,
+  updateTeamMentor,
   getOfflineBackupRegistrations,
   createExportTicket,
 } from '../controllers/adminController.js';
@@ -78,6 +79,8 @@ router.post('/registrations/:id/approve', approveRegistration);
 router.post('/registrations/:id/reject', rejectRegistration);
 router.patch('/teams/:id/venue', updateTeamVenue);
 router.patch('/registrations/:id/venue', updateTeamVenue);
+router.patch('/teams/:id/mentor', updateTeamMentor);
+router.patch('/registrations/:id/mentor', updateTeamMentor);
 router.post('/ps/reset', resetProblemStatements);
 router.post('/ps/fix-seats', fixProblemStatementsSeats);
 router.patch('/ps/:id/seats', updateProblemStatementSeats);

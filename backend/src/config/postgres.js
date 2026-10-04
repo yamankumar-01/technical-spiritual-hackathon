@@ -127,6 +127,9 @@ export const testPgConnection = async () => {
           await pgliteInstance.waitReady;
           console.log('⚡ In-memory PostgreSQL (PGlite) activated for test environment.');
         } else {
+          if (!fs.existsSync(pgliteDataDir)) {
+            fs.mkdirSync(pgliteDataDir, { recursive: true });
+          }
           pgliteInstance = new PGlite(pgliteDataDir);
           await pgliteInstance.waitReady;
           console.log(`⚡ Embedded PostgreSQL (PGlite) activated with persistent storage at: ${pgliteDataDir}`);
@@ -210,6 +213,13 @@ export const initializePostgres = async () => {
     await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS venue_time_slot VARCHAR(150);`);
     await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS venue_allocated_at TIMESTAMPTZ;`);
 
+    // Auto-migrate mentor management columns on teams table if not present
+    await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS mentor_name VARCHAR(150);`);
+    await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS mentor_phone VARCHAR(50);`);
+    await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS mentor_whatsapp VARCHAR(50);`);
+    await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS mentor_email VARCHAR(255);`);
+    await pgQuery(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS mentor_assigned_at TIMESTAMPTZ;`);
+
     // Auto-migrate permanent offline registration backup archive table (zero data loss vault)
     await pgQuery(`
       CREATE TABLE IF NOT EXISTS offline_registrations_backup (
@@ -230,10 +240,20 @@ export const initializePostgres = async () => {
         payment_amount INTEGER DEFAULT 1200,
         venue_room_number VARCHAR(100),
         venue_time_slot VARCHAR(150),
+        mentor_name VARCHAR(150),
+        mentor_phone VARCHAR(50),
+        mentor_whatsapp VARCHAR(50),
+        mentor_email VARCHAR(255),
         registered_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
         snapshot_json JSONB
       );
     `);
+
+    // Auto-migrate mentor columns on existing offline_registrations_backup table if already created
+    await pgQuery(`ALTER TABLE offline_registrations_backup ADD COLUMN IF NOT EXISTS mentor_name VARCHAR(150);`);
+    await pgQuery(`ALTER TABLE offline_registrations_backup ADD COLUMN IF NOT EXISTS mentor_phone VARCHAR(50);`);
+    await pgQuery(`ALTER TABLE offline_registrations_backup ADD COLUMN IF NOT EXISTS mentor_whatsapp VARCHAR(50);`);
+    await pgQuery(`ALTER TABLE offline_registrations_backup ADD COLUMN IF NOT EXISTS mentor_email VARCHAR(255);`);
 
     // Standardize all existing registration payment amounts to 1200
     await pgQuery(`UPDATE teams SET payment_amount = 1200 WHERE payment_amount IS NULL OR payment_amount = 400 OR payment_amount != 1200;`);

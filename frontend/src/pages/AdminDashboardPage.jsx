@@ -5,6 +5,7 @@ import api, { adminService, psService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import StatusBadge from '../components/StatusBadge';
 import FixSeatModal from '../components/FixSeatModal';
+import MentorModal from '../components/MentorModal';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -27,6 +28,12 @@ import {
   Calendar,
   Building,
   Wrench,
+  UserCheck,
+  GraduationCap,
+  Phone,
+  MessageCircle,
+  Sparkles,
+  Check,
 } from 'lucide-react';
 
 export const AdminDashboardPage = () => {
@@ -135,6 +142,94 @@ export const AdminDashboardPage = () => {
       setSavingVenue(false);
     }
   };
+
+  // Mentor Management Modal States
+  const [mentorModalTeam, setMentorModalTeam] = useState(null);
+
+  const handleOpenMentorModal = (team) => {
+    setMentorModalTeam(team);
+  };
+
+  const handleMentorSuccess = (updatedTeam, msg) => {
+    setActionSuccessMsg(msg || 'Mentor details updated successfully.');
+    setRegistrations((prev) =>
+      prev.map((t) => (t._id === updatedTeam._id || t.id === updatedTeam.id ? updatedTeam : t))
+    );
+    if (inspectTeam && (inspectTeam._id === updatedTeam._id || inspectTeam.id === updatedTeam.id)) {
+      setInspectTeam(updatedTeam);
+    }
+  };
+
+  // Distinct mentors pool for quick-suggestions
+  const existingMentors = React.useMemo(() => {
+    const map = new Map();
+    registrations.forEach((t) => {
+      const m = t.mentor;
+      if (m && m.name && m.email && !map.has(m.email.toLowerCase())) {
+        map.set(m.email.toLowerCase(), m);
+      }
+    });
+    return Array.from(map.values());
+  }, [registrations]);
+
+  // Mentor & Venue Directory Filter and Search State
+  const [mentorDirectorySearch, setMentorDirectorySearch] = useState('');
+  const [mentorDirectoryFilter, setMentorDirectoryFilter] = useState('all');
+
+  // Mentor & Venue Overall Statistics
+  const mentorStats = React.useMemo(() => {
+    const total = registrations.length;
+    const mentorsAssigned = registrations.filter((t) => Boolean(t.mentor?.name || t.mentor_name)).length;
+    const venuesAllocated = registrations.filter((t) => Boolean(t.venue?.roomNumber || t.venue?.timeSlot)).length;
+    const mentorsPending = total - mentorsAssigned;
+    const venuesPending = total - venuesAllocated;
+    return {
+      total,
+      mentorsAssigned,
+      mentorsPending,
+      venuesAllocated,
+      venuesPending,
+      mentorPercentage: total > 0 ? Math.round((mentorsAssigned / total) * 100) : 0,
+      venuePercentage: total > 0 ? Math.round((venuesAllocated / total) * 100) : 0,
+    };
+  }, [registrations]);
+
+  // Filtered teams list for the Mentor & Slot/Venue Directory Tab
+  const filteredDirectoryTeams = React.useMemo(() => {
+    return registrations.filter((t) => {
+      const hasMentor = Boolean(t.mentor?.name || t.mentor_name);
+      const hasVenue = Boolean(t.venue?.roomNumber || t.venue?.timeSlot);
+
+      if (mentorDirectoryFilter === 'mentor_assigned' && !hasMentor) return false;
+      if (mentorDirectoryFilter === 'mentor_pending' && hasMentor) return false;
+      if (mentorDirectoryFilter === 'venue_assigned' && !hasVenue) return false;
+      if (mentorDirectoryFilter === 'venue_pending' && hasVenue) return false;
+
+      if (!mentorDirectorySearch.trim()) return true;
+      const q = mentorDirectorySearch.toLowerCase();
+      const matchTeam =
+        (t.teamName || '').toLowerCase().includes(q) ||
+        (t.teamCode || '').toLowerCase().includes(q) ||
+        (t.registrationNumber || '').toLowerCase().includes(q);
+      const matchLeader =
+        (t.leader?.name || '').toLowerCase().includes(q) ||
+        (t.leader?.email || '').toLowerCase().includes(q) ||
+        (t.leader?.phone || '').toLowerCase().includes(q);
+      const matchPS =
+        (t.problemStatement?.code || '').toLowerCase().includes(q) ||
+        (t.problemStatement?.title || '').toLowerCase().includes(q);
+      const matchVenue =
+        (t.venue?.roomNumber || '').toLowerCase().includes(q) ||
+        (t.venue?.timeSlot || '').toLowerCase().includes(q);
+      const matchMentor =
+        (t.mentor?.name || '').toLowerCase().includes(q) ||
+        (t.mentor?.phone || '').toLowerCase().includes(q) ||
+        (t.mentor?.whatsapp || '').toLowerCase().includes(q) ||
+        (t.mentor?.email || '').toLowerCase().includes(q);
+
+      return matchTeam || matchLeader || matchPS || matchVenue || matchMentor;
+    });
+  }, [registrations, mentorDirectoryFilter, mentorDirectorySearch]);
 
   const fetchRegistrations = async () => {
     try {
@@ -843,6 +938,17 @@ export const AdminDashboardPage = () => {
           Team Registrations ({registrations.length})
         </button>
         <button
+          onClick={() => setActiveTab('mentors')}
+          className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            activeTab === 'mentors'
+              ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs border border-slate-200/60 dark:border-slate-700'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <UserCheck className="w-3.5 h-3.5 text-indigo-500" />
+          <span>Mentors & Slots/Venues ({mentorStats.mentorsAssigned}/{registrations.length})</span>
+        </button>
+        <button
           onClick={() => {
             setActiveTab('capacity_breakdown');
             fetchCapacityBreakdown();
@@ -935,20 +1041,21 @@ export const AdminDashboardPage = () => {
                   <th className="px-2.5 py-2.5 w-10 text-center whitespace-nowrap">#</th>
                   <th className="px-3 py-2.5 min-w-[140px]">Team</th>
                   <th className="px-3 py-2.5 min-w-[140px] whitespace-nowrap">Payment & Status</th>
-                  <th className="px-3 py-2.5 min-w-[140px] whitespace-nowrap">Venue</th>
-                  <th className="px-3 py-2.5 text-left min-w-[140px] whitespace-nowrap">Actions</th>
+                  <th className="px-3 py-2.5 min-w-[140px] whitespace-nowrap">Slot & Venue</th>
+                  <th className="px-3 py-2.5 min-w-[150px] whitespace-nowrap">Assigned Mentor</th>
+                  <th className="px-3 py-2.5 text-left min-w-[160px] whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
+                    <td colSpan={6} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
                       Loading registrations...
                     </td>
                   </tr>
                 ) : registrations.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
+                    <td colSpan={6} className="px-5 py-8 text-center text-[#536159] dark:text-slate-400">
                       No registrations found matching the filters.
                     </td>
                   </tr>
@@ -1031,7 +1138,42 @@ export const AdminDashboardPage = () => {
                           </span>
                         )}
                       </td>
-                      <td className="px-3 py-2 text-left min-w-[140px] whitespace-nowrap">
+                      {/* Mentor Column */}
+                      <td className="px-3 py-2 min-w-[150px]">
+                        {t.mentor && (t.mentor.name || t.mentor.email) ? (
+                          <div className="space-y-0.5">
+                            <div className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+                              <span className="p-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+                                <UserCheck className="w-3 h-3 shrink-0" />
+                              </span>
+                              <span className="truncate max-w-[140px]" title={t.mentor.name}>
+                                {t.mentor.name}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                              {t.mentor.phone && <span>{t.mentor.phone}</span>}
+                              {t.mentor.whatsapp && (
+                                <a
+                                  href={`https://wa.me/${t.mentor.whatsapp.replace(/[^\d]/g, '')}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-0.5 font-sans"
+                                  title="WhatsApp Mentor"
+                                >
+                                  <MessageCircle className="w-2.5 h-2.5 text-emerald-500" />
+                                  WA
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-[11px] italic text-slate-400 dark:text-slate-500">
+                            Not assigned yet
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 text-left min-w-[160px] whitespace-nowrap">
                         <div className="flex items-center justify-start gap-1 sm:gap-1.5 flex-wrap" onClick={(e) => e.stopPropagation()}>
                           {['payment_pending', 'registered'].includes(t.status) && (
                             <>
@@ -1097,6 +1239,24 @@ export const AdminDashboardPage = () => {
                             </button>
                           )}
 
+                          {/* Assign / Edit Mentor Button (Available at any time for registered teams) */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenMentorModal(t);
+                            }}
+                            className={`px-2 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+                              t.mentor?.name
+                                ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/80 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 shadow-2xs'
+                                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 shadow-2xs'
+                            }`}
+                            title={t.mentor?.name ? 'Edit assigned mentor details' : 'Assign mentor to this team'}
+                          >
+                            <UserCheck className="w-3 h-3 text-indigo-500 shrink-0" />
+                            <span>{t.mentor?.name ? 'Edit Mentor' : 'Assign Mentor'}</span>
+                          </button>
+
                           {t.status === 'rejected' && (
                             <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wide">
                               Released
@@ -1113,7 +1273,397 @@ export const AdminDashboardPage = () => {
         </div>
       )}
 
-      {/* TAB 2: PROBLEM CAPACITY BREAKDOWN */}
+      {/* TAB 2: MENTOR & SLOT/VENUE DIRECTORY */}
+      {activeTab === 'mentors' && (
+        <div className="space-y-6">
+          {/* Top KPI & Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-2">
+              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
+                <span>Total Registered Teams</span>
+                <span className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                  <Users className="w-4 h-4" />
+                </span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-display">
+                {mentorStats.total}
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                All teams across 50 problem statements
+              </p>
+            </div>
+
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-50/80 to-white dark:from-indigo-950/40 dark:to-slate-900 border border-indigo-200/80 dark:border-indigo-800/60 shadow-xs space-y-2">
+              <div className="flex items-center justify-between text-xs text-indigo-700 dark:text-indigo-400 font-bold uppercase tracking-wider">
+                <span>Mentors Assigned</span>
+                <span className="p-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400">
+                  <UserCheck className="w-4 h-4" />
+                </span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-extrabold text-indigo-900 dark:text-indigo-200 font-display">
+                  {mentorStats.mentorsAssigned}
+                </span>
+                <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                  ({mentorStats.mentorPercentage}%)
+                </span>
+              </div>
+              <div className="w-full bg-indigo-100 dark:bg-indigo-950 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="bg-indigo-600 dark:bg-indigo-400 h-1.5 rounded-full transition-all duration-300"
+                  style={{ width: `${mentorStats.mentorPercentage}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-2">
+              <div className="flex items-center justify-between text-xs text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider">
+                <span>Mentors Pending</span>
+                <span className="p-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
+                  <Clock className="w-4 h-4" />
+                </span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-display">
+                {mentorStats.mentorsPending}
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Teams awaiting mentor assignment
+              </p>
+            </div>
+
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-sky-50/80 to-white dark:from-sky-950/40 dark:to-slate-900 border border-sky-200/80 dark:border-sky-800/60 shadow-xs space-y-2">
+              <div className="flex items-center justify-between text-xs text-sky-700 dark:text-sky-400 font-bold uppercase tracking-wider">
+                <span>Slots & Venues Fixed</span>
+                <span className="p-1 rounded-lg bg-sky-100 dark:bg-sky-900/60 text-sky-600 dark:text-sky-400">
+                  <MapPin className="w-4 h-4" />
+                </span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-extrabold text-sky-900 dark:text-sky-200 font-display">
+                  {mentorStats.venuesAllocated}
+                </span>
+                <span className="text-xs font-bold text-sky-600 dark:text-sky-400">
+                  ({mentorStats.venuePercentage}%)
+                </span>
+              </div>
+              <div className="w-full bg-sky-100 dark:bg-sky-950 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="bg-sky-500 dark:bg-sky-400 h-1.5 rounded-full transition-all duration-300"
+                  style={{ width: `${mentorStats.venuePercentage}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Search, Filter & Quick Export Bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="relative w-full sm:w-96">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search team, leader, mentor name, PS code, slot..."
+                value={mentorDirectorySearch}
+                onChange={(e) => setMentorDirectorySearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-[#12141A] dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-xs"
+              />
+            </div>
+
+            <div className="flex items-center gap-3 w-full sm:w-auto flex-wrap">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">
+                  Filter:
+                </span>
+                <select
+                  value={mentorDirectoryFilter}
+                  onChange={(e) => setMentorDirectoryFilter(e.target.value)}
+                  className="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-[#12141A] dark:text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-xs cursor-pointer"
+                >
+                  <option value="all">All Teams ({registrations.length})</option>
+                  <option value="mentor_assigned">Mentor Assigned ({mentorStats.mentorsAssigned})</option>
+                  <option value="mentor_pending">Mentor Pending ({mentorStats.mentorsPending})</option>
+                  <option value="venue_assigned">Slot & Venue Fixed ({mentorStats.venuesAllocated})</option>
+                  <option value="venue_pending">Slot & Venue Pending ({mentorStats.venuesPending})</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleExportExcel}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white text-xs font-bold shadow-xs hover:shadow transition-all cursor-pointer shrink-0"
+                  title="Export complete roster including slots, venues, and mentors to Excel"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Export Roster (.xlsx)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Directory Matrix Table */}
+          <div className="overflow-x-auto rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-[#071510]/95 shadow-sm">
+            <table className="w-full text-left border-collapse min-w-[960px]">
+              <thead>
+                <tr className="border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 text-[#536159] dark:text-slate-300 text-[10.5px] font-bold uppercase tracking-wider">
+                  <th className="px-2.5 py-3 w-10 text-center whitespace-nowrap">#</th>
+                  <th className="px-3 py-3 min-w-[200px]">Team & Leader</th>
+                  <th className="px-3 py-3 min-w-[170px]">Problem Statement</th>
+                  <th className="px-3 py-3 min-w-[190px]">Fixed Slot & Venue</th>
+                  <th className="px-3 py-3 min-w-[240px]">Assigned Mentor Details</th>
+                  <th className="px-3 py-3 text-right min-w-[140px] whitespace-nowrap">Quick Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                {filteredDirectoryTeams.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-5 py-12 text-center text-slate-500 dark:text-slate-400 space-y-2">
+                      <p className="text-sm font-semibold">No teams matched the selected filter or search query.</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMentorDirectoryFilter('all');
+                          setMentorDirectorySearch('');
+                        }}
+                        className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                      >
+                        Reset filters
+                      </button>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredDirectoryTeams.map((t, idx) => {
+                    const hasMentor = Boolean(t.mentor?.name);
+                    const hasVenue = Boolean(t.venue?.roomNumber || t.venue?.timeSlot);
+                    const isApproved = ['confirmed', 'finalized', 'approved'].includes(t.status?.toLowerCase());
+
+                    return (
+                      <tr
+                        key={t._id || t.id}
+                        onClick={() => setInspectTeam(t)}
+                        className="hover:bg-indigo-50/40 dark:hover:bg-slate-800/40 transition-colors cursor-pointer group"
+                        title="Click row to inspect full team profile"
+                      >
+                        {/* # */}
+                        <td className="px-2.5 py-3 text-center font-mono font-bold text-xs text-slate-400 whitespace-nowrap">
+                          {idx + 1}
+                        </td>
+
+                        {/* Team & Leader */}
+                        <td className="px-3 py-3 min-w-[200px]">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400">
+                              {t.teamCode}
+                            </span>
+                            {t.registrationNumber ? (
+                              <span className="inline-flex items-center gap-1 font-mono font-extrabold text-[9.5px] text-emerald-700 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-300 dark:border-emerald-800 whitespace-nowrap">
+                                <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600" />
+                                {t.registrationNumber}
+                              </span>
+                            ) : (
+                              <StatusBadge status={t.status} />
+                            )}
+                          </div>
+                          <div className="font-bold text-slate-900 dark:text-white text-xs mt-1 leading-snug line-clamp-1" title={t.teamName}>
+                            {t.teamName}
+                          </div>
+                          <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate" title={`Leader: ${t.leader?.name} • ${t.leader?.phone}`}>
+                            Leader: <span className="font-medium text-slate-700 dark:text-slate-300">{t.leader?.name}</span> ({t.leader?.phone})
+                          </div>
+                        </td>
+
+                        {/* Problem Statement */}
+                        <td className="px-3 py-3 min-w-[170px]">
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800/60">
+                              {t.problemStatement?.code || 'N/A'}
+                            </span>
+                            <div className="font-semibold text-slate-800 dark:text-slate-200 text-xs line-clamp-2 leading-tight" title={t.problemStatement?.title}>
+                              {t.problemStatement?.title || 'Problem track'}
+                            </div>
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 block truncate">
+                              {t.problemStatement?.category || ''}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Fixed Slot & Venue */}
+                        <td className="px-3 py-3 min-w-[190px]">
+                          {hasVenue ? (
+                            <div className="space-y-1.5">
+                              {t.venue?.roomNumber && (
+                                <div className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+                                  <span className="p-1 rounded-md bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 shrink-0">
+                                    <MapPin className="w-3.5 h-3.5" />
+                                  </span>
+                                  <span className="truncate max-w-[160px]" title={t.venue.roomNumber}>
+                                    {t.venue.roomNumber}
+                                  </span>
+                                </div>
+                              )}
+                              {t.venue?.timeSlot && (
+                                <div className="text-[11px] text-slate-600 dark:text-slate-300 font-medium flex items-center gap-1.5">
+                                  <Clock className="w-3 h-3 text-indigo-500 shrink-0" />
+                                  <span className="truncate max-w-[160px]" title={t.venue.timeSlot}>
+                                    {t.venue.timeSlot}
+                                  </span>
+                                </div>
+                              )}
+                              {isApproved && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleOpenVenueModal(t);
+                                  }}
+                                  className="text-[10.5px] font-bold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-0.5 cursor-pointer"
+                                >
+                                  <span>Edit Slot & Venue</span>
+                                </button>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="space-y-1.5">
+                              <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-slate-400 dark:text-slate-500 italic">
+                                <Clock className="w-3 h-3 text-slate-400" />
+                                Not allocated yet
+                              </span>
+                              {isApproved ? (
+                                <div>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleOpenVenueModal(t);
+                                    }}
+                                    className="px-2.5 py-1 rounded-lg text-[10.5px] font-bold text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1"
+                                  >
+                                    <MapPin className="w-3 h-3" />
+                                    <span>Fix Slot & Venue</span>
+                                  </button>
+                                </div>
+                              ) : (
+                                <p className="text-[10px] text-slate-400">Available after approval</p>
+                              )}
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Assigned Mentor Details */}
+                        <td className="px-3 py-3 min-w-[240px]">
+                          {hasMentor ? (
+                            <div className="space-y-1">
+                              <div className="font-extrabold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+                                <span className="p-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 shrink-0">
+                                  <UserCheck className="w-3.5 h-3.5" />
+                                </span>
+                                <span className="truncate max-w-[180px]" title={t.mentor.name}>
+                                  {t.mentor.name}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-3 text-[11px] text-slate-600 dark:text-slate-300 font-mono flex-wrap">
+                                {t.mentor.phone && (
+                                  <a
+                                    href={`tel:${t.mentor.phone}`}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1"
+                                    title="Call Mentor"
+                                  >
+                                    <Phone className="w-3 h-3 text-indigo-500 shrink-0" />
+                                    <span>{t.mentor.phone}</span>
+                                  </a>
+                                )}
+                                {t.mentor.whatsapp && (
+                                  <a
+                                    href={`https://wa.me/${t.mentor.whatsapp.replace(/[^\d]/g, '')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 transition-colors"
+                                    title="Direct WhatsApp Chat"
+                                  >
+                                    <MessageCircle className="w-2.5 h-2.5 text-emerald-500 shrink-0" />
+                                    <span>WhatsApp</span>
+                                    <ExternalLink className="w-2 h-2" />
+                                  </a>
+                                )}
+                              </div>
+
+                              {t.mentor.email && (
+                                <a
+                                  href={`mailto:${t.mentor.email}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="text-[10.5px] text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline flex items-center gap-1 truncate max-w-[200px]"
+                                  title={t.mentor.email}
+                                >
+                                  <Mail className="w-3 h-3 shrink-0 text-slate-400" />
+                                  <span className="truncate">{t.mentor.email}</span>
+                                </a>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="space-y-1.5">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60">
+                                <AlertCircle className="w-3 h-3 text-amber-500" />
+                                Mentor Pending
+                              </span>
+                              <div>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleOpenMentorModal(t);
+                                  }}
+                                  className="px-2.5 py-1 rounded-lg text-[10.5px] font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-300 dark:border-indigo-800 hover:bg-indigo-100 transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1"
+                                >
+                                  <UserCheck className="w-3 h-3" />
+                                  <span>Assign Mentor</span>
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Quick Actions */}
+                        <td className="px-3 py-3 text-right min-w-[140px] whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenMentorModal(t)}
+                              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                                hasMentor
+                                  ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100'
+                                  : 'text-white bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 shadow-2xs'
+                              }`}
+                              title={hasMentor ? 'Update mentor details' : 'Assign mentor to this team'}
+                            >
+                              <UserCheck className="w-3.5 h-3.5" />
+                              <span>{hasMentor ? 'Edit Mentor' : 'Assign'}</span>
+                            </button>
+
+                            {isApproved && (
+                              <button
+                                type="button"
+                                onClick={() => handleOpenVenueModal(t)}
+                                className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-sky-400 text-slate-600 dark:text-slate-300 hover:text-sky-600 transition-colors cursor-pointer"
+                                title={hasVenue ? 'Edit Venue & Slot' : 'Allocate Venue & Slot'}
+                              >
+                                <MapPin className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: PROBLEM CAPACITY BREAKDOWN */}
       {activeTab === 'capacity_breakdown' && (
         <div className="space-y-5">
           {/* Capacity Logic Info Header */}
@@ -1572,6 +2122,82 @@ export const AdminDashboardPage = () => {
               </div>
             </div>
 
+            {/* Assigned Mentor Details Card */}
+            <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 space-y-2">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">
+                  <UserCheck className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                  <span>Assigned Team Mentor</span>
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => handleOpenMentorModal(inspectTeam)}
+                  className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <UserCheck className="w-3 h-3" />
+                  <span>{inspectTeam.mentor?.name ? 'Edit Mentor' : 'Assign Mentor'}</span>
+                </button>
+              </div>
+
+              {inspectTeam.mentor && inspectTeam.mentor.name ? (
+                <div className="space-y-2 pt-1 text-xs text-slate-800 dark:text-slate-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="p-2.5 rounded-xl bg-white dark:bg-slate-800/80 border border-indigo-200/60 dark:border-slate-700/60">
+                      <span className="text-slate-500 dark:text-slate-400 font-semibold block text-[11px]">Mentor Name:</span>
+                      <strong className="text-slate-900 dark:text-white text-xs block mt-0.5">{inspectTeam.mentor.name}</strong>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white dark:bg-slate-800/80 border border-indigo-200/60 dark:border-slate-700/60">
+                      <span className="text-slate-500 dark:text-slate-400 font-semibold block text-[11px]">Email Address:</span>
+                      <a
+                        href={`mailto:${inspectTeam.mentor.email}`}
+                        className="text-indigo-600 dark:text-indigo-400 hover:underline text-xs flex items-center gap-1 mt-0.5 truncate"
+                      >
+                        <Mail className="w-3 h-3 shrink-0" />
+                        <span className="truncate">{inspectTeam.mentor.email || 'N/A'}</span>
+                      </a>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white dark:bg-slate-800/80 border border-indigo-200/60 dark:border-slate-700/60">
+                      <span className="text-slate-500 dark:text-slate-400 font-semibold block text-[11px]">Calling Number:</span>
+                      <a
+                        href={`tel:${inspectTeam.mentor.phone}`}
+                        className="text-slate-900 dark:text-white hover:text-indigo-600 text-xs font-mono font-bold flex items-center gap-1 mt-0.5"
+                      >
+                        <Phone className="w-3 h-3 text-indigo-500 shrink-0" />
+                        <span>{inspectTeam.mentor.phone || 'N/A'}</span>
+                      </a>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-white dark:bg-slate-800/80 border border-indigo-200/60 dark:border-slate-700/60">
+                      <span className="text-slate-500 dark:text-slate-400 font-semibold block text-[11px]">WhatsApp Number:</span>
+                      {inspectTeam.mentor.whatsapp ? (
+                        <a
+                          href={`https://wa.me/${inspectTeam.mentor.whatsapp.replace(/[^\d]/g, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-emerald-600 dark:text-emerald-400 hover:underline text-xs font-mono font-bold flex items-center gap-1 mt-0.5"
+                        >
+                          <MessageCircle className="w-3 h-3 text-emerald-500 shrink-0" />
+                          <span>{inspectTeam.mentor.whatsapp}</span>
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
+                      ) : (
+                        <span className="text-slate-400 italic">N/A</span>
+                      )}
+                    </div>
+                  </div>
+                  {inspectTeam.mentor.assignedAt && (
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-slate-400 shrink-0" />
+                      <span>Assigned on: {new Date(inspectTeam.mentor.assignedAt).toLocaleString()}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-400 italic">
+                  No mentor assigned to this team yet. Click Assign Mentor above to associate one.
+                </p>
+              )}
+            </div>
+
             {/* Venue Allocation Details */}
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-2">
               <div className="flex items-center justify-between">
@@ -1620,7 +2246,7 @@ export const AdminDashboardPage = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-200/80 dark:border-slate-800">
+            <div className="flex items-center justify-between pt-4 border-t border-slate-200/80 dark:border-slate-800 flex-wrap gap-2">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setInspectTeam(null)}
@@ -1638,7 +2264,17 @@ export const AdminDashboardPage = () => {
                 </button>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                {/* Assign / Edit Mentor button in modal footer */}
+                <button
+                  type="button"
+                  onClick={() => handleOpenMentorModal(inspectTeam)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-300 dark:border-indigo-800 hover:bg-indigo-100 transition-all cursor-pointer"
+                >
+                  <UserCheck className="w-4 h-4 text-indigo-500" />
+                  <span>{inspectTeam.mentor?.name ? 'Edit Mentor' : 'Assign Mentor'}</span>
+                </button>
+
                 {['payment_pending', 'registered'].includes(inspectTeam.status) && (
                   <>
                     <button
@@ -2047,6 +2683,39 @@ export const AdminDashboardPage = () => {
                 </div>
               </div>
 
+              {/* Mentor Integration Preview inside Venue Modal */}
+              <div className="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 space-y-1.5 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-indigo-900 dark:text-indigo-300 flex items-center gap-1.5 text-[11px] uppercase tracking-wider">
+                    <UserCheck className="w-3.5 h-3.5 text-indigo-500" />
+                    <span>Assigned Team Mentor</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const current = venueModalTeam;
+                      setVenueModalTeam(null);
+                      handleOpenMentorModal(current);
+                    }}
+                    className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>{venueModalTeam.mentor?.name ? 'Edit Mentor' : 'Assign Mentor'}</span>
+                  </button>
+                </div>
+                {venueModalTeam.mentor?.name ? (
+                  <div className="flex items-center justify-between text-xs text-slate-700 dark:text-slate-300 font-medium pt-0.5">
+                    <span className="font-bold text-slate-900 dark:text-white">{venueModalTeam.mentor.name}</span>
+                    <span className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
+                      {venueModalTeam.mentor.phone}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">
+                    No mentor assigned to this team yet.
+                  </p>
+                )}
+              </div>
+
               {/* Status Note */}
               <div className="p-3 rounded-xl bg-sky-50/70 dark:bg-sky-950/30 border border-sky-300 dark:border-sky-800/60 text-[11px] text-sky-700 dark:text-sky-300 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 shrink-0 text-sky-500" />
@@ -2096,6 +2765,14 @@ export const AdminDashboardPage = () => {
           fetchPSSeats();
           fetchCapacityBreakdown();
         }}
+      />
+
+      {/* Mentor Assignment & Management Modal */}
+      <MentorModal
+        team={mentorModalTeam}
+        existingMentors={existingMentors}
+        onClose={() => setMentorModalTeam(null)}
+        onSuccess={handleMentorSuccess}
       />
     </div>
   );
