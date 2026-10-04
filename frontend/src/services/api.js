@@ -27,8 +27,14 @@ API.interceptors.request.use((config) => {
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message =
-      error.response?.data?.message || error.message || 'An unexpected error occurred.';
+    let message = error.response?.data?.message;
+    if (!message && error.response?.status === 404) {
+      message =
+        'Backend route not found (404). If Render backend is used, please trigger "Manual Deploy -> Deploy latest commit" on Render dashboard (tsh-backend).';
+    }
+    if (!message) {
+      message = error.message || 'An unexpected error occurred.';
+    }
     const customErr = new Error(message);
     customErr.response = error.response;
     customErr.code = error.response?.data?.code;
@@ -71,7 +77,16 @@ export const adminService = {
   approveRegistration: (id, data) => API.post(`/admin/registrations/${id}/approve`, data),
   rejectRegistration: (id, data) => API.post(`/admin/registrations/${id}/reject`, data),
   updateTeamVenue: (id, data) => API.patch(`/admin/teams/${id}/venue`, data),
-  updateTeamMentor: (id, data) => API.patch(`/admin/teams/${id}/mentor`, data),
+  updateTeamMentor: async (id, data) => {
+    try {
+      return await API.patch(`/admin/teams/${id}/mentor`, data);
+    } catch (err) {
+      if (err.response?.status === 404) {
+        return await API.patch(`/admin/registrations/${id}/mentor`, data);
+      }
+      throw err;
+    }
+  },
   resetPS: () => API.post('/admin/ps/reset'),
   fixSeats: (data) => API.post('/admin/ps/fix-seats', data),
   updatePSSeats: (id, data) => API.patch(`/admin/ps/${id}/seats`, data),

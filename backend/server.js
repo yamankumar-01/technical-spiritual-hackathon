@@ -118,6 +118,14 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
+// 404 handler for unmatched API routes (returns structured JSON instead of HTML)
+app.use('/api/*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `API endpoint '${req.method} ${req.originalUrl}' not found. Please verify the URL or ensure the backend service has deployed the latest code.`,
+  });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   if (err && err.message && err.message.startsWith('CORS policy violation')) {
